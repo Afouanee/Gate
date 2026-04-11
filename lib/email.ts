@@ -1,9 +1,29 @@
+/**
+ * Email Templates & Sending (Resend)
+ *
+ * Tous les templates d'email de l'application.
+ * Utilise Resend pour l'envoi (SMTP + templates HTML stylisées).
+ *
+ * Templates:
+ * - sendVerificationEmail: Lien magique pour connexion
+ * - sendVerificationCode: Code 6 chiffres pour inscription
+ * - sendPaymentFailedEmail: Notification échec paiement
+ * - sendContactEmail: Formulaire de contact + auto-reply
+ * - sendReportNotification: Signalement d'erreur/contribution
+ * - sendLinkRequestDecisionEmail: Résultat demande de rattachement
+ */
+
 import { Resend } from "resend";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 const FROM = process.env.RESEND_FROM_EMAIL || "noreply@gate.afouanee.dev";
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
+/**
+ * Email: Lien magique pour connexion
+ * Utilisé par EmailProvider (NextAuth)
+ * Template: Dark theme, bouton gold avec gradient
+ */
 export async function sendVerificationEmail({
   to,
   magicLink,
@@ -32,6 +52,11 @@ export async function sendVerificationEmail({
   });
 }
 
+/**
+ * Email: Code de vérification 6 chiffres
+ * Envoyé lors de l'inscription
+ * Template: Code affiché en gros avec background sombre
+ */
 export async function sendVerificationCode({
   to,
   code,
@@ -60,6 +85,11 @@ export async function sendVerificationCode({
   });
 }
 
+/**
+ * Email: Notification échec de paiement
+ * Envoyé par webhook Stripe quand paiement échoue plusieurs fois
+ * Downgrade automatique vers FREE
+ */
 export async function sendPaymentFailedEmail({ to }: { to: string }) {
   await resend.emails.send({
     from: FROM,
@@ -81,6 +111,12 @@ export async function sendPaymentFailedEmail({ to }: { to: string }) {
   });
 }
 
+/**
+ * Email: Formulaire de contact
+ * Envoie 2 emails:
+ * 1. Au FROM (admin) - message de contact
+ * 2. À l'utilisateur - auto-reply
+ */
 export async function sendContactEmail({
   name,
   email,
@@ -109,7 +145,7 @@ export async function sendContactEmail({
     `,
   });
 
-  // Auto-reply
+  // Auto-reply à l'utilisateur
   await resend.emails.send({
     from: FROM,
     to: email,
@@ -125,6 +161,13 @@ export async function sendContactEmail({
   });
 }
 
+/**
+ * Email: Notification de signalement/contribution
+ * Envoyé aux admins quand un utilisateur:
+ * - Signale une erreur dans une fiche
+ * - Propose un ajout
+ * Permet aux admins d'examiner et corriger
+ */
 export async function sendReportNotification({
   personId,
   personName,
@@ -161,6 +204,13 @@ export async function sendReportNotification({
   });
 }
 
+/**
+ * Email: Décision sur demande de rattachement
+ * Envoie au demandeur:
+ * - "Approuvée" si admin a accepté le rattachement
+ * - "Refusée" si admin a rejeté (avec motif optionnel)
+ * Message customisable par admin
+ */
 export async function sendLinkRequestDecisionEmail({
   to,
   firstName,
@@ -182,6 +232,8 @@ export async function sendLinkRequestDecisionEmail({
     ? `Bienvenue ${firstName},\n\nVotre demande de rattachement au profil ${personName} a ete acceptee.\n\nVous pouvez desormais completer votre profil et explorer votre arbre genealogique.\n\n- L'equipe Gate`
     : `Bonjour ${firstName},\n\nVotre demande de rattachement au profil ${personName} a ete refusee.\n\nVous pouvez soumettre une nouvelle demande si vous pensez qu'il s'agit d'une erreur.\n\n- L'equipe Gate`;
 
+  // Utilise message custom si fourni, sinon message par défaut
+  // Template variables remplaçables: {firstName}, {personName}
   const message = (adminMessage?.trim() || fallbackMessage)
     .replace(/\{firstName\}/g, firstName)
     .replace(/\{personName\}/g, personName);

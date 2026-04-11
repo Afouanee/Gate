@@ -1,5 +1,20 @@
-// Gate - Prisma Schema
-// PostgreSQL (Supabase)
+/**
+ * GATE - Prisma Schema
+ *
+ * Modèle de données pour l'application d'arbre généalogique.
+ * Base de données: PostgreSQL (Supabase)
+ *
+ * Structures principales:
+ * - User: Utilisateurs avec gestion de rôles (ADMIN, PREMIUM, FREE)
+ * - Person: Profils généalogiques avec visibility toggles
+ * - Relation: Relations familiales (parent-enfant, mariage, etc.)
+ * - LinkRequest: Demandes de rattachement de profils utilisateurs
+ * - Subscription: Gestion des abonnements Stripe
+ * - AuditLog: Logs d'audit pour la traçabilité
+ * - ConsentLog: Consentements RGPD
+ * - Report: Signalements d'erreurs dans les données
+ * - ImportJob: Suivi des imports de données
+ */
 
 generator client {
   provider = "prisma-client-js"
@@ -11,24 +26,41 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
+// ============================================================================
+// ENUMS - Énumérations
+// ============================================================================
+
+/// Rôles utilisateurs pour la gestion des accès et limites
+/// - ADMIN: Accès complet, gestion de la plateforme
+/// - PREMIUM: Accès abonnement payant, limites élevées
+/// - FREE: Accès gratuit avec limites (5 recherches, 10 profils, 1 export)
 enum Role {
   ADMIN
   PREMIUM
   FREE
 }
 
+/// États du cycle de vie des demandes de rattachement
+/// - PENDING: En attente de traitement par un admin
+/// - APPROVED: Approuvée, l'utilisateur est lié au profil
+/// - REJECTED: Rejetée, l'utilisateur ne peut pas se lier à ce profil
 enum LinkRequestStatus {
   PENDING
   APPROVED
   REJECTED
 }
 
+/// Types de relations familiales
+/// - PARENT_CHILD: Relation parent-enfant
+/// - SPOUSE: Relation conjugale (mariage)
+/// - CUSTOM: Relation personnalisée (ex: parrain/marraine)
 enum RelationType {
   PARENT_CHILD
   SPOUSE
   CUSTOM
 }
 
+/// Genres des personnes dans l'arbre généalogique
 enum Gender {
   MALE
   FEMALE
@@ -36,6 +68,11 @@ enum Gender {
   UNKNOWN
 }
 
+/// Types d'exports de données généalogiques
+/// - ASCENDANCE: Ancêtres uniquement
+/// - DESCENDANCE: Descendants uniquement
+/// - MIXTE: Ascendants + descendants
+/// - CUSTOM: Export personnalisé
 enum ExportType {
   ASCENDANCE
   DESCENDANCE
@@ -43,11 +80,15 @@ enum ExportType {
   CUSTOM
 }
 
+/// Types de rapports/signalements
+/// - ERROR: Erreur dans les données
+/// - ADDITION: Suggestion d'ajout
 enum ReportType {
   ERROR
   ADDITION
 }
 
+/// Actions d'audit pour traçabilité complète des opérations
 enum AuditAction {
   USER_CREATED
   USER_UPDATED
@@ -67,33 +108,44 @@ enum AuditAction {
   REPORT_SUBMITTED
 }
 
+// ============================================================================
+// MODÈLES - NextAuth (Auth & Sessions)
+// ============================================================================
+
+/// Modèle User: Utilisateurs du système
+/// Gère les authentifications (credentials, magic link) et les rôles
+/// - searchCount, exportCount: Suivi des limites FREE/PREMIUM
+/// - EmailVerified: Nécessaire pour l'authentification
+/// - role: Détermine les accès et limites (source de vérité: webhooks Stripe)
 model User {
   id                String    @id @default(cuid())
   email             String    @unique
   emailVerified     DateTime?
   name              String?
-  password          String?
+  password          String?                // Hash bcrypt pour CredentialsProvider
   image             String?
-  role              Role      @default(FREE)
-  searchCount       Int       @default(0)
-  exportCount       Int       @default(0)
+  role              Role      @default(FREE)    // Rôle par défaut FREE, changé par Stripe webhook
+  searchCount       Int       @default(0)       // Limites FREE: 5 / PREMIUM: illimité
+  exportCount       Int       @default(0)       // Limites FREE: 1 / PREMIUM: illimité
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
 
-  // NextAuth
-  accounts          Account[]
-  sessions          Session[]
+  // NextAuth relations
+  accounts          Account[]     // OAuth providers
+  sessions          Session[]     // Sessions JWT
 
-  // App
-  person            Person?       @relation("UserPerson")
-  linkRequests      LinkRequest[] @relation("UserLinkRequests")
-  subscription      Subscription?
-  consentLogs       ConsentLog[]
-  auditLogs         AuditLog[]
+  // App relations
+  person            Person?       @relation("UserPerson")           // 1 utilisateur = 1 profil max
+  linkRequests      LinkRequest[] @relation("UserLinkRequests")     // Demandes de rattachement
+  subscription      Subscription?                                     // Abonnement Stripe
+  consentLogs       ConsentLog[]                                      // Historique RGPD
+  auditLogs         AuditLog[]                                        // Audit trail
 
   @@map("users")
 }
 
+/// Modèle Account: Comptes OAuth (NextAuth)
+/// Stocke les credentials OAuth pour les providers externes
 model Account {
   id                String  @id @default(cuid())
   userId            String
@@ -114,6 +166,8 @@ model Account {
   @@map("accounts")
 }
 
+/// Modèle Session: Sessions utilisateurs NextAuth
+/// Gère les tokens JWT et expirations
 model Session {
   id           String   @id @default(cuid())
   sessionToken String   @unique
@@ -125,6 +179,8 @@ model Session {
   @@map("sessions")
 }
 
+/// Modèle VerificationToken: Tokens Email Provider (NextAuth)
+/// Utilisé pour les magic links
 model VerificationToken {
   identifier String
   token      String   @unique
@@ -134,18 +190,29 @@ model VerificationToken {
   @@map("verification_tokens")
 }
 
+/// Modèle EmailVerificationCode: Codes de vérification email personnalisés
+/// Utilisé lors de l'inscription (code à 6 chiffres envoyé par Resend)
 model EmailVerificationCode {
   id         String   @id @default(cuid())
   email      String
   code       String
   expires    DateTime
-  used       Boolean  @default(false)
+  used       Boolean  @default(false)      // Empêche la réutilisation
   createdAt  DateTime @default(now())
 
   @@index([email])
   @@map("email_verification_codes")
 }
 
+// ============================================================================
+// MODÈLES - Cœur de l'application (Généalogie)
+// ============================================================================
+
+/// Modèle Person: Profils généalogiques dans l'arbre
+/// Représente une personne dans la base de données généalogique
+/// - Peut être lié à un utilisateur via userId (1 utilisateur = 1 profil)
+/// - Les toggles de visibilité sont contrôlés par les admins
+/// - Relations: stockées dans le modèle Relation
 model Person {
   id            String    @id @default(cuid())
   firstName     String
@@ -156,28 +223,30 @@ model Person {
   birthPlace    String?
   deathPlace    String?
   photoUrl      String?
-  description   String?   @db.Text
-  isAlive       Boolean   @default(true)
+  description   String?   @db.Text         // Bio/description personnalisée
 
-  // Visibility toggles (controlled by ADMIN)
+  // Contrôle de visibilité (toggles admin pour la confidentialité)
+  // Ces champs permettent aux admins de masquer certaines infos sensibles même au propriétaire
   showBirthDate   Boolean @default(false)
   showDeathDate   Boolean @default(false)
   showMarriage    Boolean @default(false)
   showPhoto       Boolean @default(false)
   showPersonalData Boolean @default(false)
+  isAlive         Boolean @default(true)
 
-  // Linked user (1 seul user par profil)
+  // Lien avec un utilisateur (au maximum 1 utilisateur par profil)
+  // Signifie que cet utilisateur "gère" ce profil
   userId        String?   @unique
   user          User?     @relation("UserPerson", fields: [userId], references: [id])
 
-  // Relations
-  relationsAsSource  Relation[] @relation("RelationSource")
-  relationsAsTarget  Relation[] @relation("RelationTarget")
+  // Relations familiales
+  relationsAsSource  Relation[] @relation("RelationSource")  // Relations sortantes (ex: parent vers enfant)
+  relationsAsTarget  Relation[] @relation("RelationTarget")  // Relations entrantes (ex: enfant depuis parent)
 
-  // Link requests
+  // Demandes de rattachement d'utilisateurs
   linkRequests  LinkRequest[]
 
-  // Reports
+  // Signalements d'erreurs
   reports       Report[]
 
   createdAt     DateTime @default(now())
@@ -186,31 +255,38 @@ model Person {
   @@map("persons")
 }
 
+/// Modèle Relation: Relations familiales entre personnes
+/// Liens généalogiques dirigés: source -> target
+/// Ex: Parent (source) -> Enfant (target)
 model Relation {
   id           String       @id @default(cuid())
   sourceId     String
   targetId     String
-  type         RelationType
-  label        String?      // Pour les relations custom
-  marriageDate DateTime?
-  divorceDate  DateTime?
+  type         RelationType              // PARENT_CHILD, SPOUSE, CUSTOM
+  label        String?                   // Libellé pour les relations custom
+  marriageDate DateTime?                 // Date de mariage (utile pour SPOUSE)
+  divorceDate  DateTime?                 // Date de divorce
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
 
   source Person @relation("RelationSource", fields: [sourceId], references: [id], onDelete: Cascade)
   target Person @relation("RelationTarget", fields: [targetId], references: [id], onDelete: Cascade)
 
+  // Contrainte: unique sur chaque combinaison source+target+type (une seule relation de ce type entre 2 personnes)
   @@unique([sourceId, targetId, type])
   @@map("relations")
 }
 
+/// Modèle LinkRequest: Demandes de rattachement utilisateur à profil
+/// Permet à un utilisateur de demander à être lié à un profil généalogique
+/// Ce profil pourrait être proposé ou le profil d'un ancêtre
 model LinkRequest {
   id        String            @id @default(cuid())
   userId    String
   personId  String
-  message   String            @db.Text
-  status    LinkRequestStatus @default(PENDING)
-  adminMessage String?        @db.Text
+  message   String            @db.Text           // Message de justification de l'utilisateur
+  status    LinkRequestStatus @default(PENDING)  // PENDING -> approval par admin -> APPROVED/REJECTED
+  adminMessage String?        @db.Text           // Réponse de l'admin en cas de refus
   createdAt DateTime          @default(now())
   updatedAt DateTime          @updatedAt
 
@@ -220,14 +296,22 @@ model LinkRequest {
   @@map("link_requests")
 }
 
+// ============================================================================
+// MODÈLES - Monétisation & Payements
+// ============================================================================
+
+/// Modèle Subscription: Gestion des abonnements Stripe
+/// Stocke les infos d'abonnement Stripe pour chaque utilisateur
+/// La SOURCE DE VÉRITÉ pour le rôle: webhook Stripe met à jour User.role
+/// Les changements de rôle se font via le webhook Stripe, pas directement
 model Subscription {
   id                   String    @id @default(cuid())
   userId               String    @unique
-  stripeCustomerId     String?   @unique
-  stripeSubscriptionId String?   @unique
-  stripePriceId        String?
-  stripeCurrentPeriodEnd DateTime?
-  status               String    @default("inactive") // active, inactive, past_due, canceled
+  stripeCustomerId     String?   @unique         // ID client Stripe
+  stripeSubscriptionId String?   @unique         // ID abonnement Stripe
+  stripePriceId        String?                    // ID du prix/plan Stripe
+  stripeCurrentPeriodEnd DateTime?               // Fin de la période actuelle
+  status               String    @default("inactive")  // active, inactive, past_due, canceled
   createdAt            DateTime  @default(now())
   updatedAt            DateTime  @updatedAt
 
@@ -236,13 +320,20 @@ model Subscription {
   @@map("subscriptions")
 }
 
+// ============================================================================
+// MODÈLES - Conformité & Audit
+// ============================================================================
+
+/// Modèle ConsentLog: Logs de consentement RGPD
+/// Enregistre chaque consentement utilisateur (RGPD, conditions, marketing)
+/// Incluant IP et User-Agent pour audit
 model ConsentLog {
   id        String   @id @default(cuid())
   userId    String
   type      String   // "rgpd", "terms", "marketing"
-  accepted  Boolean
-  ip        String?
-  userAgent String?
+  accepted  Boolean  // true si accepté, false si refusé
+  ip        String?  // IP de l'utilisateur
+  userAgent String?  // User-Agent du navigateur
   createdAt DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -250,15 +341,18 @@ model ConsentLog {
   @@map("consent_logs")
 }
 
+/// Modèle AuditLog: Logs d'audit pour traçabilité
+/// Enregistre TOUTES les actions importantes (créations, modifications, suppressions)
+/// Utilisable pour reconstruction d'historique et conformité légale
 model AuditLog {
   id        String      @id @default(cuid())
-  userId    String?
-  action    AuditAction
-  entity    String?     // nom de la table/entité concernée
-  entityId  String?     // id de l'entité concernée
-  details   Json?
-  ip        String?
-  userAgent String?
+  userId    String?                     // Utilisateur qui a effectué l'action (null si système)
+  action    AuditAction                 // Type d'action (USER_CREATED, PERSON_UPDATED, etc.)
+  entity    String?                     // Nom de la table concernée (users, persons, etc.)
+  entityId  String?                     // ID de l'entité touchée
+  details   Json?                       // Détails additionnels (changements avant/après, etc.)
+  ip        String?                     // IP de l'utilisateur
+  userAgent String?                     // User-Agent du navigateur
   createdAt DateTime    @default(now())
 
   user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
@@ -266,14 +360,17 @@ model AuditLog {
   @@map("audit_logs")
 }
 
+/// Modèle Report: Signalements d'erreurs ou suggestions
+/// Permet aux utilisateurs de signaler des erreurs dans les données
+/// Examinés par les admins pour correction
 model Report {
   id          String   @id @default(cuid())
   personId    String
-  type        ReportType @default(ERROR)
-  errorType   String?
-  reporterEmail String?
-  message     String   @db.Text
-  resolved    Boolean  @default(false)
+  type        ReportType @default(ERROR)     // ERROR ou ADDITION
+  errorType   String?                        // Type d'erreur (date invalide, doublon, etc.)
+  reporterEmail String?                      // Email du signaleur (facultatif)
+  message     String   @db.Text             // Description détaillée
+  resolved    Boolean  @default(false)       // Marqué comme résolu par admin
   createdAt   DateTime @default(now())
 
   person Person @relation(fields: [personId], references: [id], onDelete: Cascade)
@@ -281,13 +378,19 @@ model Report {
   @@map("reports")
 }
 
+// ============================================================================
+// MODÈLES - Imports de données
+// ============================================================================
+
+/// Modèle ImportJob: Suivi des imports CSV/Excel
+/// Enregistre la progression des imports de données généalogiques massifs
 model ImportJob {
   id         String   @id @default(cuid())
   fileName   String
-  status     String   @default("pending") // pending, processing, done, error
-  totalRows  Int      @default(0)
-  processed  Int      @default(0)
-  errors     Json?
+  status     String   @default("pending")     // pending, processing, done, error
+  totalRows  Int      @default(0)             // Nombre total de lignes
+  processed  Int      @default(0)             // Nombre de lignes traitées
+  errors     Json?                            // Erreurs rencontrées
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
