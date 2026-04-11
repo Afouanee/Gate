@@ -3,10 +3,12 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { createAuditLog } from "@/lib/audit";
+import { sendLinkRequestDecisionEmail } from "@/lib/email";
 import { z } from "zod";
 
 const actionSchema = z.object({
   action: z.enum(["APPROVED", "REJECTED"]),
+  adminMessage: z.string().max(3000).optional(),
 });
 
 export async function PATCH(
@@ -32,6 +34,10 @@ export async function PATCH(
 
     const linkRequest = await prisma.linkRequest.findUnique({
       where: { id: params.id },
+      include: {
+        user: { select: { id: true, email: true, name: true } },
+        person: { select: { id: true, firstName: true, lastName: true } },
+      },
     });
 
     if (!linkRequest) {
@@ -52,7 +58,10 @@ export async function PATCH(
       await prisma.$transaction([
         prisma.linkRequest.update({
           where: { id: params.id },
-          data: { status: "APPROVED" },
+          data: {
+            status: "APPROVED",
+            adminMessage: parsed.data.adminMessage?.trim() || null,
+          },
         }),
         prisma.person.update({
           where: { id: linkRequest.personId },
@@ -75,10 +84,23 @@ export async function PATCH(
         entity: "link_requests",
         entityId: params.id,
       });
+
+      if (linkRequest.user.email) {
+        await sendLinkRequestDecisionEmail({
+          to: linkRequest.user.email,
+          firstName: linkRequest.user.name || linkRequest.person.firstName || "Bonjour",
+          personName: `${linkRequest.person.firstName} ${linkRequest.person.lastName}`,
+          action: "APPROVED",
+          adminMessage: parsed.data.adminMessage,
+        });
+      }
     } else {
       await prisma.linkRequest.update({
         where: { id: params.id },
-        data: { status: "REJECTED" },
+        data: {
+          status: "REJECTED",
+          adminMessage: parsed.data.adminMessage?.trim() || null,
+        },
       });
 
       await createAuditLog({
@@ -87,6 +109,16 @@ export async function PATCH(
         entity: "link_requests",
         entityId: params.id,
       });
+
+      if (linkRequest.user.email) {
+        await sendLinkRequestDecisionEmail({
+          to: linkRequest.user.email,
+          firstName: linkRequest.user.name || linkRequest.person.firstName || "Bonjour",
+          personName: `${linkRequest.person.firstName} ${linkRequest.person.lastName}`,
+          action: "REJECTED",
+          adminMessage: parsed.data.adminMessage,
+        });
+      }
     }
 
     return NextResponse.json({ success: true });

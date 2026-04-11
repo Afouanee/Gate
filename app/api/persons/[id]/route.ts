@@ -80,10 +80,6 @@ export async function PATCH(
     return NextResponse.json({ error: "UNAUTHORIZED" }, { status: 401 });
   }
 
-  if (session.user.role !== "ADMIN") {
-    return NextResponse.json({ error: "FORBIDDEN" }, { status: 403 });
-  }
-
   try {
     const body = await req.json();
     const parsed = updateSchema.safeParse(body);
@@ -92,12 +88,43 @@ export async function PATCH(
       return NextResponse.json({ error: "INVALID_FIELDS" }, { status: 400 });
     }
 
+    const existingPerson = await prisma.person.findUnique({
+      where: { id: params.id },
+      select: { id: true, userId: true },
+    });
+
+    if (!existingPerson) {
+      return NextResponse.json({ error: "NOT_FOUND" }, { status: 404 });
+    }
+
+    const isAdmin = session.user.role === "ADMIN";
+    const isOwner = existingPerson.userId === session.user.id;
+
+    if (!isAdmin && !isOwner) {
+      return NextResponse.json({ error: "FORBIDDEN" }, { status: 403 });
+    }
+
+    const allowedData = isAdmin
+      ? parsed.data
+      : {
+          firstName: parsed.data.firstName,
+          lastName: parsed.data.lastName,
+          gender: parsed.data.gender,
+          birthDate: parsed.data.birthDate,
+          deathDate: parsed.data.deathDate,
+          birthPlace: parsed.data.birthPlace,
+          deathPlace: parsed.data.deathPlace,
+          photoUrl: parsed.data.photoUrl,
+          description: parsed.data.description,
+          isAlive: parsed.data.isAlive,
+        };
+
     const person = await prisma.person.update({
       where: { id: params.id },
       data: {
-        ...parsed.data,
-        birthDate: parsed.data.birthDate ? new Date(parsed.data.birthDate) : undefined,
-        deathDate: parsed.data.deathDate ? new Date(parsed.data.deathDate) : undefined,
+        ...allowedData,
+        birthDate: allowedData.birthDate === null ? null : allowedData.birthDate ? new Date(allowedData.birthDate) : undefined,
+        deathDate: allowedData.deathDate === null ? null : allowedData.deathDate ? new Date(allowedData.deathDate) : undefined,
       },
     });
 

@@ -7,8 +7,9 @@ import {
   Calendar, MapPin, User, Heart, Users, Baby, ArrowLeft,
   EyeOff, Crown, ExternalLink,
 } from "lucide-react";
-import { ReportModal } from "@/components/profile/report-modal";
 import { LinkRequestButton } from "@/components/profile/link-request-button";
+import { ProfileFeedbackModal } from "@/components/profile/profile-feedback-modal";
+import { ProfileEditDialog } from "@/components/profile/profile-edit-dialog";
 
 export default async function ProfilPage({ params }: { params: { id: string } }) {
   const session   = await requireSession();
@@ -49,6 +50,7 @@ export default async function ProfilPage({ params }: { params: { id: string } })
   const showPersonalData = isPremium || person.showPersonalData;
   const showMarriage   = isPremium || person.showMarriage;
   const age            = showBirthDate ? getAge(person.birthDate, person.deathDate) : null;
+  const canEdit        = session.user.role === "ADMIN" || person.userId === session.user.id;
 
   const parents  = person.relationsAsTarget.filter((r) => r.type === "PARENT_CHILD").map((r) => r.source);
   const children = person.relationsAsSource.filter((r) => r.type === "PARENT_CHILD").map((r) => r.target);
@@ -160,13 +162,26 @@ export default async function ProfilPage({ params }: { params: { id: string } })
 
                 {/* Actions */}
                 <div className="space-y-2">
+                  {canEdit && (
+                    <ProfileEditDialog
+                      person={person}
+                      canEditVisibility={session.user.role === "ADMIN"}
+                    />
+                  )}
                   {!person.userId && session?.user?.id && (
                     <LinkRequestButton personId={person.id} personName={`${person.firstName} ${person.lastName}`} />
                   )}
-                  <ReportModal
+                  <ProfileFeedbackModal
                     personId={person.id}
                     personFirstName={person.firstName}
                     personLastName={person.lastName}
+                    mode="ERROR"
+                  />
+                  <ProfileFeedbackModal
+                    personId={person.id}
+                    personFirstName={person.firstName}
+                    personLastName={person.lastName}
+                    mode="ADDITION"
                   />
                 </div>
               </div>
@@ -302,7 +317,10 @@ export default async function ProfilPage({ params }: { params: { id: string } })
               <SectionCard icon={User} title="Relations personnalisées">
                 <div className="space-y-2">
                   {customRelations.map((r) => {
-                    const related = r.sourceId === person.id ? r.target : r.source;
+                    const related = r.sourceId === person.id
+                      ? ("target" in r ? r.target : null)
+                      : ("source" in r ? r.source : null);
+                    if (!related) return null;
                     return <PersonCard key={r.id} p={related} relation={r.label || "Relation"} />;
                   })}
                 </div>

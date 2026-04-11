@@ -26,18 +26,29 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const page = parseInt(searchParams.get("page") || "1");
   const limit = parseInt(searchParams.get("limit") || "50");
+  const query = searchParams.get("q")?.trim() || "";
   const skip = (page - 1) * limit;
+
+  const where = query
+    ? {
+        OR: [
+          { firstName: { contains: query, mode: "insensitive" as const } },
+          { lastName: { contains: query, mode: "insensitive" as const } },
+        ],
+      }
+    : undefined;
 
   const [persons, total] = await prisma.$transaction([
     prisma.person.findMany({
       skip,
       take: limit,
+      where,
       orderBy: [{ lastName: "asc" }, { firstName: "asc" }],
       include: {
         user: { select: { id: true, name: true, email: true } },
       },
     }),
-    prisma.person.count(),
+    prisma.person.count({ where }),
   ]);
 
   return NextResponse.json({ persons, total, page, limit });

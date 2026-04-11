@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
+import { Prisma } from "@prisma/client";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { createAuditLog } from "@/lib/audit";
@@ -165,7 +166,7 @@ export async function POST(req: NextRequest) {
       where: { id: importJob.id },
       data: {
         status: parseErrors.length > 0 ? "done_with_errors" : "done",
-        errors: parseErrors.length > 0 ? parseErrors : null,
+        errors: parseErrors.length > 0 ? parseErrors : Prisma.JsonNull,
       },
     });
 

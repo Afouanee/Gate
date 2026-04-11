@@ -43,6 +43,11 @@ enum ExportType {
   CUSTOM
 }
 
+enum ReportType {
+  ERROR
+  ADDITION
+}
+
 enum AuditAction {
   USER_CREATED
   USER_UPDATED
@@ -205,6 +210,7 @@ model LinkRequest {
   personId  String
   message   String            @db.Text
   status    LinkRequestStatus @default(PENDING)
+  adminMessage String?        @db.Text
   createdAt DateTime          @default(now())
   updatedAt DateTime          @updatedAt
 
@@ -263,6 +269,8 @@ model AuditLog {
 model Report {
   id          String   @id @default(cuid())
   personId    String
+  type        ReportType @default(ERROR)
+  errorType   String?
   reporterEmail String?
   message     String   @db.Text
   resolved    Boolean  @default(false)

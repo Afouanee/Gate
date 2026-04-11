@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { X, Calendar, MapPin, ExternalLink, EyeOff, Loader2 } from "lucide-react";
+import { X, Calendar, MapPin, ExternalLink, EyeOff, Loader2, FileText } from "lucide-react";
 import { formatDate, getAge } from "@/lib/utils";
 
 interface PersonPanelProps {
@@ -39,7 +39,7 @@ export function PersonPanel({ personId, onClose }: PersonPanelProps) {
 
       {/* Header */}
       <div className="px-5 py-4 border-b border-zinc-100 flex items-center justify-between">
-        <h3 className="text-xs font-bold uppercase tracking-[0.15em] text-zinc-400">Profil</h3>
+        <h3 className="text-xs font-bold uppercase tracking-[0.15em] text-zinc-400">Apercu</h3>
         <button
           onClick={onClose}
           className="h-7 w-7 rounded-lg border border-zinc-200 flex items-center justify-center text-zinc-400 hover:text-zinc-900 hover:border-zinc-900 transition-colors"
@@ -112,6 +112,21 @@ export function PersonPanel({ personId, onClose }: PersonPanelProps) {
                   <span className="text-zinc-700">{person.birthPlace}</span>
                 </div>
               )}
+
+              {person.description ? (
+                <div className="rounded-xl border border-zinc-100 bg-zinc-50 p-3 mt-3">
+                  <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-2">
+                    <FileText className="h-3.5 w-3.5" />
+                    Informations essentielles
+                  </div>
+                  <p className="text-sm text-zinc-600 line-clamp-4 whitespace-pre-wrap">{person.description}</p>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2 text-xs text-zinc-400 mt-2">
+                  <EyeOff className="h-3.5 w-3.5" />
+                  Certaines informations peuvent etre masquees selon vos permissions.
+                </div>
+              )}
             </div>
 
             {/* Relations */}
@@ -160,7 +175,7 @@ export function PersonPanel({ personId, onClose }: PersonPanelProps) {
             className="w-full h-9 bg-zinc-900 text-white text-sm font-semibold rounded-full flex items-center justify-center gap-2 hover:bg-zinc-700 transition-colors"
           >
             <ExternalLink className="h-3.5 w-3.5" />
-            Voir le profil complet
+            Voir en detail
           </button>
         </div>
       )}

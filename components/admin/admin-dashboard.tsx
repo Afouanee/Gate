@@ -4,10 +4,18 @@ import { useEffect, useState } from "react";
 import {
   Users, TreePine, Link2, FileUp, Flag, ScrollText,
   Eye, EyeOff, Check, X, Loader2, Settings, Search,
-  AlertCircle, User
+  AlertCircle, User, Crown, MessageSquare, Info
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { AdminImport } from "./admin-import";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 type Tab = "stats" | "users" | "persons" | "requests" | "reports" | "import" | "audit";
 
@@ -17,6 +25,41 @@ type PendingToggle = {
   newValue: boolean;
   label: string;
 } | null;
+
+type LinkRequestActionState = {
+  request: any;
+  action: "APPROVED" | "REJECTED";
+  message: string;
+} | null;
+
+function getFirstName(name?: string | null, fallback = "Bonjour") {
+  return name?.trim()?.split(/\s+/)[0] || fallback;
+}
+
+function getLinkRequestTemplate(request: any, action: "APPROVED" | "REJECTED") {
+  const firstName = getFirstName(request.user?.name, request.person?.firstName || "Bonjour");
+  const personName = `${request.person?.firstName || ""} ${request.person?.lastName || ""}`.trim();
+
+  if (action === "APPROVED") {
+    return `Bienvenue ${firstName},
+
+Votre demande de rattachement au profil ${personName} a ete acceptee.
+
+Vous pouvez desormais completer votre profil et explorer votre arbre genealogique.
+
+- L'equipe Gate`;
+  }
+
+  return `Bonjour ${firstName},
+
+Votre demande de rattachement au profil ${personName} a ete refusee.
+
+Raison : merci de preciser ici la raison du refus.
+
+Vous pouvez soumettre une nouvelle demande si vous pensez qu'il s'agit d'une erreur.
+
+- L'equipe Gate`;
+}
 
 function SectionHeader({ icon: Icon, title }: { icon: any; title: string }) {
   return (
@@ -40,6 +83,8 @@ export function AdminDashboard() {
   const [personSearch, setPersonSearch] = useState("");
   const [pendingToggle, setPendingToggle] = useState<PendingToggle>(null);
   const [confirmLoading, setConfirmLoading] = useState(false);
+  const [requestActionState, setRequestActionState] = useState<LinkRequestActionState>(null);
+  const [requestActionLoading, setRequestActionLoading] = useState(false);
 
   useEffect(() => { fetchStats(); }, []);
 
@@ -102,16 +147,38 @@ export function AdminDashboard() {
     }
   };
 
-  const handleLinkRequest = async (id: string, action: "APPROVED" | "REJECTED") => {
-    const res = await fetch(`/api/link-requests/${id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action }),
+  const openLinkRequestAction = (request: any, action: "APPROVED" | "REJECTED") => {
+    setRequestActionState({
+      request,
+      action,
+      message: getLinkRequestTemplate(request, action),
     });
-    if (res.ok) {
-      toast({ title: action === "APPROVED" ? "Demande approuvée" : "Demande rejetée" });
-      fetchRequests();
-      fetchStats();
+  };
+
+  const handleLinkRequest = async () => {
+    if (!requestActionState) return;
+
+    setRequestActionLoading(true);
+    try {
+      const res = await fetch(`/api/link-requests/${requestActionState.request.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: requestActionState.action,
+          adminMessage: requestActionState.message,
+        }),
+      });
+
+      if (res.ok) {
+        toast({ title: requestActionState.action === "APPROVED" ? "Demande approuvee" : "Demande rejetee" });
+        setRequestActionState(null);
+        fetchRequests();
+        fetchStats();
+      } else {
+        toast({ title: "Erreur", description: "Impossible de traiter cette demande.", variant: "destructive" });
+      }
+    } finally {
+      setRequestActionLoading(false);
     }
   };
 
@@ -443,14 +510,14 @@ export function AdminDashboard() {
                             {r.status === "PENDING" && (
                               <div className="flex gap-2 shrink-0">
                                 <button
-                                  onClick={() => handleLinkRequest(r.id, "APPROVED")}
+                                  onClick={() => openLinkRequestAction(r, "APPROVED")}
                                   className="h-8 px-3 bg-zinc-900 text-white text-xs font-semibold rounded-lg flex items-center gap-1.5 hover:bg-zinc-700 transition-colors"
                                 >
                                   <Check className="h-3.5 w-3.5" />
                                   Approuver
                                 </button>
                                 <button
-                                  onClick={() => handleLinkRequest(r.id, "REJECTED")}
+                                  onClick={() => openLinkRequestAction(r, "REJECTED")}
                                   className="h-8 px-3 border border-red-200 text-red-600 text-xs font-semibold rounded-lg flex items-center gap-1.5 hover:bg-red-50 transition-colors"
                                 >
                                   <X className="h-3.5 w-3.5" />
@@ -459,6 +526,12 @@ export function AdminDashboard() {
                               </div>
                             )}
                           </div>
+                          {r.adminMessage && (
+                            <div className="mt-3 rounded-xl border border-zinc-100 bg-zinc-50 p-3">
+                              <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-zinc-400 mb-1">Message envoye</p>
+                              <p className="text-sm text-zinc-600 whitespace-pre-wrap">{r.adminMessage}</p>
+                            </div>
+                          )}
                         </div>
                       ))}
                     </div>
@@ -609,6 +682,76 @@ export function AdminDashboard() {
           </div>
         </div>
       )}
+
+      <Dialog
+        open={Boolean(requestActionState)}
+        onOpenChange={(open) => !open && !requestActionLoading && setRequestActionState(null)}
+      >
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>
+              {requestActionState?.action === "APPROVED" ? "Accepter la demande" : "Refuser la demande"}
+            </DialogTitle>
+            <DialogDescription>
+              Personnalisez le message envoye a l'utilisateur avant validation.
+            </DialogDescription>
+          </DialogHeader>
+
+          {requestActionState && (
+            <div className="space-y-4">
+              <div className="rounded-2xl border border-zinc-100 bg-zinc-50 p-4">
+                <p className="text-xs font-bold uppercase tracking-[0.15em] text-zinc-400 mb-2">Demande concernee</p>
+                <p className="text-sm text-zinc-900">
+                  <span className="font-semibold">{requestActionState.request.user?.name || requestActionState.request.user?.email}</span>
+                  {" "}→{" "}
+                  <span className="font-semibold">{requestActionState.request.person?.firstName} {requestActionState.request.person?.lastName}</span>
+                </p>
+              </div>
+
+              <div className={`rounded-2xl border p-4 ${
+                requestActionState.action === "APPROVED" ? "border-green-200 bg-green-50/70" : "border-red-200 bg-red-50/70"
+              }`}>
+                <div className="flex items-center gap-2 mb-2">
+                  {requestActionState.action === "APPROVED" ? (
+                    <MessageSquare className="h-4 w-4 text-green-700" />
+                  ) : (
+                    <Info className="h-4 w-4 text-red-600" />
+                  )}
+                  <p className="text-sm font-semibold text-zinc-900">
+                    {requestActionState.action === "APPROVED" ? "Template de bienvenue" : "Template de refus"}
+                  </p>
+                </div>
+                <textarea
+                  value={requestActionState.message}
+                  onChange={(e) => setRequestActionState((prev) => prev ? { ...prev, message: e.target.value } : prev)}
+                  rows={10}
+                  className="w-full rounded-xl border border-white/80 bg-white px-4 py-3 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-900 resize-none"
+                />
+              </div>
+            </div>
+          )}
+
+          <DialogFooter>
+            <button
+              type="button"
+              disabled={requestActionLoading}
+              onClick={() => setRequestActionState(null)}
+              className="h-9 px-4 rounded-lg border border-zinc-200 text-sm font-semibold text-zinc-600 hover:border-zinc-900 hover:text-zinc-900 transition-colors disabled:opacity-40"
+            >
+              Annuler
+            </button>
+            <button
+              type="button"
+              disabled={requestActionLoading || !requestActionState?.message.trim()}
+              onClick={handleLinkRequest}
+              className="h-9 px-4 rounded-full bg-zinc-900 text-white text-sm font-semibold flex items-center gap-2 hover:bg-zinc-700 transition-colors disabled:opacity-40"
+            >
+              {requestActionLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
+              Valider
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -95,7 +95,7 @@ export async function sendContactEmail({
   await resend.emails.send({
     from: FROM,
     to: FROM,
-    replyTo: email,
+    reply_to: email,
     subject: `[Contact Gate] ${subject}`,
     html: `
       <div style="font-family: Poppins, sans-serif; background: #0a0a0a; color: #ffffff; padding: 40px; max-width: 600px; margin: 0 auto; border-radius: 12px;">
@@ -128,28 +128,74 @@ export async function sendContactEmail({
 export async function sendReportNotification({
   personId,
   personName,
+  type,
+  errorType,
   reporterEmail,
   message,
 }: {
   personId: string;
   personName: string;
+  type: "ERROR" | "ADDITION";
+  errorType?: string | null;
   reporterEmail: string;
   message: string;
 }) {
   await resend.emails.send({
     from: FROM,
     to: FROM,
-    subject: `[Signalement Gate] Profil ${personName}`,
+    subject: `[${type === "ERROR" ? "Signalement" : "Contribution"} Gate] Profil ${personName}`,
     html: `
       <div style="font-family: Poppins, sans-serif; background: #0a0a0a; color: #ffffff; padding: 40px; max-width: 600px; margin: 0 auto; border-radius: 12px;">
-        <h1 style="color: #c9930f;">Nouveau signalement</h1>
+        <h1 style="color: #c9930f;">${type === "ERROR" ? "Nouveau signalement" : "Nouvelle contribution"}</h1>
         <p><strong>Profil :</strong> ${personName} (ID: ${personId})</p>
+        <p><strong>Type :</strong> ${type === "ERROR" ? "Erreur" : "Information complémentaire"}</p>
+        ${errorType ? `<p><strong>Catégorie :</strong> ${errorType}</p>` : ""}
         <p><strong>Signalé par :</strong> ${reporterEmail || "Anonyme"}</p>
         <p><strong>Message :</strong></p>
         <p style="background: #111111; padding: 16px; border-radius: 8px; border-left: 4px solid #ef4444;">${message}</p>
         <a href="${APP_URL}/admin?tab=reports" style="display: inline-block; background: linear-gradient(135deg, #c9930f, #e4b325); color: #000000; padding: 14px 28px; border-radius: 8px; text-decoration: none; font-weight: 600;">
           Voir dans l'administration
         </a>
+      </div>
+    `,
+  });
+}
+
+export async function sendLinkRequestDecisionEmail({
+  to,
+  firstName,
+  personName,
+  action,
+  adminMessage,
+}: {
+  to: string;
+  firstName: string;
+  personName: string;
+  action: "APPROVED" | "REJECTED";
+  adminMessage?: string | null;
+}) {
+  const subject = action === "APPROVED"
+    ? "Gate — Votre demande de rattachement a été acceptée"
+    : "Gate — Votre demande de rattachement a été refusée";
+
+  const fallbackMessage = action === "APPROVED"
+    ? `Bienvenue ${firstName},\n\nVotre demande de rattachement au profil ${personName} a ete acceptee.\n\nVous pouvez desormais completer votre profil et explorer votre arbre genealogique.\n\n- L'equipe Gate`
+    : `Bonjour ${firstName},\n\nVotre demande de rattachement au profil ${personName} a ete refusee.\n\nVous pouvez soumettre une nouvelle demande si vous pensez qu'il s'agit d'une erreur.\n\n- L'equipe Gate`;
+
+  const message = (adminMessage?.trim() || fallbackMessage)
+    .replace(/\{firstName\}/g, firstName)
+    .replace(/\{personName\}/g, personName);
+
+  await resend.emails.send({
+    from: FROM,
+    to,
+    subject,
+    html: `
+      <div style="font-family: Poppins, sans-serif; background: #0a0a0a; color: #ffffff; padding: 40px; max-width: 600px; margin: 0 auto; border-radius: 12px;">
+        <h1 style="color: #c9930f; font-size: 32px; margin-bottom: 8px;">Gate</h1>
+        <p style="color: #888888; margin-bottom: 32px;">La porte vers vos origines</p>
+        <h2 style="font-size: 20px; margin-bottom: 16px;">${action === "APPROVED" ? "Demande acceptee" : "Demande refusee"}</h2>
+        <div style="background: #111111; padding: 20px; border-radius: 12px; white-space: pre-line; color: #cccccc;">${message}</div>
       </div>
     `,
   });

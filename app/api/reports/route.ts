@@ -7,6 +7,8 @@ import { z } from "zod";
 
 const schema = z.object({
   personId: z.string(),
+  type: z.enum(["ERROR", "ADDITION"]),
+  errorType: z.string().max(120).optional().nullable(),
   message: z.string().min(10).max(2000),
   reporterEmail: z.string().email().optional(),
 });
@@ -34,6 +36,8 @@ export async function POST(req: NextRequest) {
     const report = await prisma.report.create({
       data: {
         personId: parsed.data.personId,
+        type: parsed.data.type,
+        errorType: parsed.data.type === "ERROR" ? (parsed.data.errorType?.trim() || null) : null,
         message: parsed.data.message,
         reporterEmail: parsed.data.reporterEmail || session?.user?.email || null,
       },
@@ -42,6 +46,8 @@ export async function POST(req: NextRequest) {
     await sendReportNotification({
       personId: person.id,
       personName: `${person.firstName} ${person.lastName}`,
+      type: parsed.data.type,
+      errorType: parsed.data.type === "ERROR" ? parsed.data.errorType : null,
       reporterEmail: parsed.data.reporterEmail || session?.user?.email || "Anonyme",
       message: parsed.data.message,
     });

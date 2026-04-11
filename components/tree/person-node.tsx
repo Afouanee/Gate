@@ -2,10 +2,8 @@
 
 import { memo } from "react";
 import { Handle, Position, NodeProps } from "reactflow";
-import { useRouter } from "next/navigation";
 import { EyeOff } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { getAge, getInitials } from "@/lib/utils";
+import { cn, getInitials } from "@/lib/utils";
 
 interface PersonNodeData {
   id: string;
@@ -36,12 +34,8 @@ const genderText: Record<string, string> = {
 };
 
 function PersonNodeComponent({ data, selected }: NodeProps<PersonNodeData>) {
-  const router = useRouter();
-  const age    = getAge(data.birthDate, data.deathDate);
-
   return (
     <div
-      onClick={() => router.push(`/profil/${data.id}`)}
       className={cn(
         "relative w-40 rounded-2xl border-2 bg-white cursor-pointer transition-all duration-200 shadow-sm",
         genderBorder[data.gender] || genderBorder.UNKNOWN,
