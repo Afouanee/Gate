@@ -1,0 +1,84 @@
+import { NextRequest, NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+import { createAuditLog } from "@/lib/audit";
+import { z } from "zod";
+
+const createSchema = z.object({
+  firstName: z.string().min(1).max(100),
+  lastName: z.string().min(1).max(100),
+  gender: z.enum(["MALE", "FEMALE", "OTHER", "UNKNOWN"]).optional(),
+  birthDate: z.string().optional().nullable(),
+  deathDate: z.string().optional().nullable(),
+  birthPlace: z.string().optional().nullable(),
+  deathPlace: z.string().optional().nullable(),
+  description: z.string().optional().nullable(),
+  isAlive: z.boolean().optional(),
+});
+
+export async function GET(req: NextRequest) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: "UNAUTHORIZED" }, { status: 401 });
+  }
+
+  const { searchParams } = new URL(req.url);
+  const page = parseInt(searchParams.get("page") || "1");
+  const limit = parseInt(searchParams.get("limit") || "50");
+  const skip = (page - 1) * limit;
+
+  const [persons, total] = await prisma.$transaction([
+    prisma.person.findMany({
+      skip,
+      take: limit,
+      orderBy: [{ lastName: "asc" }, { firstName: "asc" }],
+      include: {
+        user: { select: { id: true, name: true, email: true } },
+      },
+    }),
+    prisma.person.count(),
+  ]);
+
+  return NextResponse.json({ persons, total, page, limit });
+}
+
+export async function POST(req: NextRequest) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: "UNAUTHORIZED" }, { status: 401 });
+  }
+
+  if (session.user.role !== "ADMIN") {
+    return NextResponse.json({ error: "FORBIDDEN" }, { status: 403 });
+  }
+
+  try {
+    const body = await req.json();
+    const parsed = createSchema.safeParse(body);
+
+    if (!parsed.success) {
+      return NextResponse.json({ error: "INVALID_FIELDS", details: parsed.error.flatten() }, { status: 400 });
+    }
+
+    const person = await prisma.person.create({
+      data: {
+        ...parsed.data,
+        birthDate: parsed.data.birthDate ? new Date(parsed.data.birthDate) : null,
+        deathDate: parsed.data.deathDate ? new Date(parsed.data.deathDate) : null,
+      },
+    });
+
+    await createAuditLog({
+      userId: session.user.id,
+      action: "PERSON_CREATED",
+      entity: "persons",
+      entityId: person.id,
+    });
+
+    return NextResponse.json(person, { status: 201 });
+  } catch (error) {
+    console.error("Create person error:", error);
+    return NextResponse.json({ error: "INTERNAL_ERROR" }, { status: 500 });
+  }
+}

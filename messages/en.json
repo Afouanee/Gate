@@ -1,0 +1,345 @@
+{
+  "common": {
+    "appName": "Gate",
+    "tagline": "The gateway to your origins",
+    "footer": "by Afouanee.dev",
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "close": "Close",
+    "confirm": "Confirm",
+    "back": "Back",
+    "next": "Next",
+    "search": "Search",
+    "noResults": "No results",
+    "seeMore": "See more",
+    "submit": "Submit",
+    "required": "Required field",
+    "optional": "Optional",
+    "yes": "Yes",
+    "no": "No",
+    "premium": "Premium",
+    "free": "Free",
+    "admin": "Administrator"
+  },
+  "nav": {
+    "home": "Home",
+    "tree": "Tree",
+    "search": "Search",
+    "export": "Export",
+    "myAccount": "My Account",
+    "linkRequest": "Link Request",
+    "pricing": "Pricing",
+    "contact": "Contact",
+    "login": "Sign In",
+    "register": "Sign Up",
+    "logout": "Sign Out",
+    "admin": "Administration",
+    "charter": "Charter"
+  },
+  "home": {
+    "hero": {
+      "title": "The gateway to your origins",
+      "subtitle": "Explore, build, and share your family tree with unparalleled precision and elegance.",
+      "cta": "Start for free",
+      "ctaPremium": "Discover Premium",
+      "badge": "Advanced genealogy platform"
+    },
+    "features": {
+      "title": "Features",
+      "tree": {
+        "title": "Interactive Tree",
+        "description": "Visualize complex family relationships with our advanced graph engine."
+      },
+      "search": {
+        "title": "Powerful Search",
+        "description": "Find any ancestor with our PostgreSQL-powered search engine."
+      },
+      "export": {
+        "title": "PDF Export",
+        "description": "Generate detailed PDF reports of your family tree."
+      },
+      "privacy": {
+        "title": "Privacy",
+        "description": "Full control over the visibility of each field in your profiles."
+      }
+    },
+    "stats": {
+      "profiles": "Profiles",
+      "relations": "Relations",
+      "families": "Families"
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Sign In",
+      "subtitle": "Access your Gate account",
+      "email": "Email address",
+      "password": "Password",
+      "forgotPassword": "Forgot password?",
+      "submit": "Sign In",
+      "noAccount": "Don't have an account?",
+      "register": "Sign Up",
+      "magicLink": "Sign in with magic link",
+      "magicLinkSent": "A sign-in link has been sent to your email address.",
+      "orDivider": "or continue with"
+    },
+    "register": {
+      "title": "Create an account",
+      "subtitle": "Join Gate and explore your origins",
+      "name": "Full name",
+      "email": "Email address",
+      "password": "Password",
+      "confirmPassword": "Confirm password",
+      "submit": "Create my account",
+      "hasAccount": "Already have an account?",
+      "login": "Sign In",
+      "terms": "By creating an account, you agree to our",
+      "termsLink": "terms of use",
+      "rgpd": "and our privacy policy.",
+      "verification": "Email verification",
+      "verificationCode": "A verification code has been sent to your email address.",
+      "enterCode": "Enter the code received by email",
+      "verifyCode": "Verify code",
+      "resendCode": "Resend code",
+      "disposableEmail": "Disposable email addresses are not allowed."
+    },
+    "errors": {
+      "invalidCredentials": "Invalid email or password.",
+      "emailExists": "This email address is already in use.",
+      "weakPassword": "Password must contain at least 8 characters.",
+      "passwordMismatch": "Passwords do not match.",
+      "invalidEmail": "Invalid email address.",
+      "codeExpired": "The verification code has expired.",
+      "codeInvalid": "Invalid verification code.",
+      "disposableEmail": "Disposable email addresses are not allowed."
+    }
+  },
+  "tree": {
+    "title": "Family Tree",
+    "search": "Search for a person...",
+    "center": "Center on me",
+    "minimap": "Minimap",
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out",
+    "fitView": "Fit view",
+    "loading": "Loading tree...",
+    "noData": "No data available",
+    "addPerson": "Add a person",
+    "relations": {
+      "parentChild": "Parent → Child",
+      "spouse": "Spouse",
+      "custom": "Custom relation"
+    }
+  },
+  "profile": {
+    "title": "Profile",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "gender": "Gender",
+    "birthDate": "Date of Birth",
+    "deathDate": "Date of Death",
+    "birthPlace": "Place of Birth",
+    "deathPlace": "Place of Death",
+    "photo": "Photo",
+    "description": "Story / Description",
+    "hidden": "Hidden information",
+    "report": "Report an error",
+    "reportTitle": "Report an error / Suggest a modification",
+    "reportMessage": "Describe the error or proposed change",
+    "reportSubmit": "Submit report",
+    "reportSuccess": "Report submitted successfully.",
+    "linkRequest": "Request link",
+    "notLinked": "No linked user",
+    "linked": "Linked user",
+    "male": "Male",
+    "female": "Female",
+    "other": "Other",
+    "unknown": "Not specified",
+    "alive": "Alive",
+    "deceased": "Deceased",
+    "relations": "Relations",
+    "parents": "Parents",
+    "children": "Children",
+    "spouses": "Spouses",
+    "siblings": "Siblings"
+  },
+  "search": {
+    "title": "Search",
+    "placeholder": "Search by first name, last name, place...",
+    "filters": "Filters",
+    "gender": "Gender",
+    "yearFrom": "Born after",
+    "yearTo": "Born before",
+    "results": "results found",
+    "limitReached": "You have reached the 5 free searches limit.",
+    "upgradeToPremium": "Upgrade to Premium for unlimited searches",
+    "blurredResults": "Upgrade to Premium to see full results",
+    "noResults": "No profiles found"
+  },
+  "export": {
+    "title": "Export my tree",
+    "subtitle": "Generate a PDF of your family tree",
+    "targetPerson": "Target person",
+    "searchPerson": "Search for a person...",
+    "type": "Tree type",
+    "ascendance": "Ancestry",
+    "descendance": "Descendants",
+    "mixte": "Mixed",
+    "custom": "Custom",
+    "depth": "Depth (generations)",
+    "options": "Options",
+    "includeSpouses": "Include spouses",
+    "includeCustom": "Include custom relations",
+    "showPhotos": "Show photos",
+    "showDates": "Show dates",
+    "showDescriptions": "Show descriptions",
+    "generate": "Generate PDF",
+    "generating": "Generating...",
+    "download": "Download",
+    "limitReached": "You have reached the 1 free export limit.",
+    "upgradeToPremium": "Upgrade to Premium for unlimited exports",
+    "success": "PDF generated successfully!",
+    "error": "Error generating PDF"
+  },
+  "pricing": {
+    "title": "Our plans",
+    "subtitle": "Choose the plan that fits your needs",
+    "free": {
+      "name": "Free",
+      "price": "€0",
+      "period": "forever",
+      "features": [
+        "5 searches maximum",
+        "10 viewable profiles",
+        "1 PDF export maximum",
+        "Partially blurred results"
+      ],
+      "cta": "Start for free"
+    },
+    "premium": {
+      "name": "Premium",
+      "price": "€3.99",
+      "period": "every 3 months",
+      "features": [
+        "Unlimited searches",
+        "Access to all profiles",
+        "Unlimited PDF exports",
+        "All data visible",
+        "Priority support"
+      ],
+      "cta": "Go Premium",
+      "badge": "Recommended"
+    }
+  },
+  "account": {
+    "title": "My Account",
+    "profile": "My Profile",
+    "subscription": "My Subscription",
+    "privacy": "Privacy",
+    "deleteAccount": "Delete my account",
+    "deleteConfirm": "Are you sure you want to delete your account? This action is irreversible.",
+    "subscriptionActive": "Active subscription",
+    "subscriptionExpires": "Expires on",
+    "subscriptionInactive": "No active subscription",
+    "manageSubscription": "Manage subscription",
+    "cancelSubscription": "Cancel subscription",
+    "renewSubscription": "Renew",
+    "consentRgpd": "GDPR Consent",
+    "downloadData": "Download my data",
+    "anonymize": "Anonymize my data"
+  },
+  "linkRequest": {
+    "title": "Link Request",
+    "subtitle": "Link your account to a profile in the tree",
+    "selectPerson": "Select a profile",
+    "message": "Message (required)",
+    "messagePlaceholder": "Explain why you want to link to this profile...",
+    "submit": "Send request",
+    "pending": "Pending",
+    "approved": "Approved",
+    "rejected": "Rejected",
+    "myRequests": "My requests",
+    "noRequests": "No pending requests",
+    "alreadyLinked": "You are already linked to a profile.",
+    "success": "Request sent successfully.",
+    "error": "Error sending request."
+  },
+  "admin": {
+    "title": "Administration",
+    "users": "Users",
+    "persons": "Profiles",
+    "linkRequests": "Link Requests",
+    "imports": "Imports",
+    "reports": "Reports",
+    "auditLogs": "Audit Logs",
+    "visibility": "Global Visibility",
+    "stats": "Statistics",
+    "totalUsers": "Total users",
+    "premiumUsers": "Premium users",
+    "totalPersons": "Total profiles",
+    "totalRelations": "Total relations",
+    "pendingRequests": "Pending requests",
+    "pendingReports": "Pending reports",
+    "approve": "Approve",
+    "reject": "Reject",
+    "resolve": "Resolve",
+    "toggleVisibility": "Toggle visibility",
+    "importCsv": "Import CSV/Excel",
+    "downloadTemplate": "Download template"
+  },
+  "contact": {
+    "title": "Contact us",
+    "subtitle": "A question? We respond within 48 hours.",
+    "name": "Your name",
+    "email": "Your email",
+    "subject": "Subject",
+    "message": "Message",
+    "submit": "Send",
+    "success": "Message sent successfully!",
+    "error": "Error sending message.",
+    "responseTime": "Response within 48 working hours"
+  },
+  "charter": {
+    "title": "Terms of Use",
+    "subtitle": "Rules and conditions of use for Gate"
+  },
+  "payment": {
+    "success": {
+      "title": "Payment successful!",
+      "subtitle": "Welcome to Gate Premium",
+      "message": "Your subscription is now active. Enjoy all Premium features.",
+      "cta": "Access the tree"
+    },
+    "cancel": {
+      "title": "Payment cancelled",
+      "subtitle": "Your payment was not processed.",
+      "message": "You can try again at any time.",
+      "cta": "View plans"
+    }
+  },
+  "errors": {
+    "403": {
+      "title": "Access denied",
+      "subtitle": "You don't have the required permissions.",
+      "cta": "Back to home"
+    },
+    "404": {
+      "title": "Page not found",
+      "subtitle": "The page you're looking for doesn't exist.",
+      "cta": "Back to home"
+    }
+  },
+  "rgpd": {
+    "consent": {
+      "title": "Your privacy",
+      "message": "Gate uses data to improve your experience. By continuing, you agree to our privacy policy.",
+      "accept": "Accept",
+      "decline": "Decline",
+      "learnMore": "Learn more"
+    }
+  }
+}

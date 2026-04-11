@@ -1,0 +1,345 @@
+{
+  "common": {
+    "appName": "Gate",
+    "tagline": "La porte vers vos origines",
+    "footer": "by Afouanee.dev",
+    "loading": "Chargement...",
+    "error": "Une erreur est survenue",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "close": "Fermer",
+    "confirm": "Confirmer",
+    "back": "Retour",
+    "next": "Suivant",
+    "search": "Rechercher",
+    "noResults": "Aucun résultat",
+    "seeMore": "Voir plus",
+    "submit": "Soumettre",
+    "required": "Champ requis",
+    "optional": "Optionnel",
+    "yes": "Oui",
+    "no": "Non",
+    "premium": "Premium",
+    "free": "Gratuit",
+    "admin": "Administrateur"
+  },
+  "nav": {
+    "home": "Accueil",
+    "tree": "Arbre",
+    "search": "Recherche",
+    "export": "Exporter",
+    "myAccount": "Mon compte",
+    "linkRequest": "Rattachement",
+    "pricing": "Tarifs",
+    "contact": "Contact",
+    "login": "Se connecter",
+    "register": "S'inscrire",
+    "logout": "Se déconnecter",
+    "admin": "Administration",
+    "charter": "Charte"
+  },
+  "home": {
+    "hero": {
+      "title": "La porte vers vos origines",
+      "subtitle": "Explorez, construisez et partagez votre arbre généalogique avec une précision et une élégance incomparables.",
+      "cta": "Commencer gratuitement",
+      "ctaPremium": "Découvrir Premium",
+      "badge": "Plateforme généalogique avancée"
+    },
+    "features": {
+      "title": "Fonctionnalités",
+      "tree": {
+        "title": "Arbre interactif",
+        "description": "Visualisez des relations familiales complexes grâce à notre moteur graphique avancé."
+      },
+      "search": {
+        "title": "Recherche puissante",
+        "description": "Trouvez n'importe quel ancêtre grâce à notre moteur de recherche PostgreSQL."
+      },
+      "export": {
+        "title": "Export PDF",
+        "description": "Générez des rapports PDF détaillés de votre arbre généalogique."
+      },
+      "privacy": {
+        "title": "Confidentialité",
+        "description": "Contrôle total de la visibilité de chaque champ de vos profils."
+      }
+    },
+    "stats": {
+      "profiles": "Profils",
+      "relations": "Relations",
+      "families": "Familles"
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Se connecter",
+      "subtitle": "Accédez à votre espace Gate",
+      "email": "Adresse email",
+      "password": "Mot de passe",
+      "forgotPassword": "Mot de passe oublié ?",
+      "submit": "Se connecter",
+      "noAccount": "Pas encore de compte ?",
+      "register": "S'inscrire",
+      "magicLink": "Connexion par lien magique",
+      "magicLinkSent": "Un lien de connexion a été envoyé à votre adresse email.",
+      "orDivider": "ou continuer avec"
+    },
+    "register": {
+      "title": "Créer un compte",
+      "subtitle": "Rejoignez Gate et explorez vos origines",
+      "name": "Nom complet",
+      "email": "Adresse email",
+      "password": "Mot de passe",
+      "confirmPassword": "Confirmer le mot de passe",
+      "submit": "Créer mon compte",
+      "hasAccount": "Déjà un compte ?",
+      "login": "Se connecter",
+      "terms": "En créant un compte, vous acceptez notre",
+      "termsLink": "charte d'utilisation",
+      "rgpd": "et notre politique RGPD.",
+      "verification": "Vérification de votre email",
+      "verificationCode": "Un code de vérification a été envoyé à votre adresse email.",
+      "enterCode": "Entrez le code reçu par email",
+      "verifyCode": "Vérifier le code",
+      "resendCode": "Renvoyer le code",
+      "disposableEmail": "Les adresses email temporaires ne sont pas autorisées."
+    },
+    "errors": {
+      "invalidCredentials": "Email ou mot de passe incorrect.",
+      "emailExists": "Cette adresse email est déjà utilisée.",
+      "weakPassword": "Le mot de passe doit contenir au moins 8 caractères.",
+      "passwordMismatch": "Les mots de passe ne correspondent pas.",
+      "invalidEmail": "Adresse email invalide.",
+      "codeExpired": "Le code de vérification a expiré.",
+      "codeInvalid": "Code de vérification invalide.",
+      "disposableEmail": "Les adresses email temporaires ne sont pas autorisées."
+    }
+  },
+  "tree": {
+    "title": "Arbre généalogique",
+    "search": "Rechercher une personne...",
+    "center": "Me centrer",
+    "minimap": "Minimap",
+    "zoomIn": "Zoom avant",
+    "zoomOut": "Zoom arrière",
+    "fitView": "Ajuster la vue",
+    "loading": "Chargement de l'arbre...",
+    "noData": "Aucune donnée disponible",
+    "addPerson": "Ajouter une personne",
+    "relations": {
+      "parentChild": "Parent → Enfant",
+      "spouse": "Conjoint(e)",
+      "custom": "Relation personnalisée"
+    }
+  },
+  "profile": {
+    "title": "Profil",
+    "firstName": "Prénom",
+    "lastName": "Nom",
+    "gender": "Genre",
+    "birthDate": "Date de naissance",
+    "deathDate": "Date de décès",
+    "birthPlace": "Lieu de naissance",
+    "deathPlace": "Lieu de décès",
+    "photo": "Photo",
+    "description": "Histoire / Description",
+    "hidden": "Information masquée",
+    "report": "Signaler une erreur",
+    "reportTitle": "Signaler une erreur / Proposer une modification",
+    "reportMessage": "Décrivez l'erreur ou la modification proposée",
+    "reportSubmit": "Envoyer le signalement",
+    "reportSuccess": "Signalement envoyé avec succès.",
+    "linkRequest": "Demander le rattachement",
+    "notLinked": "Aucun utilisateur rattaché",
+    "linked": "Utilisateur rattaché",
+    "male": "Homme",
+    "female": "Femme",
+    "other": "Autre",
+    "unknown": "Non renseigné",
+    "alive": "En vie",
+    "deceased": "Décédé(e)",
+    "relations": "Relations",
+    "parents": "Parents",
+    "children": "Enfants",
+    "spouses": "Conjoint(e)s",
+    "siblings": "Frères et sœurs"
+  },
+  "search": {
+    "title": "Recherche",
+    "placeholder": "Rechercher un prénom, nom, lieu...",
+    "filters": "Filtres",
+    "gender": "Genre",
+    "yearFrom": "Né(e) après",
+    "yearTo": "Né(e) avant",
+    "results": "résultats trouvés",
+    "limitReached": "Vous avez atteint la limite de 5 recherches gratuites.",
+    "upgradeToPremium": "Passer à Premium pour des recherches illimitées",
+    "blurredResults": "Passez à Premium pour voir les résultats complets",
+    "noResults": "Aucun profil trouvé"
+  },
+  "export": {
+    "title": "Exporter mon arbre",
+    "subtitle": "Générez un PDF de votre arbre généalogique",
+    "targetPerson": "Personne cible",
+    "searchPerson": "Rechercher une personne...",
+    "type": "Type d'arbre",
+    "ascendance": "Ascendance",
+    "descendance": "Descendance",
+    "mixte": "Mixte",
+    "custom": "Personnalisé",
+    "depth": "Profondeur (générations)",
+    "options": "Options",
+    "includeSpouses": "Inclure les conjoint(e)s",
+    "includeCustom": "Inclure les relations personnalisées",
+    "showPhotos": "Afficher les photos",
+    "showDates": "Afficher les dates",
+    "showDescriptions": "Afficher les descriptions",
+    "generate": "Générer le PDF",
+    "generating": "Génération en cours...",
+    "download": "Télécharger",
+    "limitReached": "Vous avez atteint la limite d'1 export gratuit.",
+    "upgradeToPremium": "Passer à Premium pour des exports illimités",
+    "success": "PDF généré avec succès !",
+    "error": "Erreur lors de la génération du PDF"
+  },
+  "pricing": {
+    "title": "Nos offres",
+    "subtitle": "Choisissez l'offre adaptée à vos besoins",
+    "free": {
+      "name": "Gratuit",
+      "price": "0€",
+      "period": "pour toujours",
+      "features": [
+        "5 recherches maximum",
+        "10 profils consultables",
+        "1 export PDF maximum",
+        "Résultats partiellement masqués"
+      ],
+      "cta": "Commencer gratuitement"
+    },
+    "premium": {
+      "name": "Premium",
+      "price": "3,99€",
+      "period": "tous les 3 mois",
+      "features": [
+        "Recherches illimitées",
+        "Accès à tous les profils",
+        "Exports PDF illimités",
+        "Toutes les données visibles",
+        "Support prioritaire"
+      ],
+      "cta": "Passer à Premium",
+      "badge": "Recommandé"
+    }
+  },
+  "account": {
+    "title": "Mon compte",
+    "profile": "Mon profil",
+    "subscription": "Mon abonnement",
+    "privacy": "Confidentialité",
+    "deleteAccount": "Supprimer mon compte",
+    "deleteConfirm": "Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible.",
+    "subscriptionActive": "Abonnement actif",
+    "subscriptionExpires": "Expire le",
+    "subscriptionInactive": "Aucun abonnement actif",
+    "manageSubscription": "Gérer l'abonnement",
+    "cancelSubscription": "Annuler l'abonnement",
+    "renewSubscription": "Renouveler",
+    "consentRgpd": "Consentement RGPD",
+    "downloadData": "Télécharger mes données",
+    "anonymize": "Anonymiser mes données"
+  },
+  "linkRequest": {
+    "title": "Demande de rattachement",
+    "subtitle": "Liez votre compte à un profil de l'arbre",
+    "selectPerson": "Sélectionner un profil",
+    "message": "Message (obligatoire)",
+    "messagePlaceholder": "Expliquez pourquoi vous souhaitez vous rattacher à ce profil...",
+    "submit": "Envoyer la demande",
+    "pending": "En attente",
+    "approved": "Approuvée",
+    "rejected": "Rejetée",
+    "myRequests": "Mes demandes",
+    "noRequests": "Aucune demande en cours",
+    "alreadyLinked": "Vous êtes déjà rattaché à un profil.",
+    "success": "Demande envoyée avec succès.",
+    "error": "Erreur lors de l'envoi de la demande."
+  },
+  "admin": {
+    "title": "Administration",
+    "users": "Utilisateurs",
+    "persons": "Profils",
+    "linkRequests": "Rattachements",
+    "imports": "Imports",
+    "reports": "Signalements",
+    "auditLogs": "Journaux d'audit",
+    "visibility": "Visibilité globale",
+    "stats": "Statistiques",
+    "totalUsers": "Total utilisateurs",
+    "premiumUsers": "Utilisateurs Premium",
+    "totalPersons": "Total profils",
+    "totalRelations": "Total relations",
+    "pendingRequests": "Demandes en attente",
+    "pendingReports": "Signalements en attente",
+    "approve": "Approuver",
+    "reject": "Rejeter",
+    "resolve": "Résoudre",
+    "toggleVisibility": "Basculer la visibilité",
+    "importCsv": "Importer CSV/Excel",
+    "downloadTemplate": "Télécharger le modèle"
+  },
+  "contact": {
+    "title": "Contactez-nous",
+    "subtitle": "Une question ? Nous répondons sous 48h.",
+    "name": "Votre nom",
+    "email": "Votre email",
+    "subject": "Sujet",
+    "message": "Message",
+    "submit": "Envoyer",
+    "success": "Message envoyé avec succès !",
+    "error": "Erreur lors de l'envoi du message.",
+    "responseTime": "Réponse sous 48h ouvrées"
+  },
+  "charter": {
+    "title": "Charte d'utilisation",
+    "subtitle": "Règles et conditions d'utilisation de Gate"
+  },
+  "payment": {
+    "success": {
+      "title": "Paiement réussi !",
+      "subtitle": "Bienvenue dans Gate Premium",
+      "message": "Votre abonnement est maintenant actif. Profitez de toutes les fonctionnalités Premium.",
+      "cta": "Accéder à l'arbre"
+    },
+    "cancel": {
+      "title": "Paiement annulé",
+      "subtitle": "Votre paiement n'a pas été effectué.",
+      "message": "Vous pouvez réessayer à tout moment.",
+      "cta": "Voir les offres"
+    }
+  },
+  "errors": {
+    "403": {
+      "title": "Accès refusé",
+      "subtitle": "Vous n'avez pas les permissions nécessaires.",
+      "cta": "Retour à l'accueil"
+    },
+    "404": {
+      "title": "Page introuvable",
+      "subtitle": "La page que vous recherchez n'existe pas.",
+      "cta": "Retour à l'accueil"
+    }
+  },
+  "rgpd": {
+    "consent": {
+      "title": "Votre vie privée",
+      "message": "Gate utilise des données pour améliorer votre expérience. En continuant, vous acceptez notre politique de confidentialité.",
+      "accept": "Accepter",
+      "decline": "Refuser",
+      "learnMore": "En savoir plus"
+    }
+  }
+}
