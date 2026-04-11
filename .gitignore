@@ -1,40 +1,65 @@
-# Dependencies
-node_modules
+# ─── Dépendances ──────────────────────────────────────
+node_modules/
 .pnp
 .pnp.js
 
-# Next.js
-.next
-out
-build
+# ─── Build ────────────────────────────────────────────
+.next/
+out/
+dist/
+build/
 
-# Environment
+# ─── Environnement (NE JAMAIS commiter) ───────────────
 .env
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
+.env*.local
 
-# Prisma
+# ─── Logs ─────────────────────────────────────────────
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.log
+
+# ─── Système d'exploitation ───────────────────────────
+.DS_Store
+Thumbs.db
+Desktop.ini
+*.pem
+
+# ─── IDE & Éditeurs ───────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ─── TypeScript ───────────────────────────────────────
+*.tsbuildinfo
+next-env.d.ts
+
+# ─── Prisma ───────────────────────────────────────────
 prisma/migrations/dev
 
-# PWA
+# ─── Cache & Deploy ───────────────────────────────────
+.cache/
+.turbo/
+.vercel/
+.eslintcache
+
+# ─── PWA (généré automatiquement) ─────────────────────
 public/sw.js
 public/workbox-*.js
 public/worker-*.js
 public/sw.js.map
 public/workbox-*.js.map
 
-# Misc
-.DS_Store
-*.pem
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+# ─── Uploads locaux ───────────────────────────────────
+public/uploads/
 
-# TypeScript
-*.tsbuildinfo
-next-env.d.ts
-
-# Vercel
-.vercel
+# ─── Tests ────────────────────────────────────────────
+coverage/
+.nyc_output/

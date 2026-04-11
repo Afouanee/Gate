@@ -3,12 +3,20 @@
 import { useEffect, useState } from "react";
 import {
   Users, TreePine, Link2, FileUp, Flag, ScrollText,
-  Crown, Eye, EyeOff, Check, X, Loader2, Settings, ChevronDown
+  Eye, EyeOff, Check, X, Loader2, Settings, Search,
+  AlertCircle, User
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { AdminImport } from "./admin-import";
 
 type Tab = "stats" | "users" | "persons" | "requests" | "reports" | "import" | "audit";
+
+type PendingToggle = {
+  person: any;
+  field: string;
+  newValue: boolean;
+  label: string;
+} | null;
 
 function SectionHeader({ icon: Icon, title }: { icon: any; title: string }) {
   return (
@@ -29,6 +37,9 @@ export function AdminDashboard() {
   const [reports, setReports] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [roleLoading, setRoleLoading] = useState<string | null>(null);
+  const [personSearch, setPersonSearch] = useState("");
+  const [pendingToggle, setPendingToggle] = useState<PendingToggle>(null);
+  const [confirmLoading, setConfirmLoading] = useState(false);
 
   useEffect(() => { fetchStats(); }, []);
 
@@ -113,15 +124,36 @@ export function AdminDashboard() {
     }
   };
 
-  const handleToggleVisibility = async (personId: string, field: string, value: boolean) => {
-    const res = await fetch(`/api/persons/${personId}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ [field]: value }),
-    });
-    if (res.ok) {
-      toast({ title: "Visibilité mise à jour" });
-      fetchPersons();
+  const fieldLabels: Record<string, string> = {
+    showPhoto:       "Photo",
+    showBirthDate:   "Date de naissance",
+    showDeathDate:   "Date de décès",
+    showMarriage:    "Mariage",
+    showPersonalData:"Données personnelles",
+  };
+
+  const requestToggle = (person: any, field: string, newValue: boolean) => {
+    setPendingToggle({ person, field, newValue, label: fieldLabels[field] || field });
+  };
+
+  const confirmToggle = async () => {
+    if (!pendingToggle) return;
+    setConfirmLoading(true);
+    try {
+      const res = await fetch(`/api/persons/${pendingToggle.person.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ [pendingToggle.field]: pendingToggle.newValue }),
+      });
+      if (res.ok) {
+        toast({ title: "Visibilité mise à jour", description: `${pendingToggle.label} ${pendingToggle.newValue ? "visible" : "masquée"} pour ${pendingToggle.person.firstName} ${pendingToggle.person.lastName}.` });
+        fetchPersons();
+      } else {
+        toast({ title: "Erreur", description: "Impossible de modifier la visibilité.", variant: "destructive" });
+      }
+    } finally {
+      setConfirmLoading(false);
+      setPendingToggle(null);
     }
   };
 
@@ -278,11 +310,44 @@ export function AdminDashboard() {
             {/* Persons */}
             {activeTab === "persons" && (
               <div className="border border-zinc-100 rounded-2xl overflow-hidden">
-                <SectionHeader icon={TreePine} title="Profils — Visibilité" />
+                {/* Header avec barre de recherche */}
+                <div className="px-6 py-4 border-b border-zinc-100 bg-zinc-50 flex items-center gap-3">
+                  <TreePine className="h-4 w-4 text-zinc-400 shrink-0" />
+                  <h2 className="text-xs font-bold uppercase tracking-[0.15em] text-zinc-400 flex-1">
+                    Profils — Visibilité
+                    {personSearch && (
+                      <span className="ml-2 normal-case tracking-normal font-normal text-zinc-400">
+                        ({persons.filter(p =>
+                          `${p.firstName} ${p.lastName}`.toLowerCase().includes(personSearch.toLowerCase())
+                        ).length} résultat{persons.filter(p =>
+                          `${p.firstName} ${p.lastName}`.toLowerCase().includes(personSearch.toLowerCase())
+                        ).length > 1 ? "s" : ""})
+                      </span>
+                    )}
+                  </h2>
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-400" />
+                    <input
+                      value={personSearch}
+                      onChange={(e) => setPersonSearch(e.target.value)}
+                      placeholder="Rechercher un profil..."
+                      className="pl-8 pr-3 h-8 w-52 rounded-lg border border-zinc-200 bg-white text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-zinc-900 transition-colors"
+                    />
+                    {personSearch && (
+                      <button
+                        onClick={() => setPersonSearch("")}
+                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-300 hover:text-zinc-600 transition-colors"
+                      >
+                        <X className="h-3.5 w-3.5" />
+                      </button>
+                    )}
+                  </div>
+                </div>
+
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead>
-                      <tr className="border-b border-zinc-100 bg-zinc-50 text-xs text-zinc-400 font-bold uppercase tracking-wider">
+                      <tr className="border-b border-zinc-100 bg-zinc-50/50 text-xs text-zinc-400 font-bold uppercase tracking-wider">
                         <th className="text-left px-6 py-3">Profil</th>
                         <th className="text-center px-3 py-3">Photo</th>
                         <th className="text-center px-3 py-3">Naissance</th>
@@ -292,38 +357,57 @@ export function AdminDashboard() {
                       </tr>
                     </thead>
                     <tbody>
-                      {persons.map((p) => {
-                        function Toggle({ field, value }: { field: string; value: boolean }) {
+                      {persons
+                        .filter((p) =>
+                          `${p.firstName} ${p.lastName}`
+                            .toLowerCase()
+                            .includes(personSearch.toLowerCase().trim())
+                        )
+                        .map((p) => {
+                          function Toggle({ field, value }: { field: string; value: boolean }) {
+                            return (
+                              <button
+                                onClick={() => requestToggle(p, field, !value)}
+                                className={`p-1.5 rounded-lg transition-colors ${
+                                  value ? "text-green-600 hover:bg-green-50" : "text-zinc-300 hover:bg-zinc-50 hover:text-zinc-500"
+                                }`}
+                              >
+                                {value ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+                              </button>
+                            );
+                          }
                           return (
-                            <button
-                              onClick={() => handleToggleVisibility(p.id, field, !value)}
-                              className={`p-1.5 rounded-lg transition-colors ${
-                                value ? "text-green-600 hover:bg-green-50" : "text-zinc-300 hover:bg-zinc-50 hover:text-zinc-500"
-                              }`}
-                            >
-                              {value ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
-                            </button>
+                            <tr key={p.id} className="border-b border-zinc-50 hover:bg-zinc-50/50 transition-colors">
+                              <td className="px-6 py-3">
+                                <p className="font-semibold text-zinc-900">{p.firstName} {p.lastName}</p>
+                                <p className="text-xs text-zinc-400">{p.gender}</p>
+                              </td>
+                              <td className="text-center px-3"><Toggle field="showPhoto" value={p.showPhoto} /></td>
+                              <td className="text-center px-3"><Toggle field="showBirthDate" value={p.showBirthDate} /></td>
+                              <td className="text-center px-3"><Toggle field="showDeathDate" value={p.showDeathDate} /></td>
+                              <td className="text-center px-3"><Toggle field="showMarriage" value={p.showMarriage} /></td>
+                              <td className="text-center px-3"><Toggle field="showPersonalData" value={p.showPersonalData} /></td>
+                            </tr>
                           );
-                        }
-                        return (
-                          <tr key={p.id} className="border-b border-zinc-50 hover:bg-zinc-50/50 transition-colors">
-                            <td className="px-6 py-3">
-                              <p className="font-semibold text-zinc-900">{p.firstName} {p.lastName}</p>
-                              <p className="text-xs text-zinc-400">{p.gender}</p>
-                            </td>
-                            <td className="text-center px-3"><Toggle field="showPhoto" value={p.showPhoto} /></td>
-                            <td className="text-center px-3"><Toggle field="showBirthDate" value={p.showBirthDate} /></td>
-                            <td className="text-center px-3"><Toggle field="showDeathDate" value={p.showDeathDate} /></td>
-                            <td className="text-center px-3"><Toggle field="showMarriage" value={p.showMarriage} /></td>
-                            <td className="text-center px-3"><Toggle field="showPersonalData" value={p.showPersonalData} /></td>
-                          </tr>
-                        );
-                      })}
+                        })}
                     </tbody>
                   </table>
+
                   {persons.length === 0 && (
                     <p className="text-center text-zinc-400 text-sm py-12">Aucun profil.</p>
                   )}
+                  {persons.length > 0 &&
+                    personSearch &&
+                    persons.filter((p) =>
+                      `${p.firstName} ${p.lastName}`.toLowerCase().includes(personSearch.toLowerCase().trim())
+                    ).length === 0 && (
+                      <div className="flex flex-col items-center py-12 gap-2">
+                        <Search className="h-6 w-6 text-zinc-200" />
+                        <p className="text-center text-zinc-400 text-sm">
+                          Aucun profil pour <span className="font-semibold text-zinc-600">"{personSearch}"</span>
+                        </p>
+                      </div>
+                    )}
                 </div>
               </div>
             )}
@@ -441,6 +525,90 @@ export function AdminDashboard() {
           </div>
         </div>
       </div>
+
+      {/* Modal de confirmation toggle visibilité */}
+      {pendingToggle && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          onClick={() => !confirmLoading && setPendingToggle(null)}
+        >
+          {/* Overlay */}
+          <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" />
+
+          {/* Card */}
+          <div
+            className="relative bg-white rounded-2xl border border-zinc-200 shadow-2xl w-full max-w-sm p-6 animate-fade-in"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Close */}
+            <button
+              onClick={() => setPendingToggle(null)}
+              disabled={confirmLoading}
+              className="absolute right-4 top-4 p-1.5 rounded-lg text-zinc-300 hover:text-zinc-700 hover:bg-zinc-100 transition-colors"
+            >
+              <X className="h-4 w-4" />
+            </button>
+
+            {/* Carte du profil */}
+            <div className="mb-5">
+              <p className="text-xs font-bold uppercase tracking-[0.15em] text-zinc-400 mb-3">Profil concerné</p>
+              <div className="flex items-center gap-3 p-4 rounded-xl border border-zinc-100 bg-zinc-50">
+                <div className={`w-10 h-10 rounded-full border-2 flex items-center justify-center text-sm font-black font-heading shrink-0 ${
+                  pendingToggle.person.gender === "MALE"   ? "border-blue-200 bg-blue-50 text-blue-700" :
+                  pendingToggle.person.gender === "FEMALE" ? "border-pink-200 bg-pink-50 text-pink-700" :
+                  "border-zinc-200 bg-white text-zinc-500"
+                }`}>
+                  {pendingToggle.person.firstName?.[0]}{pendingToggle.person.lastName?.[0]}
+                </div>
+                <div>
+                  <p className="font-semibold text-zinc-900">{pendingToggle.person.firstName} {pendingToggle.person.lastName}</p>
+                  <p className="text-xs text-zinc-400">{pendingToggle.person.gender}</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Action */}
+            <div className="mb-6">
+              <p className="text-xs font-bold uppercase tracking-[0.15em] text-zinc-400 mb-2">Modification</p>
+              <div className={`flex items-center gap-3 p-3 rounded-xl border ${
+                pendingToggle.newValue ? "border-green-200 bg-green-50" : "border-red-100 bg-red-50"
+              }`}>
+                {pendingToggle.newValue
+                  ? <Eye className="h-4 w-4 text-green-600 shrink-0" />
+                  : <EyeOff className="h-4 w-4 text-red-500 shrink-0" />
+                }
+                <p className="text-sm font-medium">
+                  <span className="font-semibold">{pendingToggle.label}</span>{" "}
+                  <span className={pendingToggle.newValue ? "text-green-700" : "text-red-600"}>
+                    {pendingToggle.newValue ? "→ visible" : "→ masquée"}
+                  </span>
+                </p>
+              </div>
+            </div>
+
+            {/* Boutons */}
+            <div className="flex gap-2">
+              <button
+                onClick={() => setPendingToggle(null)}
+                disabled={confirmLoading}
+                className="flex-1 h-9 border border-zinc-200 rounded-lg text-sm font-semibold text-zinc-600 hover:border-zinc-900 hover:text-zinc-900 transition-colors disabled:opacity-40"
+              >
+                Annuler
+              </button>
+              <button
+                onClick={confirmToggle}
+                disabled={confirmLoading}
+                className="flex-1 h-9 bg-zinc-900 text-white rounded-full text-sm font-semibold flex items-center justify-center gap-2 hover:bg-zinc-700 transition-colors disabled:opacity-40"
+              >
+                {confirmLoading
+                  ? <Loader2 className="h-4 w-4 animate-spin" />
+                  : <><Check className="h-4 w-4" /> Confirmer</>
+                }
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

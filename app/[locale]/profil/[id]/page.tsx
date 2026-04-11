@@ -5,22 +5,14 @@ import { formatDate, getAge } from "@/lib/utils";
 import Link from "next/link";
 import {
   Calendar, MapPin, User, Heart, Users, Baby, ArrowLeft,
-  EyeOff, Crown, Flag, ExternalLink,
+  EyeOff, Crown, ExternalLink,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ReportModal } from "@/components/profile/report-modal";
 import { LinkRequestButton } from "@/components/profile/link-request-button";
 
-export default async function ProfilPage({
-  params,
-}: {
-  params: { id: string };
-}) {
-  const session = await requireSession();
+export default async function ProfilPage({ params }: { params: { id: string } }) {
+  const session   = await requireSession();
   const isPremium = session.user.role === "PREMIUM" || session.user.role === "ADMIN";
-  const isAdmin = session.user.role === "ADMIN";
 
   const person = await prisma.person.findUnique({
     where: { id: params.id },
@@ -31,7 +23,7 @@ export default async function ProfilPage({
           target: {
             select: {
               id: true, firstName: true, lastName: true,
-              gender: true, photoUrl: true, showPhoto: true, isAlive: true,
+              gender: true, photoUrl: true, showPhoto: true,
             },
           },
         },
@@ -41,7 +33,7 @@ export default async function ProfilPage({
           source: {
             select: {
               id: true, firstName: true, lastName: true,
-              gender: true, photoUrl: true, showPhoto: true, isAlive: true,
+              gender: true, photoUrl: true, showPhoto: true,
             },
           },
         },
@@ -51,88 +43,88 @@ export default async function ProfilPage({
 
   if (!person) notFound();
 
-  const showBirthDate = isPremium || person.showBirthDate;
-  const showDeathDate = isPremium || person.showDeathDate;
-  const showPhoto = isPremium || person.showPhoto;
+  const showBirthDate  = isPremium || person.showBirthDate;
+  const showDeathDate  = isPremium || person.showDeathDate;
+  const showPhoto      = isPremium || person.showPhoto;
   const showPersonalData = isPremium || person.showPersonalData;
-  const showMarriage = isPremium || person.showMarriage;
+  const showMarriage   = isPremium || person.showMarriage;
+  const age            = showBirthDate ? getAge(person.birthDate, person.deathDate) : null;
 
-  const age = showBirthDate ? getAge(person.birthDate, person.deathDate) : null;
-
-  const parents = person.relationsAsTarget
-    .filter((r) => r.type === "PARENT_CHILD")
-    .map((r) => r.source);
-
-  const children = person.relationsAsSource
-    .filter((r) => r.type === "PARENT_CHILD")
-    .map((r) => r.target);
-
-  const spouses = [
+  const parents  = person.relationsAsTarget.filter((r) => r.type === "PARENT_CHILD").map((r) => r.source);
+  const children = person.relationsAsSource.filter((r) => r.type === "PARENT_CHILD").map((r) => r.target);
+  const spouses  = [
     ...person.relationsAsSource.filter((r) => r.type === "SPOUSE").map((r) => r.target),
     ...person.relationsAsTarget.filter((r) => r.type === "SPOUSE").map((r) => r.source),
   ];
-
   const customRelations = [
     ...person.relationsAsSource.filter((r) => r.type === "CUSTOM"),
     ...person.relationsAsTarget.filter((r) => r.type === "CUSTOM"),
   ];
 
+  const genderAvatar: Record<string, string> = {
+    MALE:    "border-blue-200 bg-blue-50 text-blue-700",
+    FEMALE:  "border-pink-200 bg-pink-50 text-pink-700",
+    OTHER:   "border-purple-200 bg-purple-50 text-purple-700",
+    UNKNOWN: "border-zinc-200 bg-zinc-50 text-zinc-500",
+  };
+
   function PersonCard({ p, relation }: { p: any; relation?: string }) {
     return (
       <Link href={`/profil/${p.id}`}>
-        <div className="flex items-center gap-3 p-3 rounded-lg border border-gate-border hover:border-gold-800/50 hover:bg-gate-card transition-all group">
-          <div className={`h-9 w-9 rounded-full border-2 flex items-center justify-center text-xs font-bold font-heading shrink-0 ${
-            p.gender === "MALE" ? "border-blue-700/60 bg-blue-900/20 text-blue-300" :
-            p.gender === "FEMALE" ? "border-pink-700/60 bg-pink-900/20 text-pink-300" :
-            "border-gate-border bg-gate-card text-muted-foreground"
-          }`}>
+        <div className="flex items-center gap-3 p-3 rounded-xl border border-zinc-100 hover:border-zinc-300 hover:bg-zinc-50 transition-all group">
+          <div className={`h-9 w-9 rounded-full border-2 flex items-center justify-center text-xs font-bold font-heading shrink-0 ${genderAvatar[p.gender] || genderAvatar.UNKNOWN}`}>
             {(p.firstName?.[0] || "") + (p.lastName?.[0] || "")}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-semibold truncate group-hover:text-gold-400 transition-colors">
-              {p.firstName} {p.lastName}
-            </p>
-            {relation && <p className="text-xs text-muted-foreground">{relation}</p>}
+            <p className="text-sm font-semibold truncate text-zinc-900">{p.firstName} {p.lastName}</p>
+            {relation && <p className="text-xs text-zinc-400">{relation}</p>}
           </div>
-          <ExternalLink className="h-3.5 w-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+          <ExternalLink className="h-3.5 w-3.5 text-zinc-300 opacity-0 group-hover:opacity-100 transition-opacity" />
         </div>
       </Link>
     );
   }
 
+  function SectionCard({ icon: Icon, title, children }: { icon: any; title: string; children: React.ReactNode }) {
+    return (
+      <div className="border border-zinc-100 rounded-2xl overflow-hidden">
+        <div className="px-5 py-3.5 border-b border-zinc-100 bg-zinc-50 flex items-center gap-2">
+          <Icon className="h-3.5 w-3.5 text-zinc-400" />
+          <h2 className="text-xs font-bold uppercase tracking-[0.12em] text-zinc-400">{title}</h2>
+        </div>
+        <div className="p-5">{children}</div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-[calc(100vh-4rem)] py-8 px-4">
+    <div className="min-h-[calc(100vh-4rem)] bg-white py-10 px-6">
       <div className="container mx-auto max-w-4xl">
+
         {/* Back */}
-        <Link href="/arbre" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-6 transition-colors">
+        <Link href="/arbre" className="inline-flex items-center gap-2 text-sm text-zinc-400 hover:text-zinc-900 mb-8 transition-colors">
           <ArrowLeft className="h-4 w-4" />
           Retour à l'arbre
         </Link>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left column — identity */}
+
+          {/* Left — identity card */}
           <div className="space-y-4">
-            <Card>
-              <CardContent className="pt-6">
-                {/* Photo */}
-                <div className="flex justify-center mb-4">
+            <div className="border border-zinc-100 rounded-2xl overflow-hidden">
+              <div className="p-6">
+
+                {/* Avatar */}
+                <div className="flex justify-center mb-5">
                   {showPhoto && person.photoUrl ? (
                     <img
                       src={person.photoUrl}
                       alt={`${person.firstName} ${person.lastName}`}
-                      className="h-28 w-28 rounded-full object-cover border-2 border-gold-800/50 shadow-lg"
+                      className="h-24 w-24 rounded-full object-cover border-2 border-zinc-200 shadow-sm"
                     />
                   ) : (
-                    <div className={`h-28 w-28 rounded-full border-2 flex items-center justify-center ${
-                      person.gender === "MALE" ? "border-blue-700/60 bg-blue-900/20" :
-                      person.gender === "FEMALE" ? "border-pink-700/60 bg-pink-900/20" :
-                      "border-gate-border bg-gate-card"
-                    }`}>
-                      <span className={`text-3xl font-black font-heading ${
-                        person.gender === "MALE" ? "text-blue-300" :
-                        person.gender === "FEMALE" ? "text-pink-300" :
-                        "text-muted-foreground"
-                      }`}>
+                    <div className={`h-24 w-24 rounded-full border-2 flex items-center justify-center ${genderAvatar[person.gender] || genderAvatar.UNKNOWN}`}>
+                      <span className="text-2xl font-black font-heading">
                         {person.firstName[0]}{person.lastName[0]}
                       </span>
                     </div>
@@ -140,41 +132,34 @@ export default async function ProfilPage({
                 </div>
 
                 {/* Name */}
-                <div className="text-center mb-4">
-                  <h1 className="text-2xl font-black font-heading leading-tight">
-                    {person.firstName}
-                  </h1>
-                  <h2 className="text-xl font-black font-heading text-gold-400 uppercase tracking-wide">
-                    {person.lastName}
-                  </h2>
-                  <div className="flex items-center justify-center gap-2 mt-2 flex-wrap">
-                    <Badge variant={person.isAlive ? "default" : "secondary"}>
-                      {person.isAlive ? "En vie" : "Décédé(e)"}
-                    </Badge>
+                <div className="text-center mb-5">
+                  <h1 className="text-2xl font-black font-heading leading-tight tracking-tight">{person.firstName}</h1>
+                  <h2 className="text-xl font-black font-heading uppercase tracking-wider text-zinc-500">{person.lastName}</h2>
+                  <div className="flex items-center justify-center gap-2 mt-3 flex-wrap">
                     {person.gender !== "UNKNOWN" && (
-                      <Badge variant="outline">
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${genderAvatar[person.gender]}`}>
                         {person.gender === "MALE" ? "Homme" : person.gender === "FEMALE" ? "Femme" : "Autre"}
-                      </Badge>
+                      </span>
                     )}
                     {!isPremium && (
-                      <Badge variant="free" className="gap-1">
+                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold border border-zinc-200 text-zinc-400">
                         <EyeOff className="h-2.5 w-2.5" />
-                        Partiel
-                      </Badge>
+                        Données partielles
+                      </span>
                     )}
                   </div>
                 </div>
 
-                {/* User linked */}
+                {/* Linked user */}
                 {person.user && (
-                  <div className="text-center text-xs text-muted-foreground border-t border-gate-border pt-3">
+                  <div className="text-center text-xs text-zinc-400 border-t border-zinc-100 pt-4 mb-4">
                     <User className="h-3 w-3 inline mr-1" />
                     Rattaché à un utilisateur
                   </div>
                 )}
 
-                {/* Buttons */}
-                <div className="mt-4 space-y-2">
+                {/* Actions */}
+                <div className="space-y-2">
                   {!person.userId && session?.user?.id && (
                     <LinkRequestButton personId={person.id} personName={`${person.firstName} ${person.lastName}`} />
                   )}
@@ -184,194 +169,146 @@ export default async function ProfilPage({
                     personLastName={person.lastName}
                   />
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
 
-            {/* Premium upgrade */}
+            {/* Premium upgrade prompt */}
             {!isPremium && (
-              <Card className="border-gold-800/30">
-                <CardContent className="pt-4 pb-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Crown className="h-4 w-4 text-gold-500" />
-                    <span className="text-sm font-semibold">Données masquées</span>
-                  </div>
-                  <p className="text-xs text-muted-foreground mb-3">
-                    Passez à Premium pour voir les dates, photos et descriptions.
-                  </p>
-                  <Link href="/pricing">
-                    <Button size="sm" variant="premium" className="w-full gap-1.5">
-                      <Crown className="h-3.5 w-3.5" />
-                      Passer à Premium
-                    </Button>
-                  </Link>
-                </CardContent>
-              </Card>
+              <div className="border border-zinc-200 rounded-2xl p-5">
+                <div className="flex items-center gap-2 mb-2">
+                  <Crown className="h-4 w-4 text-zinc-500" />
+                  <span className="text-sm font-semibold text-zinc-900">Données masquées</span>
+                </div>
+                <p className="text-xs text-zinc-400 mb-4">
+                  Passez à Premium pour accéder aux dates, photos et descriptions.
+                </p>
+                <Link href="/pricing">
+                  <button className="w-full h-9 bg-zinc-900 text-white text-sm font-semibold rounded-full flex items-center justify-center gap-2 hover:bg-zinc-700 transition-colors">
+                    <Crown className="h-3.5 w-3.5" />
+                    Passer à Premium
+                  </button>
+                </Link>
+              </div>
             )}
           </div>
 
-          {/* Right column */}
+          {/* Right */}
           <div className="lg:col-span-2 space-y-4">
-            {/* Personal details */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-base">Informations</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <dl className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+            {/* Infos */}
+            <SectionCard icon={Calendar} title="Informations">
+              <dl className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <div>
+                  <dt className="text-xs font-bold text-zinc-400 uppercase tracking-wide mb-1 flex items-center gap-1">
+                    <Calendar className="h-3 w-3" /> Naissance
+                  </dt>
+                  <dd className="text-sm text-zinc-900">
+                    {showBirthDate && person.birthDate ? (
+                      <span>
+                        {formatDate(person.birthDate)}
+                        {age !== null && <span className="text-zinc-400 ml-1">({age} ans)</span>}
+                      </span>
+                    ) : (
+                      <span className="flex items-center gap-1 text-zinc-300 text-xs">
+                        <EyeOff className="h-3 w-3" /> Information masquée
+                      </span>
+                    )}
+                  </dd>
+                </div>
+
+                {!person.isAlive && (
                   <div>
-                    <dt className="text-xs text-muted-foreground mb-1 flex items-center gap-1">
-                      <Calendar className="h-3 w-3" />
-                      Date de naissance
+                    <dt className="text-xs font-bold text-zinc-400 uppercase tracking-wide mb-1 flex items-center gap-1">
+                      <Calendar className="h-3 w-3" /> Décès
                     </dt>
-                    <dd className="text-sm">
-                      {showBirthDate && person.birthDate ? (
-                        <span>
-                          {formatDate(person.birthDate)}
-                          {age !== null && <span className="text-muted-foreground ml-1">({age} ans)</span>}
-                        </span>
-                      ) : (
-                        <span className="flex items-center gap-1 text-muted-foreground text-xs">
-                          <EyeOff className="h-3 w-3" />
-                          Information masquée
+                    <dd className="text-sm text-zinc-900">
+                      {showDeathDate && person.deathDate ? formatDate(person.deathDate) : (
+                        <span className="flex items-center gap-1 text-zinc-300 text-xs">
+                          <EyeOff className="h-3 w-3" /> Information masquée
                         </span>
                       )}
                     </dd>
                   </div>
+                )}
 
-                  {!person.isAlive && (
-                    <div>
-                      <dt className="text-xs text-muted-foreground mb-1 flex items-center gap-1">
-                        <Calendar className="h-3 w-3" />
-                        Date de décès
-                      </dt>
-                      <dd className="text-sm">
-                        {showDeathDate && person.deathDate ? (
-                          formatDate(person.deathDate)
-                        ) : (
-                          <span className="flex items-center gap-1 text-muted-foreground text-xs">
-                            <EyeOff className="h-3 w-3" />
-                            Information masquée
-                          </span>
-                        )}
-                      </dd>
-                    </div>
-                  )}
+                <div>
+                  <dt className="text-xs font-bold text-zinc-400 uppercase tracking-wide mb-1 flex items-center gap-1">
+                    <MapPin className="h-3 w-3" /> Lieu de naissance
+                  </dt>
+                  <dd className="text-sm text-zinc-900">
+                    {isPremium && person.birthPlace ? person.birthPlace : (
+                      <span className="flex items-center gap-1 text-zinc-300 text-xs">
+                        <EyeOff className="h-3 w-3" /> Information masquée
+                      </span>
+                    )}
+                  </dd>
+                </div>
 
+                {!person.isAlive && (
                   <div>
-                    <dt className="text-xs text-muted-foreground mb-1 flex items-center gap-1">
-                      <MapPin className="h-3 w-3" />
-                      Lieu de naissance
+                    <dt className="text-xs font-bold text-zinc-400 uppercase tracking-wide mb-1 flex items-center gap-1">
+                      <MapPin className="h-3 w-3" /> Lieu de décès
                     </dt>
-                    <dd className="text-sm">
-                      {isPremium && person.birthPlace ? person.birthPlace : (
-                        <span className="flex items-center gap-1 text-muted-foreground text-xs">
-                          <EyeOff className="h-3 w-3" />
-                          Information masquée
+                    <dd className="text-sm text-zinc-900">
+                      {isPremium && person.deathPlace ? person.deathPlace : (
+                        <span className="flex items-center gap-1 text-zinc-300 text-xs">
+                          <EyeOff className="h-3 w-3" /> Information masquée
                         </span>
                       )}
                     </dd>
                   </div>
+                )}
+              </dl>
+            </SectionCard>
 
-                  {!person.isAlive && (
-                    <div>
-                      <dt className="text-xs text-muted-foreground mb-1 flex items-center gap-1">
-                        <MapPin className="h-3 w-3" />
-                        Lieu de décès
-                      </dt>
-                      <dd className="text-sm">
-                        {isPremium && person.deathPlace ? person.deathPlace : (
-                          <span className="flex items-center gap-1 text-muted-foreground text-xs">
-                            <EyeOff className="h-3 w-3" />
-                            Information masquée
-                          </span>
-                        )}
-                      </dd>
-                    </div>
-                  )}
-                </dl>
-              </CardContent>
-            </Card>
-
-            {/* Description */}
+            {/* History */}
             {isPremium && person.description && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-base">Histoire</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap">
-                    {person.description}
-                  </p>
-                </CardContent>
-              </Card>
+              <SectionCard icon={User} title="Histoire">
+                <p className="text-sm text-zinc-600 leading-relaxed whitespace-pre-wrap">{person.description}</p>
+              </SectionCard>
             )}
 
-            {/* Relations */}
+            {/* Parents */}
             {parents.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-base flex items-center gap-2">
-                    <Users className="h-4 w-4 text-gold-500" />
-                    Parents
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
-                    {parents.map((p) => <PersonCard key={p.id} p={p} />)}
-                  </div>
-                </CardContent>
-              </Card>
+              <SectionCard icon={Users} title="Parents">
+                <div className="space-y-2">
+                  {parents.map((p) => <PersonCard key={p.id} p={p} />)}
+                </div>
+              </SectionCard>
             )}
 
+            {/* Spouses */}
             {spouses.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-base flex items-center gap-2">
-                    <Heart className="h-4 w-4 text-gold-500" />
-                    Conjoint(e)s
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
-                    {spouses.map((p) => (
-                      <PersonCard key={p.id} p={p} relation={showMarriage ? "Marié(e)" : undefined} />
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
+              <SectionCard icon={Heart} title="Conjoint(e)s">
+                <div className="space-y-2">
+                  {spouses.map((p) => (
+                    <PersonCard key={p.id} p={p} relation={showMarriage ? "Marié(e)" : undefined} />
+                  ))}
+                </div>
+              </SectionCard>
             )}
 
+            {/* Children */}
             {children.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-base flex items-center gap-2">
-                    <Baby className="h-4 w-4 text-gold-500" />
-                    Enfants ({children.length})
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
-                    {children.map((p) => <PersonCard key={p.id} p={p} />)}
-                  </div>
-                </CardContent>
-              </Card>
+              <SectionCard icon={Baby} title={`Enfants (${children.length})`}>
+                <div className="space-y-2">
+                  {children.map((p) => <PersonCard key={p.id} p={p} />)}
+                </div>
+              </SectionCard>
             )}
 
+            {/* Custom */}
             {customRelations.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-base">Relations personnalisées</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
-                    {customRelations.map((r) => {
-                      const related = r.sourceId === person.id ? r.target : r.source;
-                      return <PersonCard key={r.id} p={related} relation={r.label || "Relation custom"} />;
-                    })}
-                  </div>
-                </CardContent>
-              </Card>
+              <SectionCard icon={User} title="Relations personnalisées">
+                <div className="space-y-2">
+                  {customRelations.map((r) => {
+                    const related = r.sourceId === person.id ? r.target : r.source;
+                    return <PersonCard key={r.id} p={related} relation={r.label || "Relation"} />;
+                  })}
+                </div>
+              </SectionCard>
             )}
+
           </div>
         </div>
       </div>

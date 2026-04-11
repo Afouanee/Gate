@@ -8,6 +8,7 @@ import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { Toaster } from "@/components/ui/toaster";
 import { ConsentBanner } from "@/components/layout/consent-banner";
+import { CustomCursor } from "@/components/layout/custom-cursor";
 
 const locales = ["fr", "en"];
 
@@ -29,7 +30,7 @@ export default async function LocaleLayout({
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
-      <body className="min-h-screen bg-gate-dark flex flex-col">
+      <body className="min-h-screen bg-white flex flex-col">
         <NextIntlClientProvider messages={messages}>
           <SessionProvider session={session}>
             <Navbar />
@@ -39,6 +40,7 @@ export default async function LocaleLayout({
             <Footer />
             <Toaster />
             <ConsentBanner />
+            <CustomCursor />
           </SessionProvider>
         </NextIntlClientProvider>
       </body>

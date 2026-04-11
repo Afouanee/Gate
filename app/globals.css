@@ -42,6 +42,18 @@
   body {
     @apply bg-white text-zinc-900 font-sans antialiased;
     font-feature-settings: "rlig" 1, "calt" 1;
+    cursor: none;
+  }
+
+  /* Masquer le curseur natif partout */
+  *, *::before, *::after {
+    cursor: none !important;
+  }
+
+  /* Sauf les inputs texte — on remet le curseur texte natif */
+  input[type="text"], input[type="email"], input[type="password"],
+  input[type="search"], input[type="number"], textarea {
+    cursor: text !important;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -58,26 +70,16 @@
     width: 5px;
     height: 5px;
   }
-
-  ::-webkit-scrollbar-track {
-    background: #f5f5f5;
-  }
-
-  ::-webkit-scrollbar-thumb {
-    background: #d4d4d4;
-    border-radius: 99px;
-  }
-
-  ::-webkit-scrollbar-thumb:hover {
-    background: #000;
-  }
+  ::-webkit-scrollbar-track { background: #f5f5f5; }
+  ::-webkit-scrollbar-thumb { background: #d4d4d4; border-radius: 99px; }
+  ::-webkit-scrollbar-thumb:hover { background: #000; }
 }
 
 /* ─── Utilitaires Gate ─────────────────────────────── */
 
 @layer components {
 
-  /* Texte en noir avec soulignement animé */
+  /* Soulignement animé */
   .link-underline {
     @apply relative inline-block;
   }
@@ -85,11 +87,9 @@
     content: '';
     @apply absolute left-0 bottom-0 w-0 h-px bg-current transition-all duration-300;
   }
-  .link-underline:hover::after {
-    @apply w-full;
-  }
+  .link-underline:hover::after { @apply w-full; }
 
-  /* Tag badge minimaliste */
+  /* Tag minimaliste */
   .tag {
     @apply inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold uppercase tracking-widest
            border border-zinc-200 rounded-full text-zinc-500 bg-white;
@@ -105,7 +105,7 @@
     box-shadow: 0 12px 40px rgba(0,0,0,0.10), 0 4px 12px rgba(0,0,0,0.06);
   }
 
-  /* Ligne séparatrice animée */
+  /* Ligne animée */
   .divider-animate {
     @apply relative overflow-hidden h-px bg-zinc-100;
   }
@@ -117,30 +117,27 @@
     transform-origin: left;
   }
 
-  /* Texte masqué qui se révèle */
-  .reveal-text {
-    overflow: hidden;
-    display: block;
-  }
+  /* Révélation de texte */
+  .reveal-text { overflow: hidden; display: block; }
   .reveal-text > span {
     display: block;
     animation: slide-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
   }
 
-  /* Pill numéro */
+  /* Numéro de step */
   .step-number {
     @apply flex items-center justify-center w-8 h-8 rounded-full bg-zinc-900 text-white
            text-xs font-bold font-heading shrink-0;
   }
 
-  /* Blurred pour FREE users */
+  /* Contenu flou (FREE users) */
   .blurred-content {
     filter: blur(5px);
     user-select: none;
     pointer-events: none;
   }
 
-  /* Premium gradient subtle */
+  /* Glow premium */
   .premium-glow {
     position: relative;
     isolation: isolate;
@@ -152,6 +149,44 @@
     border-radius: inherit;
     background: linear-gradient(135deg, #000 0%, #444 100%);
     z-index: -1;
+  }
+
+  /* Skeleton shimmer */
+  .skeleton {
+    @apply bg-zinc-100 rounded-lg animate-pulse;
+  }
+
+  /* Animate on scroll — classe à appliquer via JS/IntersectionObserver */
+  .aos-init {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .aos-animate {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Stagger children */
+  .stagger > * {
+    opacity: 0;
+    transform: translateY(16px);
+    animation: fade-in-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+  .stagger > *:nth-child(1) { animation-delay: 0ms; }
+  .stagger > *:nth-child(2) { animation-delay: 60ms; }
+  .stagger > *:nth-child(3) { animation-delay: 120ms; }
+  .stagger > *:nth-child(4) { animation-delay: 180ms; }
+  .stagger > *:nth-child(5) { animation-delay: 240ms; }
+  .stagger > *:nth-child(6) { animation-delay: 300ms; }
+
+  /* Gradient text */
+  .text-gradient {
+    background: linear-gradient(135deg, #09090b 0%, #52525b 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 }
 
@@ -169,6 +204,11 @@
 
 @keyframes fade-in {
   from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(16px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
@@ -191,55 +231,98 @@
   50%       { transform: translateY(-8px); }
 }
 
-@keyframes shimmer-light {
-  0%   { background-position: -200% 0; }
-  100% { background-position:  200% 0; }
-}
-
 @keyframes spin-slow {
   to { transform: rotate(360deg); }
 }
 
-/* ─── React Flow (dark section) ─────────────────────── */
+@keyframes pulse-ring {
+  0%   { transform: scale(1);    opacity: 0.6; }
+  100% { transform: scale(1.6);  opacity: 0; }
+}
+
+@keyframes draw-line {
+  from { stroke-dashoffset: 1; }
+  to   { stroke-dashoffset: 0; }
+}
+
+@keyframes count-up {
+  from { opacity: 0; transform: translateY(10px) scale(0.9); }
+  to   { opacity: 1; transform: translateY(0)    scale(1); }
+}
+
+/* ─── Animations utilitaires (Tailwind arbitrary) ───── */
+
+.animate-fade-in   { animation: fade-in 0.4s ease-out both; }
+.animate-slide-up  { animation: slide-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.animate-float     { animation: float 3s ease-in-out infinite; }
+.animate-ticker    { animation: ticker 20s linear infinite; }
+.animate-spin-slow { animation: spin-slow 8s linear infinite; }
+.animate-count-up  { animation: count-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+/* Pulse ring — pour les indicateurs d'état actif */
+.pulse-ring {
+  position: relative;
+}
+.pulse-ring::before {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  animation: pulse-ring 1.5s ease-out infinite;
+}
+
+/* ─── React Flow ─────────────────────────────────────── */
 
 .react-flow__node {
   border-radius: 10px;
 }
 
 .react-flow__edge-path {
-  stroke: #111;
-  stroke-opacity: 0.4;
+  stroke: #18181b;
+  stroke-opacity: 0.35;
 }
 
 .react-flow__edge.selected .react-flow__edge-path {
-  stroke: #000;
+  stroke: #09090b;
   stroke-opacity: 0.9;
 }
 
 .react-flow__controls {
   background: #fff;
-  border: 1px solid #e5e5e5;
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.06);
 }
 
 .react-flow__controls-button {
   background: #fff;
-  border-bottom: 1px solid #f0f0f0;
-  color: #555;
+  border-bottom: 1px solid #f4f4f5;
+  color: #71717a;
 }
 
 .react-flow__controls-button:hover {
-  background: #f5f5f5;
-  color: #000;
+  background: #f9fafb;
+  color: #09090b;
 }
 
 .react-flow__minimap {
   background: #fff;
-  border: 1px solid #e5e5e5;
-  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
 }
 
 .react-flow__background {
   background-color: #fafafa;
+}
+
+/* ─── .gitignore hint pour la navbar active dot ──────── */
+
+/* Indicateur de page active dans la navbar */
+.nav-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #09090b;
+  animation: fade-in-scale 0.2s ease-out both;
 }
