@@ -5,7 +5,7 @@ import { formatDate, getAge } from "@/lib/utils";
 import Link from "next/link";
 import {
   Calendar, MapPin, User, Heart, Users, Baby, ArrowLeft,
-  EyeOff, Crown, ExternalLink,
+  EyeOff, Crown, ExternalLink, Briefcase,
 } from "lucide-react";
 import { LinkRequestButton } from "@/components/profile/link-request-button";
 import { ProfileFeedbackModal } from "@/components/profile/profile-feedback-modal";
@@ -275,6 +275,13 @@ export default async function ProfilPage({ params }: { params: { id: string } })
                 )}
               </dl>
             </SectionCard>
+
+            {/* Profession */}
+            {isPremium && person.profession && (
+              <SectionCard icon={Briefcase} title="Profession">
+                <p className="text-sm text-zinc-600">{person.profession}</p>
+              </SectionCard>
+            )}
 
             {/* History */}
             {isPremium && person.description && (

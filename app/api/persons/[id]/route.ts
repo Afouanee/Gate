@@ -15,6 +15,7 @@ const updateSchema = z.object({
   deathPlace: z.string().optional().nullable(),
   photoUrl: z.string().url().optional().nullable(),
   description: z.string().optional().nullable(),
+  profession: z.string().optional().nullable(),
   isAlive: z.boolean().optional(),
   showBirthDate: z.boolean().optional(),
   showDeathDate: z.boolean().optional(),
@@ -66,6 +67,7 @@ export async function GET(
     birthPlace: isPremium ? person.birthPlace : null,
     deathPlace: isPremium ? person.deathPlace : null,
     description: isPremium ? person.description : null,
+    profession: isPremium ? person.profession : null,
   };
 
   return NextResponse.json(sanitized);
@@ -116,6 +118,7 @@ export async function PATCH(
           deathPlace: parsed.data.deathPlace,
           photoUrl: parsed.data.photoUrl,
           description: parsed.data.description,
+          profession: parsed.data.profession,
           isAlive: parsed.data.isAlive,
         };
 
