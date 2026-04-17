@@ -35,6 +35,7 @@ export function ProfileEditDialog({
     deathPlace: person.deathPlace || "",
     photoUrl: person.photoUrl || "",
     description: person.description || "",
+    profession: person.profession || "",
     isAlive: Boolean(person.isAlive),
     showBirthDate: Boolean(person.showBirthDate),
     showDeathDate: Boolean(person.showDeathDate),
@@ -62,6 +63,7 @@ export function ProfileEditDialog({
           deathPlace: form.deathPlace || null,
           photoUrl: form.photoUrl || null,
           description: form.description || null,
+          profession: form.profession || null,
         }),
       });
 
@@ -139,6 +141,11 @@ export function ProfileEditDialog({
           <div>
             <label className="text-xs font-bold uppercase tracking-wide text-zinc-400 mb-2 block">Photo URL</label>
             <input value={form.photoUrl} onChange={(e) => setField("photoUrl", e.target.value)} className="w-full h-10 px-4 rounded-lg border border-zinc-200" />
+          </div>
+
+          <div>
+            <label className="text-xs font-bold uppercase tracking-wide text-zinc-400 mb-2 block">Profession</label>
+            <input value={form.profession} onChange={(e) => setField("profession", e.target.value)} className="w-full h-10 px-4 rounded-lg border border-zinc-200" />
           </div>
 
           <div>

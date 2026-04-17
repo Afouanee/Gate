@@ -224,6 +224,7 @@ model Person {
   deathPlace    String?
   photoUrl      String?
   description   String?   @db.Text         // Bio/description personnalisée
+  profession    String?
 
   // Contrôle de visibilité (toggles admin pour la confidentialité)
   // Ces champs permettent aux admins de masquer certaines infos sensibles même au propriétaire
