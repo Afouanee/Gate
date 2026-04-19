@@ -34,69 +34,80 @@ const genderText: Record<string, string> = {
 };
 
 function PersonNodeComponent({ data, selected }: NodeProps<PersonNodeData>) {
+  const birthYear = data.birthDate ? new Date(data.birthDate).getFullYear() : null;
+  const deathYear = data.deathDate ? new Date(data.deathDate).getFullYear() : null;
+
   return (
     <div
       className={cn(
-        "relative w-40 rounded-2xl border-2 bg-white cursor-pointer transition-all duration-200 shadow-sm",
+        "relative w-44 rounded-2xl bg-white cursor-pointer transition-all duration-200",
+        "border-2 shadow-[0_2px_12px_rgba(0,0,0,0.07)]",
         genderBorder[data.gender] || genderBorder.UNKNOWN,
-        selected        && "ring-2 ring-zinc-900 ring-offset-2 shadow-lg",
-        data.highlighted && "ring-2 ring-zinc-400 scale-105",
-        data.isCurrentUser && "ring-2 ring-zinc-900 border-zinc-900",
-        "hover:shadow-md hover:scale-[1.03]"
+        selected         && "ring-2 ring-offset-2 ring-zinc-800 shadow-[0_4px_20px_rgba(0,0,0,0.13)]",
+        data.highlighted && "ring-2 ring-offset-1 ring-amber-400 scale-105",
+        data.isCurrentUser && "border-zinc-800",
+        "hover:shadow-[0_4px_20px_rgba(0,0,0,0.11)] hover:scale-[1.02]"
       )}
     >
-      {/* Handles */}
-      <Handle type="target" position={Position.Top}    className="!w-2 !h-2 !bg-zinc-300 !border-0 !opacity-0" />
-      <Handle type="source" position={Position.Bottom} className="!w-2 !h-2 !bg-zinc-300 !border-0 !opacity-0" />
-      <Handle type="source" position={Position.Right}  id="right" className="!w-2 !h-2 !bg-indigo-300 !border-0 !opacity-0" />
-      <Handle type="target" position={Position.Left}   id="left"  className="!w-2 !h-2 !bg-indigo-300 !border-0 !opacity-0" />
+      <Handle type="target" position={Position.Top}    className="!w-2 !h-2 !border-0 !opacity-0" />
+      <Handle type="source" position={Position.Bottom} className="!w-2 !h-2 !border-0 !opacity-0" />
+      <Handle type="source" position={Position.Right}  id="right" className="!w-2 !h-2 !border-0 !opacity-0" />
+      <Handle type="target" position={Position.Left}   id="left"  className="!w-2 !h-2 !border-0 !opacity-0" />
 
-      <div className="p-3">
+      <div className="px-4 pt-5 pb-4 flex flex-col items-center gap-2">
+
         {/* Avatar */}
-        <div className="relative mx-auto mb-2.5 w-12 h-12">
+        <div className="relative">
           {data.photoUrl && !data.blurred ? (
             <img
               src={data.photoUrl}
               alt={`${data.firstName} ${data.lastName}`}
-              className={cn("w-12 h-12 rounded-full object-cover border-2", genderBorder[data.gender])}
+              className={cn("w-16 h-16 rounded-full object-cover border-2", genderBorder[data.gender])}
             />
           ) : (
             <div className={cn(
-              "w-12 h-12 rounded-full border-2 flex items-center justify-center text-sm font-bold font-heading",
+              "w-16 h-16 rounded-full border-2 flex items-center justify-center",
               genderBorder[data.gender],
               genderText[data.gender]
             )}>
               {data.blurred
-                ? <EyeOff className="h-4 w-4 text-zinc-300" />
-                : <span className="text-xs">{getInitials(data.firstName, data.lastName)}</span>
+                ? <EyeOff className="h-5 w-5 text-zinc-300" />
+                : <span className="text-lg font-black font-heading">{getInitials(data.firstName, data.lastName)}</span>
               }
             </div>
           )}
+          {/* Badge décédé */}
+          {!data.isAlive && (
+            <span className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-zinc-400 border-2 border-white flex items-center justify-center text-[8px] text-white font-black">✝</span>
+          )}
         </div>
 
-        {/* Name */}
-        <div className="text-center">
-          <p className={cn("text-xs font-semibold font-heading truncate", data.blurred ? "blur-sm" : "text-zinc-900")}>
+        {/* Nom */}
+        <div className="text-center w-full">
+          <p className={cn("text-sm font-bold font-heading leading-tight truncate",
+            data.blurred ? "blur-sm select-none" : "text-zinc-900"
+          )}>
             {data.firstName}
           </p>
-          <p className={cn("text-xs font-black font-heading truncate uppercase tracking-wide", data.blurred ? "blur-sm" : "text-zinc-700")}>
+          <p className={cn("text-[11px] font-black font-heading uppercase tracking-wider truncate",
+            data.blurred ? "blur-sm select-none" : "text-zinc-500"
+          )}>
             {data.lastName}
           </p>
         </div>
 
-        {/* Birth year */}
-        {(data.birthDate || data.deathDate) && !data.blurred && (
-          <p className="mt-1.5 text-center text-[10px] text-zinc-400">
-            {data.birthDate ? new Date(data.birthDate).getFullYear() : "?"}
-            {!data.isAlive && data.deathDate ? ` — ${new Date(data.deathDate).getFullYear()}` : ""}
+        {/* Années */}
+        {birthYear && !data.blurred && (
+          <p className="text-[10px] text-zinc-400 tabular-nums">
+            {birthYear}{deathYear ? ` – ${deathYear}` : ""}
           </p>
         )}
 
-        {/* "Moi" badge */}
+        {/* Badge Moi */}
         {data.isCurrentUser && (
-          <div className="mt-1.5 flex justify-center">
-            <span className="text-[9px] bg-zinc-900 text-white px-2 py-0.5 rounded-full font-bold">Moi</span>
-          </div>
+          <span className="text-[9px] bg-zinc-900 text-white px-2.5 py-0.5 rounded-full font-bold tracking-wide">
+            Moi
+          </span>
         )}
       </div>
     </div>

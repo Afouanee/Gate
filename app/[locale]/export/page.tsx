@@ -82,253 +82,192 @@ export default function ExportPage() {
   const handleDownload = () => {
     if (!exportData) return;
 
-    // Build the tree HTML — visual genealogy tree with colored lines
     const nodeMap = new Map<string, any>();
     exportData.nodes.forEach((n: any) => nodeMap.set(n.id, n));
 
-    const genderColor = (g: string) =>
-      g === "MALE" ? "#3b82f6" : g === "FEMALE" ? "#ec4899" : "#a1a1aa";
+    // BFS pour assigner une génération à chaque nœud (ancêtres = gen négative, descendants = gen positive)
+    const genMap = new Map<string, number>();
+    const bfsQ: Array<{ id: string; gen: number }> = [{ id: exportData.rootPerson.id, gen: 0 }];
+    const bfsVisited = new Set<string>();
+    while (bfsQ.length > 0) {
+      const { id, gen } = bfsQ.shift()!;
+      if (bfsVisited.has(id)) continue;
+      bfsVisited.add(id);
+      genMap.set(id, gen);
+      for (const e of exportData.edges) {
+        if (e.type === "SPOUSE") continue;
+        if (e.sourceId === id && !bfsVisited.has(e.targetId)) bfsQ.push({ id: e.targetId, gen: gen + 1 });
+        if (e.targetId === id && !bfsVisited.has(e.sourceId)) bfsQ.push({ id: e.sourceId, gen: gen - 1 });
+      }
+    }
+    exportData.nodes.forEach((n: any) => { if (!genMap.has(n.id)) genMap.set(n.id, 0); });
 
-    const renderPerson = (n: any) => `
-      <div class="person" style="border-left: 4px solid ${genderColor(n.gender)}">
-        <div class="person-initials" style="background:${genderColor(n.gender)}20; color:${genderColor(n.gender)}; border:2px solid ${genderColor(n.gender)}40">
-          ${(n.firstName?.[0] || "") + (n.lastName?.[0] || "")}
-        </div>
-        <div class="person-info">
-          <div class="person-name">${n.firstName} <span style="text-transform:uppercase; letter-spacing:.05em">${n.lastName}</span></div>
-          ${config.showDates && n.birthDate ? `<div class="person-meta">Né(e) ${new Date(n.birthDate).getFullYear()}${n.deathDate ? ` — ${new Date(n.deathDate).getFullYear()}` : ""}</div>` : ""}
-          ${n.birthPlace ? `<div class="person-meta">📍 ${n.birthPlace}</div>` : ""}
-          ${config.showDescriptions && n.description ? `<div class="person-desc">${n.description}</div>` : ""}
-        </div>
-      </div>`;
+    // Grouper par génération
+    const byGen = new Map<number, any[]>();
+    exportData.nodes.forEach((n: any) => {
+      const g = genMap.get(n.id)!;
+      if (!byGen.has(g)) byGen.set(g, []);
+      byGen.get(g)!.push(n);
+    });
 
-    // Group edges by type for the legend
-    const hasSpouse  = exportData.edges.some((e: any) => e.type === "SPOUSE");
-    const hasCustom  = exportData.edges.some((e: any) => e.type === "CUSTOM");
+    // Placer les conjoints dans la même rangée, juste à côté
+    for (const e of exportData.edges) {
+      if (e.type !== "SPOUSE") continue;
+      const srcGen = genMap.get(e.sourceId);
+      const tgtGen = genMap.get(e.targetId);
+      if (srcGen !== undefined && tgtGen !== undefined && srcGen !== tgtGen) {
+        genMap.set(e.targetId, srcGen);
+        const oldArr = byGen.get(tgtGen) || [];
+        byGen.set(tgtGen, oldArr.filter((n: any) => n.id !== e.targetId));
+        const arr = byGen.get(srcGen) || [];
+        const srcIdx = arr.findIndex((n: any) => n.id === e.sourceId);
+        arr.splice(srcIdx + 1, 0, nodeMap.get(e.targetId));
+        byGen.set(srcGen, arr);
+      }
+    }
+
+    // Constantes de mise en page
+    const R       = 44;   // rayon du cercle avatar
+    const NODE_W  = R * 2;
+    const H_GAP   = 60;   // espace horizontal entre cercles
+    const V_GAP   = 100;  // espace vertical entre rangées
+    const LABEL_H = 36;   // hauteur du texte sous le cercle
+    const ROW_H   = NODE_W + LABEL_H; // hauteur totale d'un nœud
+
+    const sortedGens = Array.from(byGen.keys()).sort((a, b) => a - b);
+    const rowMap = new Map<number, number>();
+    sortedGens.forEach((g, i) => rowMap.set(g, i));
+
+    const totalRows  = sortedGens.length;
+    const maxPerRow  = Math.max(...Array.from(byGen.values()).map((a) => a.length));
+    const canvasW    = Math.max(600, maxPerRow * (NODE_W + H_GAP) + H_GAP);
+    const canvasH    = totalRows * (ROW_H + V_GAP) + V_GAP + 60;
+
+    // Position du centre de chaque cercle
+    const posMap = new Map<string, { cx: number; cy: number }>();
+    byGen.forEach((nodes, gen) => {
+      const row    = rowMap.get(gen)!;
+      const rowW   = nodes.length * NODE_W + (nodes.length - 1) * H_GAP;
+      const startX = (canvasW - rowW) / 2 + R;
+      const cy     = V_GAP + row * (ROW_H + V_GAP) + R;
+      nodes.forEach((n: any, i: number) => {
+        posMap.set(n.id, { cx: startX + i * (NODE_W + H_GAP), cy });
+      });
+    });
+
+    // Couleurs par genre
+    const gc = (g: string) => g === "MALE" ? "#4f8ef7" : g === "FEMALE" ? "#e879a0" : "#9ca3af";
+    const gb = (g: string) => g === "MALE" ? "#e8f0fe" : g === "FEMALE" ? "#fce7f3" : "#f3f4f6";
+
+    // Lignes SVG
+    const svgLines = exportData.edges.map((e: any) => {
+      const src = posMap.get(e.sourceId);
+      const tgt = posMap.get(e.targetId);
+      if (!src || !tgt) return "";
+
+      if (e.type === "SPOUSE") {
+        // Ligne horizontale pointillée entre conjoints
+        const y  = src.cy;
+        const x1 = Math.min(src.cx, tgt.cx) + R;
+        const x2 = Math.max(src.cx, tgt.cx) - R;
+        return `<line x1="${x1}" y1="${y}" x2="${x2}" y2="${y}" stroke="#c084fc" stroke-width="2" stroke-dasharray="6,4"/>`;
+      }
+
+      // Lien parent → enfant : ligne qui part du bas du cercle parent,
+      // descend verticalement jusqu'à mi-chemin, bifurque horizontalement, puis remonte au cercle enfant
+      const x1   = src.cx;
+      const y1   = src.cy + R;
+      const x2   = tgt.cx;
+      const y2   = tgt.cy - R;
+      const midY = (y1 + y2) / 2;
+      return `<path d="M${x1},${y1} L${x1},${midY} L${x2},${midY} L${x2},${y2}" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>`;
+    }).join("\n");
+
+    // Cercles SVG + texte en dessous
+    const svgNodes = exportData.nodes.map((n: any) => {
+      const pos    = posMap.get(n.id);
+      if (!pos) return "";
+      const { cx, cy } = pos;
+      const color  = gc(n.gender);
+      const bg     = gb(n.gender);
+      const init   = (n.firstName?.[0] || "").toUpperCase() + (n.lastName?.[0] || "").toUpperCase();
+      const isRoot = n.id === exportData.rootPerson.id;
+      const year   = config.showDates && n.birthDate ? new Date(n.birthDate).getFullYear() : null;
+      const died   = config.showDates && n.deathDate ? new Date(n.deathDate).getFullYear() : null;
+      const dateTxt = year ? `${year}${died ? `–${died}` : ""}` : "";
+
+      // Ombre portée via filter
+      const shadow = isRoot ? `filter="url(#shadow)"` : "";
+
+      return `
+  <!-- ${n.firstName} ${n.lastName} -->
+  <circle cx="${cx}" cy="${cy}" r="${R + 4}" fill="white" ${shadow}/>
+  <circle cx="${cx}" cy="${cy}" r="${R}" fill="${bg}" stroke="${color}" stroke-width="${isRoot ? 3.5 : 2}"/>
+  ${n.photoUrl
+    ? `<clipPath id="clip-${n.id}"><circle cx="${cx}" cy="${cy}" r="${R - 2}"/></clipPath>
+       <image href="${n.photoUrl}" x="${cx - R + 2}" y="${cy - R + 2}" width="${(R - 2) * 2}" height="${(R - 2) * 2}" clip-path="url(#clip-${n.id})" preserveAspectRatio="xMidYMid slice"/>`
+    : `<text x="${cx}" y="${cy + 6}" text-anchor="middle" font-family="Arial,sans-serif" font-size="18" font-weight="900" fill="${color}">${init}</text>`}
+  ${isRoot ? `<circle cx="${cx}" cy="${cy}" r="${R + 7}" fill="none" stroke="${color}" stroke-width="2" stroke-dasharray="4,3" opacity="0.5"/>` : ""}
+  <text x="${cx}" y="${cy + R + 16}" text-anchor="middle" font-family="Arial,sans-serif" font-size="11" font-weight="700" fill="#1e293b">${n.firstName}</text>
+  <text x="${cx}" y="${cy + R + 28}" text-anchor="middle" font-family="Arial,sans-serif" font-size="10" font-weight="600" fill="#64748b">${n.lastName.toUpperCase()}</text>
+  ${dateTxt ? `<text x="${cx}" y="${cy + R + 40}" text-anchor="middle" font-family="Arial,sans-serif" font-size="9" fill="#94a3b8">${dateTxt}</text>` : ""}`;
+    }).join("\n");
 
     const content = `<!DOCTYPE html>
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>Arbre généalogique — ${exportData.rootPerson.firstName} ${exportData.rootPerson.lastName}</title>
+<title>Arbre — ${exportData.rootPerson.firstName} ${exportData.rootPerson.lastName}</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
-
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    font-family: 'Inter', Arial, sans-serif;
-    background: #fff;
-    color: #09090b;
-    padding: 48px;
-    max-width: 960px;
-    margin: 0 auto;
-  }
-
-  /* Header */
-  .header {
-    border-bottom: 2px solid #09090b;
-    padding-bottom: 24px;
-    margin-bottom: 40px;
-  }
-  .header-eyebrow {
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: .2em;
-    text-transform: uppercase;
-    color: #a1a1aa;
-    margin-bottom: 8px;
-  }
-  .header-title {
-    font-size: 36px;
-    font-weight: 900;
-    letter-spacing: -.02em;
-    line-height: 1;
-    margin-bottom: 6px;
-  }
-  .header-sub {
-    font-size: 14px;
-    color: #71717a;
-  }
-  .header-meta {
-    display: flex;
-    gap: 24px;
-    margin-top: 16px;
-  }
-  .meta-item {
-    display: flex;
-    flex-direction: column;
-  }
-  .meta-label { font-size: 10px; font-weight: 700; letter-spacing: .15em; text-transform: uppercase; color: #a1a1aa; }
-  .meta-value { font-size: 15px; font-weight: 700; color: #09090b; }
-
-  /* Legend */
-  .legend {
-    display: flex;
-    gap: 20px;
-    padding: 12px 16px;
-    background: #f4f4f5;
-    border-radius: 10px;
-    margin-bottom: 32px;
-    font-size: 11px;
-    font-weight: 600;
-    color: #52525b;
-  }
-  .legend-item { display: flex; align-items: center; gap: 8px; }
-  .legend-line {
-    width: 28px;
-    height: 2px;
-  }
-  .legend-line.parent  { background: #18181b; }
-  .legend-line.spouse  { background: #6366f1; border-top: 2px dashed #6366f1; }
-  .legend-line.custom  { background: #a21caf; }
-
-  /* Section title */
-  .section-title {
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: .2em;
-    text-transform: uppercase;
-    color: #a1a1aa;
-    margin: 32px 0 16px;
-    padding-bottom: 8px;
-    border-bottom: 1px solid #e4e4e7;
-  }
-
-  /* Person card */
-  .person {
-    display: flex;
-    align-items: flex-start;
-    gap: 14px;
-    padding: 14px 16px;
-    margin-bottom: 8px;
-    border-radius: 10px;
-    border: 1px solid #e4e4e7;
-    border-left-width: 4px;
-    page-break-inside: avoid;
-  }
-  .person:hover { background: #fafafa; }
-  .person-initials {
-    width: 40px; height: 40px;
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 13px; font-weight: 900;
-    flex-shrink: 0;
-  }
-  .person-info { flex: 1; }
-  .person-name { font-size: 15px; font-weight: 700; }
-  .person-meta { font-size: 12px; color: #71717a; margin-top: 3px; }
-  .person-desc { font-size: 12px; color: #52525b; margin-top: 6px; line-height: 1.5; }
-
-  /* Relations section */
-  .relations-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    margin-bottom: 8px;
-  }
-  .relation-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 12px;
-    border: 1px solid #e4e4e7;
-    border-radius: 8px;
-    font-size: 12px;
-  }
-  .relation-dot {
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    flex-shrink: 0;
-  }
-  .relation-dot.parent-child { background: #18181b; }
-  .relation-dot.spouse { background: #6366f1; }
-  .relation-dot.custom { background: #a21caf; }
-  .relation-name { font-weight: 600; }
-  .relation-type { color: #a1a1aa; font-size: 10px; margin-top: 1px; }
-
-  /* Footer */
-  .footer {
-    margin-top: 48px;
-    padding-top: 20px;
-    border-top: 1px solid #e4e4e7;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 11px;
-    color: #a1a1aa;
-  }
-  .footer-brand { font-weight: 900; color: #09090b; letter-spacing: -.01em; }
-
-  @media print {
-    body { padding: 24px; }
-    .person { page-break-inside: avoid; }
-  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Arial,sans-serif;background:#f8fafc;color:#09090b;padding:36px}
+  .header{margin-bottom:28px}
+  .header h1{font-size:26px;font-weight:900;letter-spacing:-.02em;color:#0f172a}
+  .header p{font-size:12px;color:#94a3b8;margin-top:5px;letter-spacing:.05em;text-transform:uppercase;font-weight:600}
+  .tree-wrap{background:#fff;border-radius:16px;border:1px solid #e2e8f0;overflow:auto;box-shadow:0 1px 8px rgba(0,0,0,.06)}
+  .banner{margin-top:20px;padding:10px 16px;background:#f1f5f9;border-radius:10px;font-size:11px;color:#64748b;display:flex;gap:20px}
+  .banner span{display:flex;align-items:center;gap:6px}
+  .footer{margin-top:20px;display:flex;justify-content:space-between;font-size:11px;color:#94a3b8}
+  .footer b{color:#0f172a}
+  @media print{body{padding:12px;background:#fff}.tree-wrap{border:none;box-shadow:none}}
 </style>
 </head>
 <body>
 
-  <!-- Header -->
-  <div class="header">
-    <div class="header-eyebrow">Arbre généalogique · Gate</div>
-    <div class="header-title">${exportData.rootPerson.firstName} <span style="color:#71717a;text-transform:uppercase;letter-spacing:.03em">${exportData.rootPerson.lastName}</span></div>
-    <div class="header-sub">${exportData.type} · Profondeur ${exportData.depth} génération${exportData.depth > 1 ? "s" : ""}</div>
-    <div class="header-meta">
-      <div class="meta-item">
-        <span class="meta-label">Profils</span>
-        <span class="meta-value">${exportData.nodes.length}</span>
-      </div>
-      <div class="meta-item">
-        <span class="meta-label">Relations</span>
-        <span class="meta-value">${exportData.edges.length}</span>
-      </div>
-      <div class="meta-item">
-        <span class="meta-label">Généré le</span>
-        <span class="meta-value">${new Date(exportData.generatedAt).toLocaleDateString("fr-FR")}</span>
-      </div>
-    </div>
-  </div>
+<div class="header">
+  <h1>${exportData.rootPerson.firstName} ${exportData.rootPerson.lastName.toUpperCase()}</h1>
+  <p>Arbre généalogique · ${exportData.type} · ${exportData.depth} génération${exportData.depth > 1 ? "s" : ""}</p>
+</div>
 
-  <!-- Legend -->
-  <div class="legend">
-    <div class="legend-item">
-      <div class="legend-line parent"></div>
-      <span>Parent → Enfant</span>
-    </div>
-    ${hasSpouse ? `<div class="legend-item"><div class="legend-line spouse"></div><span>Conjoint(e)</span></div>` : ""}
-    ${hasCustom ? `<div class="legend-item"><div class="legend-line custom"></div><span>Relation personnalisée</span></div>` : ""}
-  </div>
+<div class="tree-wrap">
+  <svg width="${canvasW}" height="${canvasH}" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#0f172a" flood-opacity="0.12"/>
+      </filter>
+    </defs>
+    <!-- Lignes -->
+    ${svgLines}
+    <!-- Nœuds -->
+    ${svgNodes}
+    <!-- Bandeau titre bas -->
+    <rect x="${canvasW/2 - 120}" y="${canvasH - 44}" width="240" height="30" rx="15" fill="#0f172a"/>
+    <text x="${canvasW/2}" y="${canvasH - 24}" text-anchor="middle" font-family="Arial,sans-serif" font-size="11" font-weight="700" fill="white" letter-spacing="2">✦ FAMILY TREE ✦</text>
+  </svg>
+</div>
 
-  <!-- Persons -->
-  <div class="section-title">Membres (${exportData.nodes.length})</div>
-  ${exportData.nodes.map((n: any) => renderPerson(n)).join("")}
+<div class="banner">
+  <span>⬤ <span style="color:#4f8ef7">Homme</span></span>
+  <span>⬤ <span style="color:#e879a0">Femme</span></span>
+  <span>- - - Conjoint(e)</span>
+  <span>——— Filiation</span>
+  <span style="margin-left:auto">${exportData.nodes.length} profils · ${exportData.edges.length} liens</span>
+</div>
 
-  <!-- Relations -->
-  ${exportData.edges.length > 0 ? `
-  <div class="section-title">Relations (${exportData.edges.length})</div>
-  <div class="relations-grid">
-    ${exportData.edges.map((e: any) => {
-      const src = nodeMap.get(e.sourceId);
-      const tgt = nodeMap.get(e.targetId);
-      if (!src || !tgt) return "";
-      const typeLabel = e.type === "PARENT_CHILD" ? "Parent → Enfant" : e.type === "SPOUSE" ? "Conjoint(e)" : e.label || "Relation";
-      const dotClass  = e.type === "PARENT_CHILD" ? "parent-child" : e.type === "SPOUSE" ? "spouse" : "custom";
-      return `
-      <div class="relation-item">
-        <div class="relation-dot ${dotClass}"></div>
-        <div>
-          <div class="relation-name">${src.firstName} ${src.lastName} → ${tgt.firstName} ${tgt.lastName}</div>
-          <div class="relation-type">${typeLabel}</div>
-        </div>
-      </div>`;
-    }).join("")}
-  </div>` : ""}
-
-  <!-- Footer -->
-  <div class="footer">
-    <span><span class="footer-brand">Gate</span> — by Afouanee.dev</span>
-    <span>Exporté le ${new Date().toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}</span>
-  </div>
+<div class="footer">
+  <span><b>Gate</b> — by Afouanee.dev</span>
+  <span>Exporté le ${new Date().toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}</span>
+</div>
 
 </body>
 </html>`;

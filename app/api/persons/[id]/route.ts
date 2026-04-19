@@ -17,6 +17,7 @@ const updateSchema = z.object({
   description: z.string().optional().nullable(),
   profession: z.string().optional().nullable(),
   currentCity: z.string().optional().nullable(),
+  nickname: z.string().optional().nullable(),
   isAlive: z.boolean().optional(),
   showBirthDate: z.boolean().optional(),
   showDeathDate: z.boolean().optional(),
@@ -70,6 +71,7 @@ export async function GET(
     description: isPremium ? person.description : null,
     profession: isPremium ? person.profession : null,
     currentCity: isPremium ? person.currentCity : null,
+    nickname: person.nickname,
   };
 
   return NextResponse.json(sanitized);
@@ -122,6 +124,7 @@ export async function PATCH(
           description: parsed.data.description,
           profession: parsed.data.profession,
           currentCity: parsed.data.currentCity,
+          nickname: parsed.data.nickname,
           isAlive: parsed.data.isAlive,
         };
 
