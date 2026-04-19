@@ -137,6 +137,9 @@ export default async function ProfilPage({ params }: { params: { id: string } })
                 <div className="text-center mb-5">
                   <h1 className="text-2xl font-black font-heading leading-tight tracking-tight">{person.firstName}</h1>
                   <h2 className="text-xl font-black font-heading uppercase tracking-wider text-zinc-500">{person.lastName}</h2>
+                  {person.nickname && (
+                    <p className="text-sm text-zinc-400 italic mt-1">« {person.nickname} »</p>
+                  )}
                   <div className="flex items-center justify-center gap-2 mt-3 flex-wrap">
                     {person.gender !== "UNKNOWN" && (
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${genderAvatar[person.gender]}`}>

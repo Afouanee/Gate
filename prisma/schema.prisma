@@ -208,6 +208,7 @@ model Person {
   description   String?   @db.Text         // Bio/description personnalisée
   profession    String?
   currentCity   String?                    // Ville de résidence actuelle
+  nickname      String?                    // Surnom / nom d'usage
 
   // Contrôle de visibilité (toggles admin pour la confidentialité)
   // Ces champs permettent aux admins de masquer certaines infos sensibles même au propriétaire

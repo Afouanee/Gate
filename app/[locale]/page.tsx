@@ -143,6 +143,25 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* ── CONTRIBUTE ───────────────────────────────────── */}
+      <section className="border-t border-zinc-100 py-16 px-6">
+        <div className="container mx-auto max-w-2xl text-center">
+          <p className="text-xs font-bold uppercase tracking-[0.2em] text-zinc-400 mb-4">Vous ne vous retrouvez pas ?</p>
+          <h2 className="text-2xl font-black font-heading tracking-tight text-zinc-900 mb-3">
+            Votre famille mérite d'être dans l'arbre.
+          </h2>
+          <p className="text-sm text-zinc-400 leading-relaxed mb-8 max-w-md mx-auto">
+            Si vous ne trouvez pas votre famille ou que vous souhaitez contribuer à enrichir l'arbre, contactez-nous — chaque lien compte.
+          </p>
+          <Link
+            href="/contact"
+            className="inline-flex items-center gap-2 px-6 py-3 text-sm font-semibold border border-zinc-200 text-zinc-700 rounded-full hover:border-zinc-900 hover:text-zinc-900 transition-all duration-200"
+          >
+            Nous contacter
+          </Link>
+        </div>
+      </section>
+
       {/* ── PRICING TEASER ───────────────────────────────── */}
       <section className="border-t border-zinc-100 py-20 px-6">
         <div className="container mx-auto max-w-2xl">

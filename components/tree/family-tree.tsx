@@ -25,50 +25,95 @@ import { PersonPanel } from "./person-panel";
 
 const nodeTypes = { person: PersonNode };
 
+// Algorithme de layout Reingold-Tilford simplifié :
+// chaque nœud est centré sur ses enfants, les sous-arbres ne se chevauchent pas.
 function layoutNodes(rawNodes: any[], rawEdges: any[]): { nodes: Node[]; edges: Edge[] } {
-  const HGAP = 210;
-  const VGAP = 190;
+  const NODE_W = 180;
+  const NODE_H = 110;
+  const H_GAP  = 60;   // espace horizontal entre nœuds
+  const V_GAP  = 120;  // espace vertical entre générations
 
+  // Construire les maps parent ↔ enfant (filiation uniquement)
+  const childMap  = new Map<string, string[]>();
   const parentMap = new Map<string, string[]>();
-  const childMap = new Map<string, string[]>();
-
   rawEdges.forEach((e) => {
-    if (e.type === "PARENT_CHILD") {
-      if (!childMap.has(e.sourceId)) childMap.set(e.sourceId, []);
-      childMap.get(e.sourceId)!.push(e.targetId);
-      if (!parentMap.has(e.targetId)) parentMap.set(e.targetId, []);
-      parentMap.get(e.targetId)!.push(e.sourceId);
-    }
+    if (e.type !== "PARENT_CHILD") return;
+    if (!childMap.has(e.sourceId))  childMap.set(e.sourceId, []);
+    if (!parentMap.has(e.targetId)) parentMap.set(e.targetId, []);
+    childMap.get(e.sourceId)!.push(e.targetId);
+    parentMap.get(e.targetId)!.push(e.sourceId);
   });
 
-  const levels = new Map<string, number>();
-  const roots = rawNodes.map((n) => n.id).filter((id) => !parentMap.has(id) || parentMap.get(id)!.length === 0);
-  const queue = roots.map((id) => ({ id, level: 0 }));
+  // Générations via BFS depuis les racines
+  const genMap = new Map<string, number>();
+  const roots  = rawNodes.map((n) => n.id).filter((id) => !parentMap.has(id) || parentMap.get(id)!.length === 0);
+  const bfsQ   = roots.map((id) => ({ id, gen: 0 }));
+  while (bfsQ.length > 0) {
+    const { id, gen } = bfsQ.shift()!;
+    if (genMap.has(id)) continue;
+    genMap.set(id, gen);
+    (childMap.get(id) || []).forEach((cid) => bfsQ.push({ id: cid, gen: gen + 1 }));
+  }
+  rawNodes.forEach((n) => { if (!genMap.has(n.id)) genMap.set(n.id, 0); });
 
-  while (queue.length > 0) {
-    const { id, level } = queue.shift()!;
-    if (!levels.has(id)) {
-      levels.set(id, level);
-      (childMap.get(id) || []).forEach((cid) => queue.push({ id: cid, level: level + 1 }));
+  // Calculer la "largeur" de chaque sous-arbre (nombre de feuilles)
+  const subtreeWidth = new Map<string, number>();
+  const allIds = rawNodes.map((n) => n.id);
+
+  function calcWidth(id: string): number {
+    if (subtreeWidth.has(id)) return subtreeWidth.get(id)!;
+    const children = childMap.get(id) || [];
+    if (children.length === 0) {
+      subtreeWidth.set(id, 1);
+      return 1;
     }
+    const w = children.reduce((sum, cid) => sum + calcWidth(cid), 0);
+    subtreeWidth.set(id, w);
+    return w;
+  }
+  allIds.forEach(calcWidth);
+
+  // Positionner en x en parcourant l'arbre, et en y selon la génération
+  const positions = new Map<string, { x: number; y: number }>();
+
+  function placeNode(id: string, xOffset: number): void {
+    if (positions.has(id)) return;
+    const gen      = genMap.get(id) ?? 0;
+    const children = childMap.get(id) || [];
+    const y        = gen * (NODE_H + V_GAP);
+
+    if (children.length === 0) {
+      positions.set(id, { x: xOffset, y });
+      return;
+    }
+
+    // Placer les enfants à la suite
+    let cursor = xOffset;
+    children.forEach((cid) => {
+      placeNode(cid, cursor);
+      cursor += (subtreeWidth.get(cid) || 1) * (NODE_W + H_GAP);
+    });
+
+    // Centrer le parent sur ses enfants
+    const firstChildX = positions.get(children[0])!.x;
+    const lastChildX  = positions.get(children[children.length - 1])!.x;
+    positions.set(id, { x: (firstChildX + lastChildX) / 2, y });
   }
 
+  // Calculer le décalage de départ pour chaque racine
+  let xCursor = 0;
+  roots.forEach((rootId) => {
+    placeNode(rootId, xCursor);
+    xCursor += (subtreeWidth.get(rootId) || 1) * (NODE_W + H_GAP);
+  });
+
+  // Nœuds sans position (orphelins ou conjoints non rattachés) → empiler à droite
   rawNodes.forEach((n) => {
-    if (!levels.has(n.id)) levels.set(n.id, 0);
-  });
-
-  const byLevel = new Map<number, string[]>();
-  levels.forEach((level, id) => {
-    if (!byLevel.has(level)) byLevel.set(level, []);
-    byLevel.get(level)!.push(id);
-  });
-
-  const positions = new Map<string, { x: number; y: number }>();
-  byLevel.forEach((ids, level) => {
-    const totalWidth = (ids.length - 1) * HGAP;
-    ids.forEach((id, i) => {
-      positions.set(id, { x: i * HGAP - totalWidth / 2, y: level * VGAP });
-    });
+    if (!positions.has(n.id)) {
+      const gen = genMap.get(n.id) ?? 0;
+      positions.set(n.id, { x: xCursor, y: gen * (NODE_H + V_GAP) });
+      xCursor += NODE_W + H_GAP;
+    }
   });
 
   const nodes: Node[] = rawNodes.map((n) => ({
@@ -82,20 +127,23 @@ function layoutNodes(rawNodes: any[], rawEdges: any[]): { nodes: Node[]; edges: 
     id: e.id,
     source: e.sourceId,
     target: e.targetId,
-    type: "smoothstep",
-    animated: e.type === "SPOUSE",
+    type: e.type === "PARENT_CHILD" ? "smoothstep" : "straight",
+    animated: false,
     style: {
-      stroke: e.type === "SPOUSE" ? "#6366f1" : e.type === "CUSTOM" ? "#a21caf" : "#18181b",
-      strokeWidth: e.type === "SPOUSE" ? 1.5 : 2,
-      strokeOpacity: 0.5,
-      strokeDasharray: e.type === "SPOUSE" ? "6 3" : undefined,
+      stroke:
+        e.type === "SPOUSE"  ? "#a78bfa" :
+        e.type === "CUSTOM"  ? "#c084fc" :
+        "#94a3b8",
+      strokeWidth:
+        e.type === "PARENT_CHILD" ? 2 : 1.5,
+      strokeDasharray: e.type === "SPOUSE" ? "6 4" : undefined,
     },
-    markerEnd: e.type !== "SPOUSE"
-      ? { type: MarkerType.ArrowClosed, color: "#18181b", width: 12, height: 12 }
+    markerEnd: e.type === "PARENT_CHILD"
+      ? { type: MarkerType.ArrowClosed, color: "#94a3b8", width: 10, height: 10 }
       : undefined,
     label: e.type === "CUSTOM" ? e.label : undefined,
-    labelStyle: { fill: "#71717a", fontSize: 9, fontWeight: 600 },
-    labelBgStyle: { fill: "#ffffff", fillOpacity: 0.9 },
+    labelStyle:     { fill: "#9333ea", fontSize: 9, fontWeight: 700 },
+    labelBgStyle:   { fill: "#faf5ff", fillOpacity: 0.95 },
     labelBgPadding: [4, 2] as [number, number],
     labelBgBorderRadius: 4,
   }));
@@ -242,7 +290,7 @@ function FamilyTreeInner({ focusPersonId }: { focusPersonId?: string | null }) {
         maxZoom={3}
         proOptions={{ hideAttribution: true }}
       >
-        <Background variant={BackgroundVariant.Dots} gap={24} size={1} color="#e5e7eb" />
+        <Background variant={BackgroundVariant.Dots} gap={32} size={1.2} color="#d1d5db" style={{ backgroundColor: "#f8f9fa" }} />
         <Controls
           style={{
             background: "white",
