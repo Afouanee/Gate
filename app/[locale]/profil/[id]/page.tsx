@@ -283,6 +283,13 @@ export default async function ProfilPage({ params }: { params: { id: string } })
               </SectionCard>
             )}
 
+            {/* Ville de résidence */}
+            {isPremium && person.currentCity && (
+              <SectionCard icon={MapPin} title="Habite à">
+                <p className="text-sm text-zinc-600">{person.currentCity}</p>
+              </SectionCard>
+            )}
+
             {/* History */}
             {isPremium && person.description && (
               <SectionCard icon={User} title="Histoire">

@@ -55,21 +55,6 @@ export function getAge(birthDate: Date | string | null, deathDate?: Date | strin
 }
 
 /**
- * Catégorise une personne selon son âge
- * Utilisé pour l'affichage (icônes, styles spéciaux)
- *
- * @param age Âge en années (null = adult)
- * @returns "baby" | "child" | "adult" | "senior"
- */
-export function getAgeCategory(age: number | null): "baby" | "child" | "adult" | "senior" {
-  if (age === null) return "adult";
-  if (age < 2) return "baby";
-  if (age < 18) return "child";
-  if (age < 65) return "adult";
-  return "senior";
-}
-
-/**
  * Tronque une chaîne et ajoute des points de suspension
  * Utilisé pour les titres long dans l'UI
  *

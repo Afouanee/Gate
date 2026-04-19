@@ -98,7 +98,7 @@ export async function GET(req: NextRequest) {
   // Flouter les résultats pour les FREE
   const sanitizedResults = results.map((person) => ({
     ...person,
-    firstName: isPremium ? person.firstName : person.firstName,
+    firstName: person.firstName,
     lastName: isPremium ? person.lastName : `${person.lastName[0]}${"*".repeat(person.lastName.length - 1)}`,
     birthDate: isPremium && person.showBirthDate ? person.birthDate : null,
     deathDate: isPremium && person.showDeathDate ? person.deathDate : null,
