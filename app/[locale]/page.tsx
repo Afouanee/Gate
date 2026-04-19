@@ -69,10 +69,10 @@ export default async function HomePage() {
 
           <div className="overflow-hidden mb-12">
             <p
-              className="text-base md:text-lg text-zinc-400 font-light tracking-wide"
+              className="text-base md:text-lg text-zinc-400 font-light tracking-wide italic"
               style={{ animation: "slide-up 0.9s 0.35s cubic-bezier(0.16,1,0.3,1) both" }}
             >
-              La porte vers vos origines.
+              "Dis-moi qui tu es, je te dirai d'où tu viens."
             </p>
           </div>
 

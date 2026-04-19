@@ -1,21 +1,3 @@
-/**
- * GATE - Prisma Schema
- *
- * Modèle de données pour l'application d'arbre généalogique.
- * Base de données: PostgreSQL (Supabase)
- *
- * Structures principales:
- * - User: Utilisateurs avec gestion de rôles (ADMIN, PREMIUM, FREE)
- * - Person: Profils généalogiques avec visibility toggles
- * - Relation: Relations familiales (parent-enfant, mariage, etc.)
- * - LinkRequest: Demandes de rattachement de profils utilisateurs
- * - Subscription: Gestion des abonnements Stripe
- * - AuditLog: Logs d'audit pour la traçabilité
- * - ConsentLog: Consentements RGPD
- * - Report: Signalements d'erreurs dans les données
- * - ImportJob: Suivi des imports de données
- */
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -225,6 +207,7 @@ model Person {
   photoUrl      String?
   description   String?   @db.Text         // Bio/description personnalisée
   profession    String?
+  currentCity   String?                    // Ville de résidence actuelle
 
   // Contrôle de visibilité (toggles admin pour la confidentialité)
   // Ces champs permettent aux admins de masquer certaines infos sensibles même au propriétaire

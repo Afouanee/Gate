@@ -36,6 +36,7 @@ export function ProfileEditDialog({
     photoUrl: person.photoUrl || "",
     description: person.description || "",
     profession: person.profession || "",
+    currentCity: person.currentCity || "",
     isAlive: Boolean(person.isAlive),
     showBirthDate: Boolean(person.showBirthDate),
     showDeathDate: Boolean(person.showDeathDate),
@@ -64,6 +65,7 @@ export function ProfileEditDialog({
           photoUrl: form.photoUrl || null,
           description: form.description || null,
           profession: form.profession || null,
+          currentCity: form.currentCity || null,
         }),
       });
 
@@ -146,6 +148,11 @@ export function ProfileEditDialog({
           <div>
             <label className="text-xs font-bold uppercase tracking-wide text-zinc-400 mb-2 block">Profession</label>
             <input value={form.profession} onChange={(e) => setField("profession", e.target.value)} className="w-full h-10 px-4 rounded-lg border border-zinc-200" />
+          </div>
+
+          <div>
+            <label className="text-xs font-bold uppercase tracking-wide text-zinc-400 mb-2 block">Habite à</label>
+            <input value={form.currentCity} onChange={(e) => setField("currentCity", e.target.value)} placeholder="Ville de résidence" className="w-full h-10 px-4 rounded-lg border border-zinc-200" />
           </div>
 
           <div>
