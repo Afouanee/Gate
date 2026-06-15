@@ -71,7 +71,3 @@ app/
 prisma/               # schéma + migrations + seed
 package.json          # name "gate" — scripts dev/build/start/lint/db:*
 ```
-
----
-🔗 **Fiche projet** : [afouanee.dev/projects/gate](https://afouanee.dev/projects/gate)
-👤 **Auteur** : Afouane MOUHAMAD — [Portfolio](https://afouanee.dev) · [LinkedIn](https://linkedin.com/in/afouane-mouhamad)
