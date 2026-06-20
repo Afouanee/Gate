@@ -11,12 +11,31 @@ import { authOptions } from "./auth";
 import { redirect } from "next/navigation";
 
 /**
+ * Interrupteur global d'authentification (voir middleware.ts).
+ * AUTH_DISABLED="true" → on simule un admin connecté pour pouvoir naviguer
+ * partout sans se connecter. À retirer pour réactiver l'auth.
+ */
+const AUTH_DISABLED = process.env.AUTH_DISABLED === "true";
+
+/** Session factice « admin » utilisée quand l'auth est désactivée. */
+const DEV_SESSION = {
+  user: {
+    id: "dev-admin",
+    name: "Dev Admin",
+    email: "dev@gate.local",
+    role: "ADMIN" as const,
+  },
+  expires: "2999-01-01T00:00:00.000Z",
+};
+
+/**
  * Récupère la session utilisateur côté serveur
  * Peut retourner null si non authentifié
  *
  * @returns Session NextAuth ou null
  */
 export async function getSession() {
+  if (AUTH_DISABLED) return DEV_SESSION as any;
   return await getServerSession(authOptions);
 }
 

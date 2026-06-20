@@ -5,8 +5,9 @@ import { useTranslations } from "next-intl";
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { Mail, Lock, Loader2, ArrowRight, Sparkles } from "lucide-react";
+import { Mail, Lock, Loader2, ArrowRight, Sparkles, Eye, EyeOff } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { GateMark, Logo } from "@/components/brand/logo";
 
 export default function LoginPage() {
   const te = useTranslations("auth.errors");
@@ -18,6 +19,7 @@ export default function LoginPage() {
   const [mode, setMode] = useState<"credentials" | "magic">("credentials");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [magicSent, setMagicSent] = useState(false);
 
@@ -26,12 +28,16 @@ export default function LoginPage() {
     setLoading(true);
     try {
       const result = await signIn("credentials", {
-        email, password, redirect: false, callbackUrl,
+        email,
+        password,
+        redirect: false,
+        callbackUrl,
       });
       if (result?.error) {
-        const message = result.error === "EMAIL_NOT_VERIFIED"
-          ? "Vérifiez votre email avant de vous connecter."
-          : te("invalidCredentials");
+        const message =
+          result.error === "EMAIL_NOT_VERIFIED"
+            ? "Vérifiez votre email avant de vous connecter."
+            : te("invalidCredentials");
         toast({ title: "Erreur", description: message, variant: "destructive" });
       } else {
         router.push(callbackUrl);
@@ -48,154 +54,233 @@ export default function LoginPage() {
       await signIn("email", { email, redirect: false, callbackUrl });
       setMagicSent(true);
     } catch {
-      toast({ title: "Erreur", description: "Impossible d'envoyer le lien.", variant: "destructive" });
+      toast({
+        title: "Erreur",
+        description: "Impossible d'envoyer le lien.",
+        variant: "destructive",
+      });
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-[100svh] bg-white flex">
+    <div className="flex min-h-[calc(100svh-4rem)] bg-paper">
 
-      {/* ── Colonne gauche — déco ─────────────────────── */}
-      <div className="hidden lg:flex w-1/2 bg-zinc-900 flex-col items-center justify-center p-16 relative overflow-hidden">
-        {/* Cercles déco */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full border border-white/5" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[350px] h-[350px] rounded-full border border-white/5" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200px] h-[200px] rounded-full border border-white/10" />
+      {/* ── Colonne gauche — couverture de registre ─────── */}
+      <aside className="relative hidden w-1/2 flex-col justify-between overflow-hidden bg-ink p-14 text-paper lg:flex">
+        <div className="flex items-center justify-between">
+          <Logo size={26} className="text-paper" seal={false} />
+          <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-paper/40">
+            Le registre
+          </span>
+        </div>
 
-        <div className="relative z-10 text-center">
-          <img src="/favicon.ico" alt="Gate" className="w-16 h-16 rounded-2xl mx-auto mb-8 object-contain bg-white p-1" />
-          <h2 className="text-4xl font-black font-heading text-white mb-4 leading-tight tracking-tight">
-            Votre histoire,<br />préservée.
+        {/* Filet + monogramme filigrane */}
+        <GateMark
+          size={420}
+          seal={false}
+          className="pointer-events-none absolute -right-24 bottom-0 text-paper/[0.04]"
+        />
+
+        <div className="relative z-10 max-w-sm">
+          <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-seal-bright">
+            № · Accès
+          </span>
+          <h2 className="mt-4 font-serif text-4xl font-semibold leading-tight tracking-tight">
+            Votre histoire,
+            <br />
+            <span className="italic">préservée.</span>
           </h2>
-          <p className="text-zinc-500 text-sm leading-relaxed max-w-xs">
-            Explorez, construisez et partagez votre arbre généalogique avec les personnes qui comptent.
+          <p className="mt-4 text-sm leading-relaxed text-paper/50">
+            Reprenez le fil de votre arbre, là où vous l&apos;avez laissé.
           </p>
         </div>
-      </div>
 
-      {/* ── Colonne droite — formulaire ──────────────── */}
-      <div className="flex-1 flex items-center justify-center px-6 py-16">
-        <div className="w-full max-w-sm" style={{ animation: "fade-in-scale 0.4s ease-out both" }}>
+        <p className="relative z-10 font-serif text-sm italic text-paper/40">
+          « Dis-moi qui tu es, je te dirai d&apos;où tu viens. »
+        </p>
+      </aside>
 
-          {/* Logo mobile */}
-          <div className="lg:hidden flex items-center gap-2 mb-10">
-            <img src="/favicon.ico" alt="Gate" className="h-8 w-8 rounded-lg object-contain" />
-            <span className="font-black font-heading text-lg">Gate</span>
+      {/* ── Colonne droite — formulaire ──────────────────── */}
+      <div className="flex flex-1 items-center justify-center px-4 py-16 sm:px-6">
+        <div className="w-full max-w-sm" style={{ animation: "fade-in-scale 0.5s both" }}>
+
+          <div className="mb-10 lg:hidden">
+            <Logo size={26} />
           </div>
 
-          <h1 className="text-2xl font-black font-heading mb-1 tracking-tight">Connexion</h1>
-          <p className="text-sm text-zinc-400 mb-8">Content de vous revoir.</p>
+          <span className="section-no">№ · Connexion</span>
+          <h1 className="mt-2 font-serif text-3xl font-semibold tracking-tight">
+            Content de vous revoir.
+          </h1>
 
-          {/* Mode switch */}
-          <div className="flex gap-1 p-1 bg-zinc-100 rounded-full mb-6">
+          {/* Sélecteur de mode */}
+          <div className="mt-8 mb-6 flex gap-1 rounded-full border border-ink-line p-1">
             {(["credentials", "magic"] as const).map((m) => (
               <button
                 key={m}
+                type="button"
                 onClick={() => setMode(m)}
-                className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-semibold rounded-full transition-all duration-200 ${
+                aria-pressed={mode === m}
+                className={`flex flex-1 items-center justify-center gap-1.5 rounded-full py-2 text-xs font-medium transition-all duration-200 ${
                   mode === m
-                    ? "bg-white text-zinc-900 shadow-sm"
-                    : "text-zinc-500 hover:text-zinc-700"
+                    ? "bg-ink text-paper"
+                    : "text-ink-faint hover:text-ink"
                 }`}
               >
-                {m === "magic" && <Sparkles className="h-3 w-3" />}
+                {m === "magic" && <Sparkles className="h-3 w-3" strokeWidth={1.75} />}
                 {m === "credentials" ? "Mot de passe" : "Lien magique"}
               </button>
             ))}
           </div>
 
           {magicSent ? (
-            <div className="text-center py-10">
-              <div className="w-14 h-14 rounded-full bg-zinc-100 flex items-center justify-center mx-auto mb-4">
-                <Mail className="h-6 w-6 text-zinc-600" />
-              </div>
-              <p className="font-semibold font-heading mb-1">Email envoyé</p>
-              <p className="text-sm text-zinc-400">Vérifiez votre boîte mail et cliquez sur le lien.</p>
+            <div className="py-10 text-center" role="status">
+              <span className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-seal-tint">
+                <Mail className="h-6 w-6 text-seal" strokeWidth={1.75} />
+              </span>
+              <p className="font-serif text-lg font-semibold">Email envoyé</p>
+              <p className="mt-1 text-sm text-ink-soft">
+                Vérifiez votre boîte mail et cliquez sur le lien.
+              </p>
             </div>
           ) : mode === "credentials" ? (
             <form onSubmit={handleCredentialsLogin} className="space-y-4">
-              <div>
-                <label className="text-xs font-semibold text-zinc-500 uppercase tracking-wide mb-1.5 block">
-                  Email
-                </label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="votre@email.com"
-                    required
-                    className="w-full h-11 pl-9 pr-4 rounded-lg border border-zinc-200 bg-white text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-zinc-900 transition-colors"
-                  />
-                </div>
-              </div>
-              <div>
-                <label className="text-xs font-semibold text-zinc-500 uppercase tracking-wide mb-1.5 block">
-                  Mot de passe
-                </label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
-                  <input
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="••••••••"
-                    required
-                    className="w-full h-11 pl-9 pr-4 rounded-lg border border-zinc-200 bg-white text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-zinc-900 transition-colors"
-                  />
-                </div>
-              </div>
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full h-11 bg-zinc-900 text-white text-sm font-semibold rounded-full flex items-center justify-center gap-2 hover:bg-zinc-700 active:scale-[0.98] transition-all duration-200 disabled:opacity-40"
-              >
-                {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : (
-                  <>Se connecter <ArrowRight className="h-4 w-4" /></>
-                )}
-              </button>
+              <Field label="Email" htmlFor="email">
+                <Mail className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-faint" strokeWidth={1.75} />
+                <input
+                  id="email"
+                  type="email"
+                  autoComplete="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="votre@email.com"
+                  required
+                  className="input-archive pl-9 pr-4"
+                />
+              </Field>
+
+              <Field label="Mot de passe" htmlFor="password">
+                <Lock className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-faint" strokeWidth={1.75} />
+                <input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  autoComplete="current-password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  required
+                  className="input-archive pl-9 pr-10"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((v) => !v)}
+                  aria-label={showPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-ink-faint hover:text-ink"
+                >
+                  {showPassword ? <EyeOff className="h-4 w-4" strokeWidth={1.75} /> : <Eye className="h-4 w-4" strokeWidth={1.75} />}
+                </button>
+              </Field>
+
+              <SubmitButton loading={loading}>
+                Se connecter <ArrowRight className="h-4 w-4" />
+              </SubmitButton>
             </form>
           ) : (
             <form onSubmit={handleMagicLink} className="space-y-4">
-              <div>
-                <label className="text-xs font-semibold text-zinc-500 uppercase tracking-wide mb-1.5 block">
-                  Email
-                </label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="votre@email.com"
-                    required
-                    className="w-full h-11 pl-9 pr-4 rounded-lg border border-zinc-200 bg-white text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-zinc-900 transition-colors"
-                  />
-                </div>
-              </div>
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full h-11 bg-zinc-900 text-white text-sm font-semibold rounded-full flex items-center justify-center gap-2 hover:bg-zinc-700 active:scale-[0.98] transition-all duration-200 disabled:opacity-40"
-              >
-                {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : (
-                  <><Sparkles className="h-4 w-4" /> Recevoir le lien</>
-                )}
-              </button>
+              <Field label="Email" htmlFor="magic-email">
+                <Mail className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-faint" strokeWidth={1.75} />
+                <input
+                  id="magic-email"
+                  type="email"
+                  autoComplete="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="votre@email.com"
+                  required
+                  className="input-archive pl-9 pr-4"
+                />
+              </Field>
+              <SubmitButton loading={loading}>
+                <Sparkles className="h-4 w-4" /> Recevoir le lien
+              </SubmitButton>
             </form>
           )}
 
-          <p className="text-center text-xs text-zinc-400 mt-6">
+          <p className="mt-6 text-center text-xs text-ink-faint">
             Pas encore de compte ?{" "}
-            <Link href="/register" className="text-zinc-900 font-semibold hover:underline">
-              S'inscrire
+            <Link href="/register" className="link-underline font-medium text-ink">
+              S&apos;inscrire
             </Link>
           </p>
         </div>
       </div>
+
+      <FieldStyles />
     </div>
+  );
+}
+
+/* ── sous-composants locaux ───────────────────────────── */
+
+function Field({
+  label,
+  htmlFor,
+  children,
+}: {
+  label: string;
+  htmlFor: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div>
+      <label htmlFor={htmlFor} className="mb-1.5 block meta-label">
+        {label}
+      </label>
+      <div className="relative">{children}</div>
+    </div>
+  );
+}
+
+function SubmitButton({
+  loading,
+  children,
+}: {
+  loading: boolean;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      type="submit"
+      disabled={loading}
+      className="flex h-11 w-full items-center justify-center gap-2 rounded-full bg-ink text-sm font-medium text-paper transition-all hover:bg-ink-soft active:scale-[0.98] disabled:opacity-40"
+    >
+      {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : children}
+    </button>
+  );
+}
+
+/** Style partagé des inputs auth (évite la répétition de classes) */
+function FieldStyles() {
+  return (
+    <style>{`
+      .input-archive {
+        width: 100%;
+        height: 2.75rem;
+        border-radius: 9999px;
+        border: 1px solid hsl(var(--input));
+        background: hsl(var(--card));
+        font-size: 0.875rem;
+        color: hsl(var(--foreground));
+        transition: border-color .15s, box-shadow .15s;
+      }
+      .input-archive::placeholder { color: #8A8378; }
+      .input-archive:focus {
+        outline: none;
+        border-color: #7A2E2E;
+        box-shadow: 0 0 0 3px rgba(122,46,46,0.12);
+      }
+    `}</style>
   );
 }

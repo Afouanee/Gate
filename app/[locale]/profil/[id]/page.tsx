@@ -63,25 +63,29 @@ export default async function ProfilPage({ params }: { params: { id: string } })
     ...person.relationsAsTarget.filter((r) => r.type === "CUSTOM"),
   ];
 
-  const genderAvatar: Record<string, string> = {
-    MALE:    "border-blue-200 bg-blue-50 text-blue-700",
-    FEMALE:  "border-pink-200 bg-pink-50 text-pink-700",
-    OTHER:   "border-purple-200 bg-purple-50 text-purple-700",
-    UNKNOWN: "border-zinc-200 bg-zinc-50 text-zinc-500",
+  const genderInk: Record<string, string> = {
+    MALE:    "#3F5B72",
+    FEMALE:  "#8A4A52",
+    OTHER:   "#5E5070",
+    UNKNOWN: "#8A8378",
   };
 
   function PersonCard({ p, relation }: { p: any; relation?: string }) {
+    const ink = genderInk[p.gender] || genderInk.UNKNOWN;
     return (
       <Link href={`/profil/${p.id}`}>
-        <div className="flex items-center gap-3 p-3 rounded-xl border border-zinc-100 hover:border-zinc-300 hover:bg-zinc-50 transition-all group">
-          <div className={`h-9 w-9 rounded-full border-2 flex items-center justify-center text-xs font-bold font-heading shrink-0 ${genderAvatar[p.gender] || genderAvatar.UNKNOWN}`}>
+        <div className="flex items-center gap-3 p-3 rounded-[var(--radius)] border border-ink-line hover:border-ink-soft/40 hover:bg-paper-warm transition-all duration-200 group">
+          <div
+            className="h-9 w-9 rounded-full border bg-paper-warm flex items-center justify-center text-xs font-serif font-semibold shrink-0"
+            style={{ borderColor: ink, color: ink }}
+          >
             {(p.firstName?.[0] || "") + (p.lastName?.[0] || "")}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-semibold truncate text-zinc-900">{p.firstName} {p.lastName}</p>
-            {relation && <p className="text-xs text-zinc-400">{relation}</p>}
+            <p className="text-sm font-semibold truncate text-ink">{p.firstName} {p.lastName}</p>
+            {relation && <p className="text-xs text-ink-faint">{relation}</p>}
           </div>
-          <ExternalLink className="h-3.5 w-3.5 text-zinc-300 opacity-0 group-hover:opacity-100 transition-opacity" />
+          <ExternalLink className="h-3.5 w-3.5 text-ink-faint opacity-0 group-hover:opacity-100 transition-opacity" strokeWidth={1.75} />
         </div>
       </Link>
     );
@@ -89,23 +93,25 @@ export default async function ProfilPage({ params }: { params: { id: string } })
 
   function SectionCard({ icon: Icon, title, children }: { icon: any; title: string; children: React.ReactNode }) {
     return (
-      <div className="border border-zinc-100 rounded-2xl overflow-hidden">
-        <div className="px-5 py-3.5 border-b border-zinc-100 bg-zinc-50 flex items-center gap-2">
-          <Icon className="h-3.5 w-3.5 text-zinc-400" />
-          <h2 className="text-xs font-bold uppercase tracking-[0.12em] text-zinc-400">{title}</h2>
+      <div className="bg-card border border-ink-line rounded-[var(--radius)] overflow-hidden">
+        <div className="px-5 py-3.5 border-b border-ink-line bg-paper-warm flex items-center gap-2">
+          <Icon className="h-3.5 w-3.5 text-ink-faint" strokeWidth={1.75} />
+          <h2 className="meta-label">{title}</h2>
         </div>
         <div className="p-5">{children}</div>
       </div>
     );
   }
 
+  const personInk = genderInk[person.gender] || genderInk.UNKNOWN;
+
   return (
-    <div className="min-h-[calc(100vh-4rem)] bg-white py-10 px-6">
+    <div className="min-h-[calc(100vh-4rem)] bg-paper py-10 px-4 sm:px-6">
       <div className="container mx-auto max-w-4xl">
 
         {/* Back */}
-        <Link href="/arbre" className="inline-flex items-center gap-2 text-sm text-zinc-400 hover:text-zinc-900 mb-8 transition-colors">
-          <ArrowLeft className="h-4 w-4" />
+        <Link href="/arbre" className="inline-flex items-center gap-2 text-sm text-ink-soft hover:text-ink mb-8 transition-colors">
+          <ArrowLeft className="h-4 w-4" strokeWidth={1.75} />
           Retour à l'arbre
         </Link>
 
@@ -113,7 +119,7 @@ export default async function ProfilPage({ params }: { params: { id: string } })
 
           {/* Left — identity card */}
           <div className="space-y-4">
-            <div className="border border-zinc-100 rounded-2xl overflow-hidden">
+            <div className="bg-card border border-ink-line rounded-[var(--radius)] overflow-hidden shadow-paper">
               <div className="p-6">
 
                 {/* Avatar */}
@@ -122,11 +128,14 @@ export default async function ProfilPage({ params }: { params: { id: string } })
                     <img
                       src={person.photoUrl}
                       alt={`${person.firstName} ${person.lastName}`}
-                      className="h-24 w-24 rounded-full object-cover border-2 border-zinc-200 shadow-sm"
+                      className="h-24 w-24 rounded-full object-cover border border-ink-line shadow-paper"
                     />
                   ) : (
-                    <div className={`h-24 w-24 rounded-full border-2 flex items-center justify-center ${genderAvatar[person.gender] || genderAvatar.UNKNOWN}`}>
-                      <span className="text-2xl font-black font-heading">
+                    <div
+                      className="h-24 w-24 rounded-full border bg-paper-warm flex items-center justify-center"
+                      style={{ borderColor: personInk, color: personInk }}
+                    >
+                      <span className="text-2xl font-serif font-semibold">
                         {person.firstName[0]}{person.lastName[0]}
                       </span>
                     </div>
@@ -135,20 +144,23 @@ export default async function ProfilPage({ params }: { params: { id: string } })
 
                 {/* Name */}
                 <div className="text-center mb-5">
-                  <h1 className="text-2xl font-black font-heading leading-tight tracking-tight">{person.firstName}</h1>
-                  <h2 className="text-xl font-black font-heading uppercase tracking-wider text-zinc-500">{person.lastName}</h2>
+                  <h1 className="font-serif text-2xl font-semibold leading-tight tracking-tight text-ink">{person.firstName}</h1>
+                  <h2 className="font-serif text-xl font-semibold uppercase tracking-wider text-ink-soft">{person.lastName}</h2>
                   {person.nickname && (
-                    <p className="text-sm text-zinc-400 italic mt-1">« {person.nickname} »</p>
+                    <p className="text-sm text-ink-faint italic mt-1">« {person.nickname} »</p>
                   )}
                   <div className="flex items-center justify-center gap-2 mt-3 flex-wrap">
                     {person.gender !== "UNKNOWN" && (
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${genderAvatar[person.gender]}`}>
+                      <span
+                        className="inline-flex items-center px-2.5 py-0.5 rounded-full font-mono text-[10px] uppercase tracking-[0.14em] border bg-paper-warm"
+                        style={{ borderColor: personInk, color: personInk }}
+                      >
                         {person.gender === "MALE" ? "Homme" : person.gender === "FEMALE" ? "Femme" : "Autre"}
                       </span>
                     )}
                     {!isPremium && (
-                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold border border-zinc-200 text-zinc-400">
-                        <EyeOff className="h-2.5 w-2.5" />
+                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full font-mono text-[10px] uppercase tracking-[0.14em] bg-paper-deep text-ink-soft">
+                        <EyeOff className="h-2.5 w-2.5" strokeWidth={1.75} />
                         Données partielles
                       </span>
                     )}
@@ -157,8 +169,8 @@ export default async function ProfilPage({ params }: { params: { id: string } })
 
                 {/* Linked user */}
                 {person.user && (
-                  <div className="text-center text-xs text-zinc-400 border-t border-zinc-100 pt-4 mb-4">
-                    <User className="h-3 w-3 inline mr-1" />
+                  <div className="text-center text-xs text-ink-faint border-t border-ink-line pt-4 mb-4">
+                    <User className="h-3 w-3 inline mr-1" strokeWidth={1.75} />
                     Rattaché à un utilisateur
                   </div>
                 )}
@@ -192,17 +204,17 @@ export default async function ProfilPage({ params }: { params: { id: string } })
 
             {/* Premium upgrade prompt */}
             {!isPremium && (
-              <div className="border border-zinc-200 rounded-2xl p-5">
+              <div className="bg-card border border-ink-line rounded-[var(--radius)] p-5 shadow-paper">
                 <div className="flex items-center gap-2 mb-2">
-                  <Crown className="h-4 w-4 text-zinc-500" />
-                  <span className="text-sm font-semibold text-zinc-900">Données masquées</span>
+                  <Crown className="h-4 w-4 text-seal" strokeWidth={1.75} />
+                  <span className="text-sm font-semibold text-ink">Données masquées</span>
                 </div>
-                <p className="text-xs text-zinc-400 mb-4">
+                <p className="text-xs text-ink-soft mb-4">
                   Passez à Premium pour accéder aux dates, photos et descriptions.
                 </p>
                 <Link href="/pricing">
-                  <button className="w-full h-9 bg-zinc-900 text-white text-sm font-semibold rounded-full flex items-center justify-center gap-2 hover:bg-zinc-700 transition-colors">
-                    <Crown className="h-3.5 w-3.5" />
+                  <button className="w-full h-9 bg-seal text-paper text-sm font-semibold rounded-full flex items-center justify-center gap-2 hover:bg-seal-bright active:scale-[0.98] transition-all duration-200">
+                    <Crown className="h-3.5 w-3.5" strokeWidth={1.75} />
                     Passer à Premium
                   </button>
                 </Link>
@@ -217,18 +229,18 @@ export default async function ProfilPage({ params }: { params: { id: string } })
             <SectionCard icon={Calendar} title="Informations">
               <dl className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div>
-                  <dt className="text-xs font-bold text-zinc-400 uppercase tracking-wide mb-1 flex items-center gap-1">
-                    <Calendar className="h-3 w-3" /> Naissance
+                  <dt className="meta-label mb-1 flex items-center gap-1">
+                    <Calendar className="h-3 w-3" strokeWidth={1.75} /> Naissance
                   </dt>
-                  <dd className="text-sm text-zinc-900">
+                  <dd className="text-sm text-ink">
                     {showBirthDate && person.birthDate ? (
-                      <span>
+                      <span className="tabular">
                         {formatDate(person.birthDate)}
-                        {age !== null && <span className="text-zinc-400 ml-1">({age} ans)</span>}
+                        {age !== null && <span className="text-ink-faint ml-1">({age} ans)</span>}
                       </span>
                     ) : (
-                      <span className="flex items-center gap-1 text-zinc-300 text-xs">
-                        <EyeOff className="h-3 w-3" /> Information masquée
+                      <span className="flex items-center gap-1 text-ink-faint text-xs">
+                        <EyeOff className="h-3 w-3" strokeWidth={1.75} /> Information masquée
                       </span>
                     )}
                   </dd>
@@ -236,13 +248,13 @@ export default async function ProfilPage({ params }: { params: { id: string } })
 
                 {!person.isAlive && (
                   <div>
-                    <dt className="text-xs font-bold text-zinc-400 uppercase tracking-wide mb-1 flex items-center gap-1">
-                      <Calendar className="h-3 w-3" /> Décès
+                    <dt className="meta-label mb-1 flex items-center gap-1">
+                      <Calendar className="h-3 w-3" strokeWidth={1.75} /> Décès
                     </dt>
-                    <dd className="text-sm text-zinc-900">
-                      {showDeathDate && person.deathDate ? formatDate(person.deathDate) : (
-                        <span className="flex items-center gap-1 text-zinc-300 text-xs">
-                          <EyeOff className="h-3 w-3" /> Information masquée
+                    <dd className="text-sm text-ink">
+                      {showDeathDate && person.deathDate ? <span className="tabular">{formatDate(person.deathDate)}</span> : (
+                        <span className="flex items-center gap-1 text-ink-faint text-xs">
+                          <EyeOff className="h-3 w-3" strokeWidth={1.75} /> Information masquée
                         </span>
                       )}
                     </dd>
@@ -250,13 +262,13 @@ export default async function ProfilPage({ params }: { params: { id: string } })
                 )}
 
                 <div>
-                  <dt className="text-xs font-bold text-zinc-400 uppercase tracking-wide mb-1 flex items-center gap-1">
-                    <MapPin className="h-3 w-3" /> Lieu de naissance
+                  <dt className="meta-label mb-1 flex items-center gap-1">
+                    <MapPin className="h-3 w-3" strokeWidth={1.75} /> Lieu de naissance
                   </dt>
-                  <dd className="text-sm text-zinc-900">
+                  <dd className="text-sm text-ink">
                     {isPremium && person.birthPlace ? person.birthPlace : (
-                      <span className="flex items-center gap-1 text-zinc-300 text-xs">
-                        <EyeOff className="h-3 w-3" /> Information masquée
+                      <span className="flex items-center gap-1 text-ink-faint text-xs">
+                        <EyeOff className="h-3 w-3" strokeWidth={1.75} /> Information masquée
                       </span>
                     )}
                   </dd>
@@ -264,13 +276,13 @@ export default async function ProfilPage({ params }: { params: { id: string } })
 
                 {!person.isAlive && (
                   <div>
-                    <dt className="text-xs font-bold text-zinc-400 uppercase tracking-wide mb-1 flex items-center gap-1">
-                      <MapPin className="h-3 w-3" /> Lieu de décès
+                    <dt className="meta-label mb-1 flex items-center gap-1">
+                      <MapPin className="h-3 w-3" strokeWidth={1.75} /> Lieu de décès
                     </dt>
-                    <dd className="text-sm text-zinc-900">
+                    <dd className="text-sm text-ink">
                       {isPremium && person.deathPlace ? person.deathPlace : (
-                        <span className="flex items-center gap-1 text-zinc-300 text-xs">
-                          <EyeOff className="h-3 w-3" /> Information masquée
+                        <span className="flex items-center gap-1 text-ink-faint text-xs">
+                          <EyeOff className="h-3 w-3" strokeWidth={1.75} /> Information masquée
                         </span>
                       )}
                     </dd>
@@ -282,21 +294,21 @@ export default async function ProfilPage({ params }: { params: { id: string } })
             {/* Profession */}
             {isPremium && person.profession && (
               <SectionCard icon={Briefcase} title="Profession">
-                <p className="text-sm text-zinc-600">{person.profession}</p>
+                <p className="text-sm text-ink-soft">{person.profession}</p>
               </SectionCard>
             )}
 
             {/* Ville de résidence */}
             {isPremium && person.currentCity && (
               <SectionCard icon={MapPin} title="Habite à">
-                <p className="text-sm text-zinc-600">{person.currentCity}</p>
+                <p className="text-sm text-ink-soft">{person.currentCity}</p>
               </SectionCard>
             )}
 
             {/* History */}
             {isPremium && person.description && (
               <SectionCard icon={User} title="Histoire">
-                <p className="text-sm text-zinc-600 leading-relaxed whitespace-pre-wrap">{person.description}</p>
+                <p className="text-sm text-ink-soft leading-relaxed whitespace-pre-wrap">{person.description}</p>
               </SectionCard>
             )}
 

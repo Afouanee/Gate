@@ -16,7 +16,7 @@ const sections = [
     id: "rgpd",
     icon: Eye,
     num: "02",
-    title: "Protection des données — RGPD",
+    title: "Protection des données · RGPD",
     content: [
       "Conformément au RGPD, Gate s'engage à traiter vos données personnelles de manière transparente et sécurisée.",
     ],
@@ -49,39 +49,41 @@ const sections = [
     content: [],
     legal: {
       Éditeur: "Afouanee.dev",
-      Hébergement: "Vercel Inc. — San Francisco, CA / Supabase",
+      Hébergement: "Vercel Inc. (San Francisco, CA) / Supabase",
       Contact: "contact@gate.afouanee.dev",
-      Paiements: "Stripe Inc. — San Francisco, CA",
+      Paiements: "Stripe Inc. (San Francisco, CA)",
     },
   },
 ];
 
 export default function ChartePage() {
   return (
-    <div className="min-h-[calc(100svh-4rem)] bg-white">
-      <div className="container mx-auto max-w-3xl px-6 py-20">
+    <div className="min-h-[calc(100svh-4rem)] bg-paper">
+      <div className="container mx-auto max-w-3xl px-4 py-20 sm:px-6">
 
         {/* Header */}
         <div className="mb-16" style={{ animation: "fade-in 0.5s ease-out both" }}>
-          <p className="text-xs font-bold uppercase tracking-[0.2em] text-zinc-400 mb-4">Légal</p>
-          <h1 className="text-[clamp(2rem,5vw,3.5rem)] font-black font-heading tracking-tight leading-tight mb-4">
+          <span className="section-no mb-4 block">№ · Légal</span>
+          <h1 className="font-serif text-3xl md:text-4xl font-semibold tracking-tight leading-tight mb-4">
             Charte d'utilisation
           </h1>
-          <p className="text-sm text-zinc-400">
+          <p className="meta-label">
             Dernière mise à jour :{" "}
-            {new Date().toLocaleDateString("fr-FR", { year: "numeric", month: "long", day: "numeric" })}
+            <span className="tabular">
+              {new Date().toLocaleDateString("fr-FR", { year: "numeric", month: "long", day: "numeric" })}
+            </span>
           </p>
         </div>
 
         {/* Nav rapide */}
-        <div className="flex flex-wrap gap-2 mb-16 pb-8 border-b border-zinc-100">
+        <div className="flex flex-wrap gap-2 mb-16 pb-8 border-b border-ink-line">
           {sections.map((s) => (
             <a
               key={s.id}
               href={`#${s.id}`}
-              className="px-3 py-1.5 text-xs font-semibold border border-zinc-200 rounded-full text-zinc-500 hover:border-zinc-900 hover:text-zinc-900 transition-all duration-150"
+              className="px-3 py-1.5 text-xs font-medium border border-ink-line rounded-full text-ink-soft hover:border-ink hover:text-ink transition-all duration-200"
             >
-              {s.num} {s.title}
+              <span className="tabular text-seal">{s.num}</span> {s.title}
             </a>
           ))}
         </div>
@@ -96,27 +98,27 @@ export default function ChartePage() {
               style={{ animation: `fade-in 0.5s ${i * 0.08}s ease-out both` }}
             >
               <div className="flex items-start gap-5 mb-6">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-zinc-100">
-                  <s.icon className="h-4 w-4 text-zinc-600" />
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-paper-deep">
+                  <s.icon className="h-4 w-4 text-ink-soft" strokeWidth={1.75} />
                 </div>
                 <div>
-                  <span className="text-[10px] font-black uppercase tracking-widest text-zinc-300 font-heading">{s.num}</span>
-                  <h2 className="text-xl font-black font-heading tracking-tight text-zinc-900">{s.title}</h2>
+                  <span className="section-no tabular block">№ {s.num}</span>
+                  <h2 className="font-serif text-xl font-semibold tracking-tight text-ink">{s.title}</h2>
                 </div>
               </div>
 
-              <div className="pl-[3.75rem] space-y-4">
+              <div className="pl-0 sm:pl-[3.75rem] space-y-4">
                 {s.content.map((p, j) => (
-                  <p key={j} className="text-sm text-zinc-500 leading-relaxed">{p}</p>
+                  <p key={j} className="text-sm text-ink-soft leading-relaxed">{p}</p>
                 ))}
 
                 {s.lists?.map((list) => (
                   <div key={list.title} className="pt-2">
-                    <p className="text-xs font-bold uppercase tracking-wide text-zinc-400 mb-3">{list.title}</p>
+                    <p className="meta-label mb-3">{list.title}</p>
                     <ul className="space-y-2">
                       {list.items.map((item) => (
-                        <li key={item} className="flex items-start gap-2.5 text-sm text-zinc-500">
-                          <span className="w-1 h-1 rounded-full bg-zinc-300 mt-2 shrink-0" />
+                        <li key={item} className="flex items-start gap-2.5 text-sm text-ink-soft">
+                          <span className="w-1 h-1 rounded-full bg-seal mt-2 shrink-0" />
                           {item}
                         </li>
                       ))}
@@ -127,9 +129,9 @@ export default function ChartePage() {
                 {s.legal && (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
                     {Object.entries(s.legal).map(([k, v]) => (
-                      <div key={k} className="border border-zinc-100 rounded-xl p-4">
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1">{k}</p>
-                        <p className="text-sm text-zinc-700">{v}</p>
+                      <div key={k} className="bg-card border border-ink-line rounded-[var(--radius)] p-4">
+                        <p className="meta-label mb-1">{k}</p>
+                        <p className="text-sm text-ink">{v}</p>
                       </div>
                     ))}
                   </div>

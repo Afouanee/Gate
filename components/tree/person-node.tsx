@@ -19,95 +19,119 @@ interface PersonNodeData {
   highlighted?: boolean;
 }
 
-const genderBorder: Record<string, string> = {
-  MALE:    "border-blue-300 bg-blue-50",
-  FEMALE:  "border-pink-300 bg-pink-50",
-  OTHER:   "border-purple-300 bg-purple-50",
-  UNKNOWN: "border-zinc-200 bg-white",
+/**
+ * Marque de genre par un FILET coloré sobre (pas de fond saturé) — cohérent DA.
+ * Teintes désaturées, chaudes, lisibles sur papier.
+ */
+const genderAccent: Record<string, string> = {
+  MALE:    "#3F5B72", // ardoise bleutée sourde
+  FEMALE:  "#8A4A52", // vieux rose sourd
+  OTHER:   "#5E5070", // prune sourde
+  UNKNOWN: "#8A8378", // encre estompée
 };
 
-const genderText: Record<string, string> = {
-  MALE:    "text-blue-700",
-  FEMALE:  "text-pink-700",
-  OTHER:   "text-purple-700",
-  UNKNOWN: "text-zinc-500",
+const genderLabel: Record<string, string> = {
+  MALE: "♂",
+  FEMALE: "♀",
+  OTHER: "⚥",
+  UNKNOWN: "·",
 };
 
 function PersonNodeComponent({ data, selected }: NodeProps<PersonNodeData>) {
   const birthYear = data.birthDate ? new Date(data.birthDate).getFullYear() : null;
   const deathYear = data.deathDate ? new Date(data.deathDate).getFullYear() : null;
+  const accent = genderAccent[data.gender] || genderAccent.UNKNOWN;
 
   return (
     <div
       className={cn(
-        "relative w-44 rounded-2xl bg-white cursor-pointer transition-all duration-200",
-        "border-2 shadow-[0_2px_12px_rgba(0,0,0,0.07)]",
-        genderBorder[data.gender] || genderBorder.UNKNOWN,
-        selected         && "ring-2 ring-offset-2 ring-zinc-800 shadow-[0_4px_20px_rgba(0,0,0,0.13)]",
-        data.highlighted && "ring-2 ring-offset-1 ring-amber-400 scale-105",
-        data.isCurrentUser && "border-zinc-800",
-        "hover:shadow-[0_4px_20px_rgba(0,0,0,0.11)] hover:scale-[1.02]"
+        "group relative w-44 overflow-hidden rounded-[var(--radius)] bg-card cursor-pointer",
+        "border border-ink-line shadow-paper transition-all duration-200",
+        "hover:-translate-y-0.5 hover:shadow-paper-md hover:border-ink/40",
+        selected && "ring-2 ring-seal ring-offset-2 ring-offset-paper-warm shadow-paper-md",
+        data.highlighted && "ring-2 ring-patina ring-offset-2 ring-offset-paper-warm",
+        data.isCurrentUser && "border-ink"
       )}
     >
-      <Handle type="target" position={Position.Top}    className="!w-2 !h-2 !border-0 !opacity-0" />
-      <Handle type="source" position={Position.Bottom} className="!w-2 !h-2 !border-0 !opacity-0" />
-      <Handle type="source" position={Position.Right}  id="right" className="!w-2 !h-2 !border-0 !opacity-0" />
-      <Handle type="target" position={Position.Left}   id="left"  className="!w-2 !h-2 !border-0 !opacity-0" />
+      {/* Filet de genre en tête de carte */}
+      <span className="absolute inset-x-0 top-0 h-0.5" style={{ background: accent }} />
 
-      <div className="px-4 pt-5 pb-4 flex flex-col items-center gap-2">
+      <Handle type="target" position={Position.Top} className="!h-2 !w-2 !border-0 !opacity-0" />
+      <Handle type="source" position={Position.Bottom} className="!h-2 !w-2 !border-0 !opacity-0" />
+      <Handle type="source" position={Position.Right} id="right" className="!h-2 !w-2 !border-0 !opacity-0" />
+      <Handle type="target" position={Position.Left} id="left" className="!h-2 !w-2 !border-0 !opacity-0" />
 
+      <div className="flex flex-col items-center gap-2 px-4 pb-4 pt-5">
         {/* Avatar */}
         <div className="relative">
           {data.photoUrl && !data.blurred ? (
             <img
               src={data.photoUrl}
               alt={`${data.firstName} ${data.lastName}`}
-              className={cn("w-16 h-16 rounded-full object-cover border-2", genderBorder[data.gender])}
+              className="h-16 w-16 rounded-full border-2 object-cover"
+              style={{ borderColor: accent }}
             />
           ) : (
-            <div className={cn(
-              "w-16 h-16 rounded-full border-2 flex items-center justify-center",
-              genderBorder[data.gender],
-              genderText[data.gender]
-            )}>
-              {data.blurred
-                ? <EyeOff className="h-5 w-5 text-zinc-300" />
-                : <span className="text-lg font-black font-heading">{getInitials(data.firstName, data.lastName)}</span>
-              }
+            <div
+              className="flex h-16 w-16 items-center justify-center rounded-full border-2 bg-paper-warm"
+              style={{ borderColor: accent, color: accent }}
+            >
+              {data.blurred ? (
+                <EyeOff className="h-5 w-5 text-ink-faint" strokeWidth={1.75} />
+              ) : (
+                <span className="font-serif text-lg font-semibold">
+                  {getInitials(data.firstName, data.lastName)}
+                </span>
+              )}
             </div>
           )}
-          {/* Badge décédé */}
+          {/* Genre */}
+          <span
+            className="absolute -bottom-1 -left-1 flex h-5 w-5 items-center justify-center rounded-full border border-ink-line bg-card text-[11px] leading-none"
+            style={{ color: accent }}
+            aria-hidden
+          >
+            {genderLabel[data.gender]}
+          </span>
+          {/* Décédé */}
           {!data.isAlive && (
-            <span className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-zinc-400 border-2 border-white flex items-center justify-center text-[8px] text-white font-black">✝</span>
+            <span className="absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full border border-ink-line bg-card text-[10px] font-semibold text-ink-faint">
+              ✝
+            </span>
           )}
         </div>
 
         {/* Nom */}
-        <div className="text-center w-full">
-          <p className={cn("text-sm font-bold font-heading leading-tight truncate",
-            data.blurred ? "blur-sm select-none" : "text-zinc-900"
-          )}>
+        <div className="w-full text-center">
+          <p
+            className={cn(
+              "truncate font-serif text-sm font-semibold leading-tight",
+              data.blurred ? "select-none blur-sm" : "text-ink"
+            )}
+          >
             {data.firstName}
           </p>
-          <p className={cn("text-[11px] font-black font-heading uppercase tracking-wider truncate",
-            data.blurred ? "blur-sm select-none" : "text-zinc-500"
-          )}>
+          <p
+            className={cn(
+              "truncate font-mono text-[10px] uppercase tracking-[0.12em]",
+              data.blurred ? "select-none blur-sm" : "text-ink-faint"
+            )}
+          >
             {data.lastName}
           </p>
         </div>
 
         {/* Années */}
         {birthYear && !data.blurred && (
-          <p className="text-[10px] text-zinc-400 tabular-nums">
-            {birthYear}{deathYear ? ` – ${deathYear}` : ""}
+          <p className="font-mono text-[10px] text-ink-faint tabular">
+            {birthYear}
+            {deathYear ? ` – ${deathYear}` : ""}
           </p>
         )}
 
         {/* Badge Moi */}
         {data.isCurrentUser && (
-          <span className="text-[9px] bg-zinc-900 text-white px-2.5 py-0.5 rounded-full font-bold tracking-wide">
-            Moi
-          </span>
+          <span className="seal-badge bg-seal text-paper">Moi</span>
         )}
       </div>
     </div>

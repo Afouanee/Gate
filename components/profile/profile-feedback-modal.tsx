@@ -80,6 +80,8 @@ export function ProfileFeedbackModal({
         setOpen(false);
         reset();
       }, 1800);
+    } catch {
+      toast({ title: "Erreur", description: "Connexion impossible, réessayez.", variant: "destructive" });
     } finally {
       setLoading(false);
     }
@@ -95,14 +97,14 @@ export function ProfileFeedbackModal({
     >
       <DialogTrigger asChild>
         {isError ? (
-          <button className="w-full h-10 border border-zinc-200 rounded-xl flex items-center justify-center gap-2 text-sm font-semibold text-zinc-600 hover:text-zinc-900 hover:border-zinc-900 transition-colors">
-            <Flag className="h-4 w-4" />
+          <button className="w-full h-10 border border-ink-line rounded-full flex items-center justify-center gap-2 text-sm font-semibold text-ink-soft hover:text-ink hover:border-ink transition-colors">
+            <Flag className="h-4 w-4" strokeWidth={1.75} />
             Signaler une erreur
           </button>
         ) : (
-          <button className="w-full rounded-2xl border border-emerald-200 bg-emerald-50/70 p-4 text-left hover:border-emerald-300 hover:bg-emerald-50 transition-colors">
-            <p className="text-sm font-semibold text-emerald-900">Contribuer a enrichir ce profil</p>
-            <p className="text-xs text-emerald-700 mt-1">Vous avez des informations complementaires sur cette personne ?</p>
+          <button className="w-full rounded-[var(--radius)] border border-seal/30 bg-seal-tint p-4 text-left hover:border-seal/50 transition-colors">
+            <p className="text-sm font-semibold text-seal">Contribuer a enrichir ce profil</p>
+            <p className="text-xs text-ink-soft mt-1">Vous avez des informations complementaires sur cette personne ?</p>
           </button>
         )}
       </DialogTrigger>
@@ -119,29 +121,30 @@ export function ProfileFeedbackModal({
 
         {sent ? (
           <div className="text-center py-10">
-            <div className="w-14 h-14 rounded-full bg-green-50 border border-green-200 flex items-center justify-center mx-auto mb-4">
-              <CheckCircle className="h-7 w-7 text-green-600" />
+            <div className="w-14 h-14 rounded-full bg-seal-tint flex items-center justify-center mx-auto mb-4">
+              <CheckCircle className="h-7 w-7 text-seal" strokeWidth={1.75} />
             </div>
-            <p className="font-semibold text-zinc-900">
+            <p className="font-semibold text-ink">
               {isError ? "Signalement envoye avec succes." : "Contribution envoyee avec succes."}
             </p>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="rounded-xl border border-zinc-100 bg-zinc-50 p-4 text-sm">
-              <p className="text-xs font-bold uppercase tracking-[0.15em] text-zinc-400 mb-2">Profil concerne</p>
-              <p className="font-semibold text-zinc-900">{personFirstName} {personLastName}</p>
+            <div className="rounded-[var(--radius)] border border-ink-line bg-paper-warm p-4 text-sm">
+              <p className="meta-label mb-2">Profil concerne</p>
+              <p className="font-semibold text-ink">{personFirstName} {personLastName}</p>
             </div>
 
             {isError && (
               <div>
-                <label className="text-xs font-bold uppercase tracking-wide text-zinc-400 mb-2 block">
+                <label htmlFor="feedback-errorType" className="meta-label mb-2 block">
                   Type d'erreur
                 </label>
                 <select
+                  id="feedback-errorType"
                   value={errorType}
                   onChange={(e) => setErrorType(e.target.value)}
-                  className="w-full h-10 px-4 rounded-lg border border-zinc-200 bg-white text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-900"
+                  className="w-full h-10 px-4 rounded-[var(--radius)] border border-ink-line bg-paper-deep text-sm text-ink focus:outline-none focus:ring-2 focus:ring-seal focus:border-seal transition-colors"
                 >
                   {ERROR_TYPES.map((type) => (
                     <option key={type} value={type}>{type}</option>
@@ -151,30 +154,33 @@ export function ProfileFeedbackModal({
             )}
 
             <div>
-              <label className="text-xs font-bold uppercase tracking-wide text-zinc-400 mb-2 block">
-                Email <span className="font-normal normal-case">(facultatif)</span>
+              <label htmlFor="feedback-email" className="meta-label mb-2 block">
+                Email <span className="font-normal normal-case tracking-normal">(facultatif)</span>
               </label>
               <input
+                id="feedback-email"
                 type="email"
+                autoComplete="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="votre@email.com"
-                className="w-full h-10 px-4 rounded-lg border border-zinc-200 bg-white text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-900"
+                className="w-full h-10 px-4 rounded-[var(--radius)] border border-ink-line bg-paper-deep text-sm text-ink placeholder:text-ink-faint focus:outline-none focus:ring-2 focus:ring-seal focus:border-seal transition-colors"
               />
             </div>
 
             <div>
-              <label className="text-xs font-bold uppercase tracking-wide text-zinc-400 mb-2 block">
+              <label htmlFor="feedback-message" className="meta-label mb-2 block">
                 Message
               </label>
               <textarea
+                id="feedback-message"
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 placeholder={isError ? "Decrivez l'erreur constatee..." : "Partagez l'information complementaire..."}
                 required
                 minLength={10}
                 rows={5}
-                className="w-full px-4 py-3 rounded-lg border border-zinc-200 bg-white text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-900 resize-none"
+                className="w-full px-4 py-3 rounded-[var(--radius)] border border-ink-line bg-paper-deep text-sm text-ink placeholder:text-ink-faint focus:outline-none focus:ring-2 focus:ring-seal focus:border-seal transition-colors resize-none"
               />
             </div>
 
@@ -182,21 +188,21 @@ export function ProfileFeedbackModal({
               <button
                 type="button"
                 onClick={() => setOpen(false)}
-                className="h-9 px-4 rounded-lg border border-zinc-200 text-sm font-semibold text-zinc-600 hover:border-zinc-900 hover:text-zinc-900 transition-colors"
+                className="h-9 px-4 rounded-full border border-ink-line text-sm font-semibold text-ink-soft hover:border-ink hover:text-ink transition-colors"
               >
                 Annuler
               </button>
               <button
                 type="submit"
                 disabled={loading || message.length < 10}
-                className="h-9 px-4 rounded-full bg-zinc-900 text-white text-sm font-semibold flex items-center gap-2 hover:bg-zinc-700 transition-colors disabled:opacity-40"
+                className="h-9 px-4 rounded-full bg-seal text-paper text-sm font-semibold flex items-center gap-2 hover:bg-seal-bright transition-colors disabled:opacity-40"
               >
                 {loading ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <Loader2 className="h-4 w-4 animate-spin" strokeWidth={1.75} />
                 ) : isError ? (
-                  <Flag className="h-4 w-4" />
+                  <Flag className="h-4 w-4" strokeWidth={1.75} />
                 ) : (
-                  <Info className="h-4 w-4" />
+                  <Info className="h-4 w-4" strokeWidth={1.75} />
                 )}
                 {isError ? "Envoyer le signalement" : "Envoyer la contribution"}
               </button>

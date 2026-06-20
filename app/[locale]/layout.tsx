@@ -25,25 +25,20 @@ export default async function LocaleLayout({
   const session = await getServerSession(authOptions);
 
   return (
-    <html lang={locale}>
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-      </head>
-      <body className="min-h-screen bg-white flex flex-col">
-        <NextIntlClientProvider messages={messages}>
-          <SessionProvider session={session}>
-            <Navbar />
-            <main className="flex-1 pt-16">
-              {children}
-            </main>
-            <Footer />
-            <Toaster />
-            <ConsentBanner />
-            <CustomCursor />
-          </SessionProvider>
-        </NextIntlClientProvider>
-      </body>
-    </html>
+    <NextIntlClientProvider messages={messages}>
+      <SessionProvider session={session}>
+        {/* Grain papier global — overlay non interactif */}
+        <div
+          aria-hidden
+          className="pointer-events-none fixed inset-0 z-[1] bg-grain opacity-[0.5] mix-blend-multiply"
+        />
+        <Navbar />
+        <main className="flex-1 pt-16">{children}</main>
+        <Footer />
+        <Toaster />
+        <ConsentBanner />
+        <CustomCursor />
+      </SessionProvider>
+    </NextIntlClientProvider>
   );
 }

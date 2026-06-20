@@ -19,15 +19,17 @@ export function LanguageSwitcher() {
   };
 
   return (
-    <div className="flex items-center gap-0.5 p-0.5 bg-zinc-100 rounded-full">
+    <div className="flex items-center gap-0.5 rounded-full border border-ink-line p-0.5">
       {["fr", "en"].map((l) => (
         <button
           key={l}
           onClick={() => switchLocale(l)}
-          className={`px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide rounded-full transition-all duration-150 ${
+          aria-label={l === "fr" ? "Français" : "English"}
+          aria-pressed={locale === l}
+          className={`rounded-full px-2.5 py-1 font-mono text-[11px] uppercase tracking-[0.1em] transition-colors duration-150 ${
             locale === l
-              ? "bg-white text-zinc-900 shadow-sm"
-              : "text-zinc-400 hover:text-zinc-700"
+              ? "bg-ink text-paper"
+              : "text-ink-faint hover:text-ink"
           }`}
         >
           {l}
