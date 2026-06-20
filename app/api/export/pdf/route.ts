@@ -3,9 +3,10 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { createAuditLog } from "@/lib/audit";
+import { isUserPremium, canSeeField } from "@/lib/visibility";
+import { ensureQuotaPeriod, FREE_EXPORT_LIMIT } from "@/lib/quota";
 import { z } from "zod";
 
-const FREE_EXPORT_LIMIT = 1;
 const MAX_NODES = 1000;
 
 const schema = z.object({
@@ -122,7 +123,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "UNAUTHORIZED" }, { status: 401 });
   }
 
-  const isPremium = session.user.role === "PREMIUM" || session.user.role === "ADMIN";
+  const isPremium = isUserPremium(session.user.role);
 
   try {
     const body = await req.json();
@@ -132,25 +133,27 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "INVALID_FIELDS" }, { status: 400 });
     }
 
-    // Vérifier la limite d'export pour les FREE
-    const user = await prisma.user.findUnique({
-      where: { id: session.user.id },
-      select: { exportCount: true },
-    });
-
-    if (!isPremium && (user?.exportCount || 0) >= FREE_EXPORT_LIMIT) {
-      return NextResponse.json(
-        { error: "EXPORT_LIMIT_REACHED", exportCount: user?.exportCount },
-        { status: 403 }
-      );
-    }
-
     const person = await prisma.person.findUnique({
       where: { id: parsed.data.personId },
     });
 
     if (!person) {
       return NextResponse.json({ error: "PERSON_NOT_FOUND" }, { status: 404 });
+    }
+
+    // Reset mensuel lazy AVANT de lire le quota (rend « 1 export / mois » vrai).
+    await ensureQuotaPeriod(session.user.id);
+
+    // Vérifier + réserver le quota d'export de façon ATOMIQUE pour les FREE
+    // (updateMany conditionnel : pas de race condition entre check et incrément).
+    if (!isPremium) {
+      const reserved = await prisma.user.updateMany({
+        where: { id: session.user.id, exportCount: { lt: FREE_EXPORT_LIMIT } },
+        data: { exportCount: { increment: 1 } },
+      });
+      if (reserved.count === 0) {
+        return NextResponse.json({ error: "EXPORT_LIMIT_REACHED" }, { status: 403 });
+      }
     }
 
     // Construire le graphe
@@ -162,22 +165,14 @@ export async function POST(req: NextRequest) {
       parsed.data.includeCustom
     );
 
-    // Sanitiser selon RGPD
+    // Sanitiser selon la visibilité (helper unifié)
     const sanitizedNodes = graph.nodes.map((n) => ({
       ...n,
-      birthDate: parsed.data.showDates && n.showBirthDate ? n.birthDate : null,
-      deathDate: parsed.data.showDates && n.showDeathDate ? n.deathDate : null,
-      photoUrl: parsed.data.showPhotos && n.showPhoto ? n.photoUrl : null,
+      birthDate: parsed.data.showDates && canSeeField(isPremium, n.showBirthDate) ? n.birthDate : null,
+      deathDate: parsed.data.showDates && canSeeField(isPremium, n.showDeathDate) ? n.deathDate : null,
+      photoUrl: parsed.data.showPhotos && canSeeField(isPremium, n.showPhoto) ? n.photoUrl : null,
       description: parsed.data.showDescriptions ? n.description : null,
     }));
-
-    // Incrémenter le compteur d'export pour les FREE
-    if (!isPremium) {
-      await prisma.user.update({
-        where: { id: session.user.id },
-        data: { exportCount: { increment: 1 } },
-      });
-    }
 
     await createAuditLog({
       userId: session.user.id,

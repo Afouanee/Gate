@@ -10,16 +10,16 @@ interface PersonPanelProps {
   onClose: () => void;
 }
 
-const genderAvatar: Record<string, string> = {
-  MALE:    "border-blue-200 bg-blue-50 text-blue-700",
-  FEMALE:  "border-pink-200 bg-pink-50 text-pink-700",
-  OTHER:   "border-purple-200 bg-purple-50 text-purple-700",
-  UNKNOWN: "border-zinc-200 bg-zinc-50 text-zinc-500",
+const genderAccent: Record<string, string> = {
+  MALE: "#3F5B72",
+  FEMALE: "#8A4A52",
+  OTHER: "#5E5070",
+  UNKNOWN: "#8A8378",
 };
 
 export function PersonPanel({ personId, onClose }: PersonPanelProps) {
   const router = useRouter();
-  const [person, setPerson]   = useState<any>(null);
+  const [person, setPerson] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -27,158 +27,197 @@ export function PersonPanel({ personId, onClose }: PersonPanelProps) {
       setLoading(true);
       try {
         const res = await fetch(`/api/persons/${personId}`);
-        if (res.ok) setPerson(await res.json());
+        if (res.ok) setPerson(await res.json().catch(() => null));
+      } catch {
+        setPerson(null);
       } finally {
         setLoading(false);
       }
     })();
   }, [personId]);
 
-  return (
-    <div className="absolute right-0 top-0 bottom-0 w-80 bg-white border-l border-zinc-100 flex flex-col shadow-2xl z-10 animate-fade-in">
+  // Fermeture au clavier (Échap)
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClose]);
 
+  const accent = person ? genderAccent[person.gender] || genderAccent.UNKNOWN : genderAccent.UNKNOWN;
+
+  return (
+    <aside
+      role="dialog"
+      aria-label="Aperçu du profil"
+      className="absolute right-0 top-0 bottom-0 z-10 flex w-80 flex-col border-l border-ink-line bg-paper shadow-paper-lg animate-slide-in-right"
+    >
       {/* Header */}
-      <div className="px-5 py-4 border-b border-zinc-100 flex items-center justify-between">
-        <h3 className="text-xs font-bold uppercase tracking-[0.15em] text-zinc-400">Apercu</h3>
+      <div className="flex items-center justify-between border-b border-ink-line px-5 py-4">
+        <span className="meta-label">Aperçu</span>
         <button
           onClick={onClose}
-          className="h-7 w-7 rounded-lg border border-zinc-200 flex items-center justify-center text-zinc-400 hover:text-zinc-900 hover:border-zinc-900 transition-colors"
+          aria-label="Fermer l'aperçu"
+          className="flex h-7 w-7 items-center justify-center rounded-[var(--radius)] border border-ink-line text-ink-faint transition-colors hover:border-ink hover:text-ink"
         >
-          <X className="h-3.5 w-3.5" />
+          <X className="h-3.5 w-3.5" strokeWidth={1.75} />
         </button>
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto p-5">
+      <div className="flex-1 overflow-y-auto p-5 fade-bottom">
         {loading ? (
           <div className="flex items-center justify-center py-12">
-            <Loader2 className="h-6 w-6 animate-spin text-zinc-300" />
+            <Loader2 className="h-6 w-6 animate-spin text-ink-faint" />
           </div>
         ) : person ? (
           <div className="space-y-5">
-
-            {/* Avatar + name */}
+            {/* Avatar + nom */}
             <div className="text-center">
               {person.photoUrl ? (
                 <img
                   src={person.photoUrl}
                   alt={`${person.firstName} ${person.lastName}`}
-                  className="h-20 w-20 rounded-full object-cover border-2 border-zinc-200 mx-auto mb-3"
+                  className="mx-auto mb-3 h-20 w-20 rounded-full border-2 object-cover"
+                  style={{ borderColor: accent }}
                 />
               ) : (
-                <div className={`h-20 w-20 rounded-full border-2 flex items-center justify-center text-xl font-black font-heading mx-auto mb-3 ${genderAvatar[person.gender] || genderAvatar.UNKNOWN}`}>
-                  {person.firstName?.[0]}{person.lastName?.[0]}
+                <div
+                  className="mx-auto mb-3 flex h-20 w-20 items-center justify-center rounded-full border-2 bg-paper-warm font-serif text-xl font-semibold"
+                  style={{ borderColor: accent, color: accent }}
+                >
+                  {person.firstName?.[0]}
+                  {person.lastName?.[0]}
                 </div>
               )}
-              <h2 className="text-lg font-black font-heading leading-tight">
-                {person.firstName} <span className="uppercase">{person.lastName}</span>
+              <h2 className="font-serif text-lg font-semibold leading-tight">
+                {person.firstName}{" "}
+                <span className="uppercase">{person.lastName}</span>
               </h2>
               {person.gender !== "UNKNOWN" && (
-                <p className="text-xs text-zinc-400 mt-0.5">
+                <p className="mt-0.5 text-xs text-ink-faint">
                   {person.gender === "MALE" ? "Homme" : person.gender === "FEMALE" ? "Femme" : "Autre"}
                 </p>
               )}
             </div>
 
-            {/* Details */}
-            <div className="space-y-2 border-t border-zinc-100 pt-4">
+            {/* Détails */}
+            <div className="space-y-2 border-t border-ink-line pt-4">
               {person.birthDate ? (
                 <div className="flex items-center gap-2 text-sm">
-                  <Calendar className="h-3.5 w-3.5 text-zinc-400 shrink-0" />
-                  <span className="text-zinc-500">Né(e)</span>
-                  <span className="font-medium text-zinc-900">{formatDate(person.birthDate)}</span>
+                  <Calendar className="h-3.5 w-3.5 shrink-0 text-ink-faint" strokeWidth={1.75} />
+                  <span className="text-ink-soft">Né(e)</span>
+                  <span className="font-medium text-ink tabular">{formatDate(person.birthDate)}</span>
                   {getAge(person.birthDate, person.deathDate) !== null && (
-                    <span className="text-zinc-400 text-xs">({getAge(person.birthDate, person.deathDate)} ans)</span>
+                    <span className="text-xs text-ink-faint">
+                      ({getAge(person.birthDate, person.deathDate)} ans)
+                    </span>
                   )}
                 </div>
               ) : (
-                <div className="flex items-center gap-2 text-xs text-zinc-400">
-                  <EyeOff className="h-3.5 w-3.5" />
+                <div className="flex items-center gap-2 text-xs text-ink-faint">
+                  <EyeOff className="h-3.5 w-3.5" strokeWidth={1.75} />
                   Date de naissance masquée
                 </div>
               )}
 
               {person.deathDate && (
                 <div className="flex items-center gap-2 text-sm">
-                  <Calendar className="h-3.5 w-3.5 text-zinc-400 shrink-0" />
-                  <span className="text-zinc-500">Décédé(e)</span>
-                  <span className="font-medium text-zinc-900">{formatDate(person.deathDate)}</span>
+                  <Calendar className="h-3.5 w-3.5 shrink-0 text-ink-faint" strokeWidth={1.75} />
+                  <span className="text-ink-soft">Décédé(e)</span>
+                  <span className="font-medium text-ink tabular">{formatDate(person.deathDate)}</span>
                 </div>
               )}
 
               {person.birthPlace && (
                 <div className="flex items-center gap-2 text-sm">
-                  <MapPin className="h-3.5 w-3.5 text-zinc-400 shrink-0" />
-                  <span className="text-zinc-700">{person.birthPlace}</span>
+                  <MapPin className="h-3.5 w-3.5 shrink-0 text-ink-faint" strokeWidth={1.75} />
+                  <span className="text-ink-soft">{person.birthPlace}</span>
                 </div>
               )}
 
               {person.description ? (
-                <div className="rounded-xl border border-zinc-100 bg-zinc-50 p-3 mt-3">
-                  <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-2">
-                    <FileText className="h-3.5 w-3.5" />
+                <div className="mt-3 rounded-[var(--radius)] border border-ink-line bg-paper-warm p-3">
+                  <div className="mb-2 flex items-center gap-2 meta-label">
+                    <FileText className="h-3.5 w-3.5" strokeWidth={1.75} />
                     Informations essentielles
                   </div>
-                  <p className="text-sm text-zinc-600 line-clamp-4 whitespace-pre-wrap">{person.description}</p>
+                  <p className="whitespace-pre-wrap text-sm text-ink-soft line-clamp-4">
+                    {person.description}
+                  </p>
                 </div>
               ) : (
-                <div className="flex items-center gap-2 text-xs text-zinc-400 mt-2">
-                  <EyeOff className="h-3.5 w-3.5" />
-                  Certaines informations peuvent etre masquees selon vos permissions.
+                <div className="mt-2 flex items-center gap-2 text-xs text-ink-faint">
+                  <EyeOff className="h-3.5 w-3.5" strokeWidth={1.75} />
+                  Certaines informations peuvent être masquées selon vos permissions.
                 </div>
               )}
             </div>
 
             {/* Relations */}
             {(person.relationsAsSource?.length > 0 || person.relationsAsTarget?.length > 0) && (
-              <div className="border-t border-zinc-100 pt-4">
-                <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-2">Relations</p>
-                <div className="space-y-1.5">
-                  {[...(person.relationsAsSource || []), ...(person.relationsAsTarget || [])].map((rel: any) => {
-                    const related = rel.sourceId === person.id ? rel.target : rel.source;
-                    if (!related) return null;
-                    return (
-                      <button
-                        key={rel.id}
-                        onClick={() => { onClose(); router.push(`/profil/${related.id}`); }}
-                        className="w-full flex items-center gap-2.5 p-2 rounded-lg hover:bg-zinc-50 transition-colors text-left"
-                      >
-                        <div className={`h-7 w-7 rounded-full border flex items-center justify-center text-xs font-bold shrink-0 ${genderAvatar[related.gender] || genderAvatar.UNKNOWN}`}>
-                          {related.firstName?.[0]}{related.lastName?.[0]}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-xs font-semibold truncate text-zinc-900">{related.firstName} {related.lastName}</p>
-                          <p className="text-[10px] text-zinc-400">
-                            {rel.type === "PARENT_CHILD"
-                              ? (rel.sourceId === person.id ? "Enfant" : "Parent")
-                              : rel.type === "SPOUSE" ? "Conjoint(e)"
-                              : rel.label || "Relation"}
-                          </p>
-                        </div>
-                      </button>
-                    );
-                  })}
+              <div className="border-t border-ink-line pt-4">
+                <p className="mb-2 meta-label">Relations</p>
+                <div className="space-y-1">
+                  {[...(person.relationsAsSource || []), ...(person.relationsAsTarget || [])].map(
+                    (rel: any) => {
+                      const related = rel.sourceId === person.id ? rel.target : rel.source;
+                      if (!related) return null;
+                      const relAccent = genderAccent[related.gender] || genderAccent.UNKNOWN;
+                      return (
+                        <button
+                          key={rel.id}
+                          onClick={() => {
+                            onClose();
+                            router.push(`/profil/${related.id}`);
+                          }}
+                          className="flex w-full items-center gap-2.5 rounded-[var(--radius)] p-2 text-left transition-colors hover:bg-paper-warm"
+                        >
+                          <div
+                            className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border text-xs font-semibold"
+                            style={{ borderColor: relAccent, color: relAccent }}
+                          >
+                            {related.firstName?.[0]}
+                            {related.lastName?.[0]}
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <p className="truncate text-xs font-medium text-ink">
+                              {related.firstName} {related.lastName}
+                            </p>
+                            <p className="font-mono text-[10px] uppercase tracking-[0.1em] text-ink-faint">
+                              {rel.type === "PARENT_CHILD"
+                                ? rel.sourceId === person.id
+                                  ? "Enfant"
+                                  : "Parent"
+                                : rel.type === "SPOUSE"
+                                ? "Conjoint(e)"
+                                : rel.label || "Relation"}
+                            </p>
+                          </div>
+                        </button>
+                      );
+                    }
+                  )}
                 </div>
               </div>
             )}
           </div>
         ) : (
-          <p className="text-zinc-400 text-sm text-center py-12">Profil introuvable</p>
+          <p className="py-12 text-center text-sm text-ink-faint">Profil introuvable</p>
         )}
       </div>
 
       {/* Footer */}
       {person && (
-        <div className="p-4 border-t border-zinc-100">
+        <div className="border-t border-ink-line p-4">
           <button
             onClick={() => router.push(`/profil/${personId}`)}
-            className="w-full h-9 bg-zinc-900 text-white text-sm font-semibold rounded-full flex items-center justify-center gap-2 hover:bg-zinc-700 transition-colors"
+            className="flex h-10 w-full items-center justify-center gap-2 rounded-full bg-ink text-sm font-medium text-paper transition-colors hover:bg-ink-soft"
           >
-            <ExternalLink className="h-3.5 w-3.5" />
-            Voir en detail
+            <ExternalLink className="h-3.5 w-3.5" strokeWidth={1.75} />
+            Voir en détail
           </button>
         </div>
       )}
-    </div>
+    </aside>
   );
 }

@@ -36,6 +36,9 @@ const intlMiddleware = createMiddleware({
   locales,
   defaultLocale,
   localePrefix: "as-needed",
+  // Français forcé par défaut : on n'auto-détecte PAS la langue du navigateur.
+  // Un visiteur arrive toujours en FR ; /en reste accessible manuellement.
+  localeDetection: false,
 });
 
 /**
@@ -62,8 +65,20 @@ const authMiddleware = withAuth(
  * Middleware principal
  * Décide quel middleware appliquer selon la route
  */
+/**
+ * Interrupteur global d'authentification.
+ * Mettre AUTH_DISABLED="true" dans .env.local pour naviguer librement
+ * (aucune route n'est protégée). À retirer pour réactiver l'auth.
+ */
+const AUTH_DISABLED = process.env.AUTH_DISABLED === "true";
+
 export default function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
+
+  // Auth désactivée → on applique uniquement l'i18n, plus aucune protection.
+  if (AUTH_DISABLED) {
+    return intlMiddleware(req);
+  }
 
   /**
    * Patterns de routes protégées

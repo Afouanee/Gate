@@ -107,8 +107,9 @@ model User {
   password          String?                // Hash bcrypt pour CredentialsProvider
   image             String?
   role              Role      @default(FREE)    // Rôle par défaut FREE, changé par Stripe webhook
-  searchCount       Int       @default(0)       // Limites FREE: 5 / PREMIUM: illimité
-  exportCount       Int       @default(0)       // Limites FREE: 1 / PREMIUM: illimité
+  searchCount       Int       @default(0)       // Quota FREE: 5 / mois (reset lazy)
+  exportCount       Int       @default(0)       // Quota FREE: 1 / mois (reset lazy)
+  quotaPeriodStart  DateTime  @default(now())   // Début de la période de quota courante (reset mensuel)
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
 
@@ -380,4 +381,23 @@ model ImportJob {
   updatedAt  DateTime @updatedAt
 
   @@map("import_jobs")
+}
+
+/// Encart « À l'honneur » : met en avant un projet d'un proche (resto, compte
+/// Insta, association, artiste…). Géré uniquement par les admins. Pas de pub
+/// commerciale externe : contenu familial curé.
+model Spotlight {
+  id          String   @id @default(cuid())
+  title       String                       // ex: "Le resto de Samir"
+  subtitle    String?                      // ex: "Cuisine indo-française à Marseille"
+  description String?  @db.Text
+  url         String?                      // lien (Insta, site…)
+  imageUrl    String?
+  personId    String?                      // lien optionnel vers une Person de l'arbre
+  active      Boolean  @default(true)
+  order       Int      @default(0)         // ordre d'affichage
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("spotlights")
 }

@@ -3,24 +3,26 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const badgeVariants = cva(
-  "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none",
+  "inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-[0.12em] transition-colors focus:outline-none",
   {
     variants: {
       variant: {
         default:
-          "border-zinc-200 bg-zinc-100 text-zinc-700",
+          "border-ink-line bg-paper-warm text-ink-soft",
         secondary:
-          "border-zinc-100 bg-zinc-50 text-zinc-600",
+          "border-ink-line/60 bg-paper text-ink-faint",
         destructive:
-          "border-red-200 bg-red-50 text-red-700",
+          "border-destructive/30 bg-seal-tint text-destructive",
         outline:
-          "border-zinc-200 text-zinc-700 bg-transparent",
+          "border-ink-line text-ink-soft bg-transparent",
         premium:
-          "border-zinc-200 bg-zinc-100 text-zinc-700",
+          "border-seal/30 bg-seal-tint text-seal",
         free:
-          "border-zinc-200 bg-white text-zinc-500",
+          "border-ink-line bg-transparent text-ink-faint",
         admin:
-          "border-zinc-900 bg-zinc-900 text-white",
+          "border-ink bg-ink text-paper",
+        patina:
+          "border-patina/30 bg-patina-tint text-patina",
       },
     },
     defaultVariants: {

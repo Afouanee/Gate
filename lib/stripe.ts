@@ -22,6 +22,45 @@ export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 export const STRIPE_PRICE_ID = process.env.STRIPE_PRICE_ID_PREMIUM!;
 
 /**
+ * Récupère le prix PREMIUM à afficher depuis Stripe (source de vérité).
+ * Évite la divergence « prix affiché ≠ prix facturé ». Tolérant aux pannes :
+ * renvoie un repli si Stripe est injoignable ou non configuré.
+ */
+export async function getPremiumPriceDisplay() {
+  const fallback = {
+    amount: 3.99,
+    currency: "eur",
+    interval: "month",
+    intervalCount: 3,
+    formatted: "3,99 €",
+    period: "/ 3 mois",
+  };
+
+  try {
+    if (!STRIPE_PRICE_ID) return fallback;
+    const price = await stripe.prices.retrieve(STRIPE_PRICE_ID);
+    const amount = (price.unit_amount ?? 0) / 100;
+    const currency = price.currency || "eur";
+    const interval = price.recurring?.interval ?? "month";
+    const intervalCount = price.recurring?.interval_count ?? 1;
+
+    const formatted = new Intl.NumberFormat("fr-FR", {
+      style: "currency",
+      currency: currency.toUpperCase(),
+    }).format(amount);
+
+    const unit =
+      interval === "year" ? "an" : interval === "week" ? "semaine" : interval === "day" ? "jour" : "mois";
+    const period = intervalCount > 1 ? `/ ${intervalCount} ${unit}` : `/ ${unit}`;
+
+    return { amount, currency, interval, intervalCount, formatted, period };
+  } catch (error) {
+    console.error("getPremiumPriceDisplay error:", error);
+    return fallback;
+  }
+}
+
+/**
  * Crée ou récupère un client Stripe pour un utilisateur Gate
  *
  * Logique:

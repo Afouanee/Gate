@@ -2,6 +2,71 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+> **Règle d'or :** ce fichier doit être tenu à jour **au fil de l'eau** (DA, conventions, décisions d'archi), pas seulement en fin de tâche. Mettre à jour la section concernée dès qu'une convention change.
+
+## Structure : front / back dans un seul monolithe Next.js
+
+Pas de séparation physique (un seul repo, un seul serveur). La frontière est **logique** :
+
+- **Frontend** : `app/[locale]/**/page.tsx` (Server + Client Components), `components/**`, `app/globals.css`, `tailwind.config.ts`, `messages/{fr,en}.json`.
+- **Backend** : `app/api/**/route.ts` (API routes), `lib/**` (`auth.ts`, `prisma.ts`, `stripe.ts`, `session.ts`, `audit.ts`), `prisma/schema.prisma`.
+- Le front appelle le back via `fetch("/api/...")`. Certaines pages serveur lisent Prisma directement (ex. `app/[locale]/page.tsx`). Tout est déployé ensemble.
+
+## Design System — « Éditorial Archive »
+
+Registre d'état civil ancien revisité. Source de vérité : `tailwind.config.ts` (tokens) + `app/globals.css` (primitives) + `components/brand/logo.tsx`.
+
+**Palette** (jamais de `zinc-*`, ni bleu/rose/violet/ambre bruts) :
+- Fonds : `paper` (#FAF7F0 crème), `paper-warm` (sections alternées), `paper-deep` (zones), `card`.
+- Texte/structure : `ink` (principal), `ink-soft` (secondaire), `ink-faint` (méta), `ink-line` (filets/bordures).
+- **Accent unique** = sceau bordeaux : `seal` / `seal-bright` (hover) / `seal-tint` (fond doux). Sert au focus, au Premium, aux actions d'engagement.
+- `patina` (or patiné) : accent secondaire rare.
+
+**Typographie** (via `next/font`, variables CSS) :
+- Titres : `font-serif` = Fraunces, en `font-semibold` (jamais `font-black`/`font-heading`).
+- Corps : `font-sans` = Inter.
+- Méta/labels/chiffres : `font-mono` = JetBrains Mono. Données chiffrées : ajouter `.tabular`.
+
+**Primitives CSS réutilisables** (dans `globals.css`) : `.meta-label`, `.section-no` (« № 01 »), `.rule-line`, `.card-paper`, `.seal-badge`, `.reveal`/`.reveal-in` (scroll-reveal via `hooks/use-reveal.ts` + `components/layout/reveal.tsx`), `.stagger`.
+
+**Formes & motion** : rayon ≈4px (`rounded-[var(--radius)]`) pour cartes/inputs, `rounded-full` pour boutons/pastilles. Boutons primaires `bg-ink text-paper`, engagement `bg-seal`. Animations 150–400ms en transform/opacity. `prefers-reduced-motion` est respecté globalement (globals.css). Le curseur custom (`components/layout/custom-cursor.tsx`) ne s'active que sur souris fine.
+
+**Accessibilité** : focus ring sceau jamais retiré, labels visibles liés (`htmlFor`/`id`), `aria-label` sur les boutons icon-only, contraste AA (ne pas utiliser `ink-faint` pour du texte important). Statuts : jamais la couleur seule, toujours icône + texte.
+
+**Rédaction (UI)** : PAS de tiret cadratin « — » ni demi-cadratin « – » dans les textes affichés à l'utilisateur (c'est un marqueur d'écriture IA). Utiliser virgule, point, deux-points ou parenthèses. Exception tolérée : les plages de dates dans les données (ex. « 1920–1998 »).
+
+**Responsive (obligatoire)** : tout doit être impeccable sur téléphone (mobile-first). Tester à 375px : pas de scroll horizontal, titres `clamp()` qui ne débordent pas, éléments décoratifs (numéro filigrane, arbre de fond, piles de fiches) masqués ou réduits en dessous de `md`, touch targets ≥44px, formulaires et tableaux qui se replient en colonne. Les colonnes auth (split-screen) passent en pleine largeur sur mobile.
+
+**Layout** : un seul `<html>`/`<body>` (dans `app/layout.tsx`). `app/[locale]/layout.tsx` n'émet QUE les providers + chrome (navbar/footer/grain), pas de `<html>`.
+
+## Export de l'arbre (PDF / HTML)
+
+`app/[locale]/export/page.tsx` génère l'arbre **vertical haut→bas** en SVG (DA archive) côté client :
+- `buildExport()` (fonction pure) construit `{ svg, html }`. Le `svg` sert à l'**aperçu inline** dans la page (`previewSvg`, regénéré quand `showDates`/`showPhotos` changent) ; le `html` est un document imprimable.
+- Téléchargement : **PDF** via `POST /api/export/render-pdf` (Puppeteer, `setContent` → `page.pdf` A3 ; repli sur HTML si échec) ou **HTML** direct. Nom de fichier propre : `Arbre-Prenom-Nom-AAAA-MM-JJ`.
+- `app/api/export/pdf/route.ts` ne génère PAS le PDF : il renvoie les données (nodes/edges sanitizés + quota). Le rendu visuel est côté client.
+
+## Scripts DB & seed
+
+- `npm run db:admin` → crée/maj un compte ADMIN (`prisma/create-admin.ts`, défaut `admin@gate.local` / `Admin1234!`, `emailVerified` requis pour login credentials). Custom : `ADMIN_EMAIL=… ADMIN_PASSWORD=… npm run db:admin`.
+- `npm run db:seed-famille` → **DESTRUCTIF** : purge toute la base puis recrée admin + une famille de démo (Maricar, Pondichéry→France, 4 générations, conjoints, fratries) via `prisma/seed-famille.ts`.
+- Quotas FREE : `lib/quota.ts` (5 recherches/mois, 1 export/mois) avec reset mensuel **lazy** (`quotaPeriodStart` sur User, `ensureQuotaPeriod()` appelé avant lecture). Reset aussi à chaque changement de rôle (webhook Stripe).
+
+## Layout de l'arbre (Reactflow)
+
+`components/tree/family-tree.tsx` → `layoutNodes()` : générations par BFS de filiation **propagées aux conjoints**, couples placés **côte à côte** (`SPOUSE_GAP`), largeur de sous-arbre réservant le conjoint, parent centré sur ses enfants. Gère plusieurs racines et conjoints sans parents. Marqueurs de genre = teintes désaturées (MALE `#3F5B72`, FEMALE `#8A4A52`, OTHER `#5E5070`, UNKNOWN `#8A8378`), jamais de fond saturé.
+
+## Pages éditoriales & features récentes
+
+- **Pages mémoire** : `app/[locale]/pondichery/page.tsx` et `app/[locale]/karaikal/page.tsx` (histoire, frise, photos d'archive). Photos dans `public/{pondichery,karaikal}/` (domaine public pour Pondichéry, CC BY/BY-SA avec attribution pour Karaikal via le champ `credit` de `ArchivePhoto`). Illustrations SVG maison dans `components/pondichery/illustrations.tsx` (kolam, carte Coromandel, ville blanche, boussole). Liens réciproques + navbar/footer.
+- **Bandeau « À l'honneur »** (`Spotlight`) : met en avant les projets des proches. Modèle `Spotlight` (Prisma), API `app/api/spotlights/**` (GET public actifs, POST/PATCH/DELETE admin), affichage home `components/home/spotlight-banner.tsx`, gestion admin `app/[locale]/admin/spotlights` + `components/admin/spotlight-admin.tsx`. PAS de pub externe : contenu familial curé.
+- **3D sobre** : `components/ui/tilt-3d.tsx` (`Tilt3D`) = inclinaison perspective au survol + reflet, désactivé tactile/reduced-motion. Appliqué aux cartes spotlight et pricing. Hero home = arbre animé `components/brand/living-tree.tsx`.
+
+## Dev : auth-off & cache
+
+- **Désactiver l'auth pour naviguer librement** : mettre `AUTH_DISABLED="true"` dans `.env.local`. Le `middleware.ts` ne protège plus aucune route et `lib/session.ts` renvoie une session admin factice (`DEV_SESSION`) → toutes les pages (`/arbre`, `/admin`, `/export`…) sont accessibles sans login. Retirer le flag pour réactiver l'auth. (La navbar client lit `useSession()` et affichera quand même « se connecter » — sans incidence sur la navigation.)
+- **Page blanche / `Cannot find module './vendor-chunks/*.js'` ou `MODULE_NOT_FOUND`** : cache `.next` corrompu (typiquement après avoir mélangé un build prod et le dev, ou changé la config webpack/fonts). Fix : `rm -rf .next` puis relancer `npm run dev`. Ce n'est pas un bug de code.
+
 ## Commands
 
 ```bash
@@ -53,7 +118,9 @@ FREE limits: 10 persons in tree, 5 searches, 1 export. The `/api/tree` endpoint 
 
 `Relation` is a directed graph edge with `sourceId → targetId` and a `RelationType` (PARENT_CHILD, SPOUSE, CUSTOM). The tree visualization (`/arbre`) uses Reactflow to render these as nodes/edges.
 
-`Person` has per-field visibility toggles (`showBirthDate`, `showPhoto`, etc.) controlled by admins. The `/api/tree` endpoint applies these: a field is only included in the response if `isPremium && showXxx`.
+`Person` has per-field visibility toggles (`showBirthDate`, `showDeathDate`, `showPhoto`, `showMarriage`, `showPersonalData`) controlled by admins.
+
+**Visibility is centralized in `lib/visibility.ts`** — single source of truth used by `/api/tree`, `/api/search`, `/api/persons/[id]` and `/api/export/pdf`. Rule (unified): a field is visible if `isUserPremium(role)` **OR** the corresponding `showXxx` flag is set (`canSeeField`). Personal data (places, description, profession, city) uses `canSeePersonalData` (Premium OR `showPersonalData`). Do NOT reintroduce per-endpoint `isPremium && showXxx` logic — it caused inconsistent leaks across pages.
 
 ### Stripe Integration
 
@@ -66,6 +133,8 @@ Subscription lifecycle events (`customer.subscription.deleted`, `customer.subscr
 All API routes are in `app/api/`. Authentication is checked manually with `getServerSession(authOptions)` — there is no middleware wrapping API routes. Zod is used for request body validation. Error strings are uppercase snake_case (`UNAUTHORIZED`, `FORBIDDEN`, `INVALID_FIELDS`).
 
 Audit logs are written via `lib/audit.ts → createAuditLog()` for all significant mutations. Errors in audit logging are silenced so they never block the primary operation.
+
+**FREE quotas (`searchCount`, `exportCount`) are reserved atomically** via a conditional `updateMany({ where: { id, count: { lt: LIMIT } } })`: if `count === 0` the limit is reached → return 403. Never split this into a separate read-then-increment (race condition). Date inputs are validated for ISO format and `birthDate <= deathDate` before persisting (`/api/persons` POST & PATCH).
 
 ### Known Bug
 

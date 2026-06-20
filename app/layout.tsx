@@ -1,23 +1,45 @@
 /**
  * Root Layout (app/layout.tsx)
  *
- * Layout racine de l'application Next.js
- * - Métadonnées (titre, description, favicon)
- * - Viewport config pour PWA
- * - Structure HTML minimale
+ * Layout racine — point unique du <html>/<body>.
+ * Charge les polices du design system « Éditorial Archive » via next/font :
+ *  - Fraunces (serif déclaré) pour les titres
+ *  - Inter (grotesque) pour le corps
+ *  - JetBrains Mono pour méta/labels/chiffres
  *
- * Note: Locale layout ([locale]/layout.tsx) enveloppe ce layout pour i18n
+ * Le locale layout ([locale]/layout.tsx) n'émet PAS de <html> (évite le double).
  */
 
 import type { Metadata, Viewport } from "next";
+import { Fraunces, Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
-/**
- * Métadonnées SEO et PWA
- */
+const fraunces = Fraunces({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-fraunces",
+  // Fraunces est une police variable : on laisse next/font charger toute la
+  // plage de graisses (ne PAS combiner `weight` et `axes`).
+});
+
+const inter = Inter({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-inter",
+  weight: ["400", "500", "600", "700"],
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-mono",
+  weight: ["400", "500", "600"],
+});
+
 export const metadata: Metadata = {
-  title: "Gate — La porte vers vos origines",
-  description: "Plateforme d'arbre généalogique avancé permettant de représenter des relations familiales complexes et croisées.",
+  title: "Gate · La porte vers vos origines",
+  description:
+    "Registre familial vivant. Tracez vos racines, reliez les générations et conservez la mémoire des vôtres.",
   manifest: "/manifest.json",
   icons: {
     icon: "/favicon.ico",
@@ -25,27 +47,26 @@ export const metadata: Metadata = {
   },
 };
 
-/**
- * Configuration viewport pour PWA et mobile
- */
 export const viewport: Viewport = {
-  themeColor: "#ffffff",
+  themeColor: "#FAF7F0",
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
 };
 
-/**
- * Root layout render
- */
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <html lang="fr">
-      <body>{children}</body>
+    <html
+      lang="fr"
+      className={`${fraunces.variable} ${inter.variable} ${jetbrainsMono.variable}`}
+      suppressHydrationWarning
+    >
+      <body className="min-h-screen bg-paper text-ink font-sans flex flex-col antialiased">
+        {children}
+      </body>
     </html>
   );
 }

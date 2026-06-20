@@ -11,6 +11,8 @@
     "db:migrate": "dotenv -e .env.local -- prisma migrate dev",
     "db:studio": "dotenv -e .env.local -- prisma studio",
     "db:seed": "dotenv -e .env.local -- tsx prisma/seed.ts",
+    "db:admin": "dotenv -e .env.local -- tsx prisma/create-admin.ts",
+    "db:seed-famille": "dotenv -e .env.local -- tsx prisma/seed-famille.ts",
     "postinstall": "prisma generate"
   },
   "dependencies": {

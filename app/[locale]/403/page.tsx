@@ -6,16 +6,17 @@ export default function ForbiddenPage() {
   const t = useTranslations("errors.403");
 
   return (
-    <div className="min-h-[calc(100svh-4rem)] bg-white flex items-center justify-center px-6">
-      <div className="text-center max-w-sm" style={{ animation: "fade-in-scale 0.4s ease-out both" }}>
-        <p className="text-[9rem] font-black font-heading leading-none text-zinc-100 select-none mb-0">
+    <div className="flex min-h-[calc(100svh-4rem)] items-center justify-center bg-paper px-6">
+      <div className="max-w-sm text-center" style={{ animation: "fade-in-scale 0.5s both" }}>
+        <span className="section-no">№ · Accès refusé</span>
+        <p className="my-2 select-none font-serif text-[6rem] font-semibold leading-none text-ink-line tabular sm:text-[8rem]">
           403
         </p>
-        <h1 className="text-2xl font-black font-heading tracking-tight mb-3 -mt-4">{t("title")}</h1>
-        <p className="text-sm text-zinc-400 mb-8 leading-relaxed">{t("subtitle")}</p>
+        <h1 className="font-serif text-2xl font-semibold tracking-tight">{t("title")}</h1>
+        <p className="mt-3 text-sm leading-relaxed text-ink-soft">{t("subtitle")}</p>
         <Link
           href="/"
-          className="group inline-flex items-center gap-2 px-6 py-3 bg-zinc-900 text-white text-sm font-semibold rounded-full hover:bg-zinc-700 transition-all duration-200"
+          className="group mt-8 inline-flex items-center gap-2 rounded-full bg-ink px-6 py-3 text-sm font-medium text-paper transition-all hover:bg-ink-soft active:scale-[0.98]"
         >
           {t("cta")}
           <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />

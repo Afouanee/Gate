@@ -25,94 +25,155 @@ import { PersonPanel } from "./person-panel";
 
 const nodeTypes = { person: PersonNode };
 
-// Algorithme de layout Reingold-Tilford simplifié :
-// chaque nœud est centré sur ses enfants, les sous-arbres ne se chevauchent pas.
+// Algorithme de layout généalogique : générations par BFS de filiation,
+// couples placés côte à côte, sous-arbres sans chevauchement, parent centré
+// sur le bloc « couple + enfants ». Gère plusieurs racines et conjoints sans parents.
 function layoutNodes(rawNodes: any[], rawEdges: any[]): { nodes: Node[]; edges: Edge[] } {
-  const NODE_W = 180;
-  const NODE_H = 110;
-  const H_GAP  = 60;   // espace horizontal entre nœuds
+  const NODE_W = 176;
+  const NODE_H = 132;
+  const H_GAP  = 28;   // espace entre fiches d'une fratrie
+  const SPOUSE_GAP = 14; // espace serré entre conjoints
   const V_GAP  = 120;  // espace vertical entre générations
+  const SLOT   = NODE_W + H_GAP;
 
-  // Construire les maps parent ↔ enfant (filiation uniquement)
+  const ids = new Set(rawNodes.map((n) => n.id));
+
+  // Maps de filiation (uniquement entre nœuds présents)
   const childMap  = new Map<string, string[]>();
   const parentMap = new Map<string, string[]>();
+  // Conjoint principal (1 par personne pour le layout)
+  const spouseOf  = new Map<string, string>();
+
   rawEdges.forEach((e) => {
-    if (e.type !== "PARENT_CHILD") return;
-    if (!childMap.has(e.sourceId))  childMap.set(e.sourceId, []);
-    if (!parentMap.has(e.targetId)) parentMap.set(e.targetId, []);
-    childMap.get(e.sourceId)!.push(e.targetId);
-    parentMap.get(e.targetId)!.push(e.sourceId);
+    if (!ids.has(e.sourceId) || !ids.has(e.targetId)) return;
+    if (e.type === "PARENT_CHILD") {
+      if (!childMap.has(e.sourceId)) childMap.set(e.sourceId, []);
+      if (!parentMap.has(e.targetId)) parentMap.set(e.targetId, []);
+      childMap.get(e.sourceId)!.push(e.targetId);
+      parentMap.get(e.targetId)!.push(e.sourceId);
+    } else if (e.type === "SPOUSE") {
+      if (!spouseOf.has(e.sourceId)) spouseOf.set(e.sourceId, e.targetId);
+      if (!spouseOf.has(e.targetId)) spouseOf.set(e.targetId, e.sourceId);
+    }
   });
 
-  // Générations via BFS depuis les racines
+  const hasParent = (id: string) => (parentMap.get(id)?.length ?? 0) > 0;
+
+  // ── Générations : BFS depuis les vraies racines (sans parent ET dont le
+  // conjoint n'a pas de parent non plus), en propageant aux conjoints. ────────
   const genMap = new Map<string, number>();
-  const roots  = rawNodes.map((n) => n.id).filter((id) => !parentMap.has(id) || parentMap.get(id)!.length === 0);
-  const bfsQ   = roots.map((id) => ({ id, gen: 0 }));
-  while (bfsQ.length > 0) {
-    const { id, gen } = bfsQ.shift()!;
+  const setGen = (id: string, g: number) => {
+    if (genMap.has(id)) return;
+    genMap.set(id, g);
+    const sp = spouseOf.get(id);
+    if (sp && !genMap.has(sp)) genMap.set(sp, g); // le conjoint partage la génération
+  };
+
+  // racines = nœuds sans parent dont aucun conjoint n'a de parent
+  const roots = rawNodes
+    .map((n) => n.id)
+    .filter((id) => !hasParent(id) && !(spouseOf.get(id) && hasParent(spouseOf.get(id)!)));
+
+  const queue: { id: string; gen: number }[] = roots.map((id) => ({ id, gen: 0 }));
+  while (queue.length) {
+    const { id, gen } = queue.shift()!;
     if (genMap.has(id)) continue;
-    genMap.set(id, gen);
-    (childMap.get(id) || []).forEach((cid) => bfsQ.push({ id: cid, gen: gen + 1 }));
+    setGen(id, gen);
+    for (const cid of childMap.get(id) || []) queue.push({ id: cid, gen: gen + 1 });
+    const sp = spouseOf.get(id);
+    if (sp) for (const cid of childMap.get(sp) || []) queue.push({ id: cid, gen: gen + 1 });
   }
+  // fallback : tout nœud non atteint (cas exotiques)
   rawNodes.forEach((n) => { if (!genMap.has(n.id)) genMap.set(n.id, 0); });
 
-  // Calculer la "largeur" de chaque sous-arbre (nombre de feuilles)
-  const subtreeWidth = new Map<string, number>();
-  const allIds = rawNodes.map((n) => n.id);
-
-  function calcWidth(id: string): number {
-    if (subtreeWidth.has(id)) return subtreeWidth.get(id)!;
-    const children = childMap.get(id) || [];
-    if (children.length === 0) {
-      subtreeWidth.set(id, 1);
-      return 1;
-    }
-    const w = children.reduce((sum, cid) => sum + calcWidth(cid), 0);
-    subtreeWidth.set(id, w);
-    return w;
-  }
-  allIds.forEach(calcWidth);
-
-  // Positionner en x en parcourant l'arbre, et en y selon la génération
+  // ── On parcourt l'arbre par « unité familiale » = une personne + son conjoint.
+  // L'unité est représentée par le membre qui porte la filiation (a des enfants
+  // ou descend d'un parent placé). Pour éviter de placer 2× un couple, on marque
+  // les conjoints « secondaires » (rattachés par mariage à un membre déjà placé).
+  const placedAsSpouse = new Set<string>();
   const positions = new Map<string, { x: number; y: number }>();
 
-  function placeNode(id: string, xOffset: number): void {
-    if (positions.has(id)) return;
-    const gen      = genMap.get(id) ?? 0;
-    const children = childMap.get(id) || [];
-    const y        = gen * (NODE_H + V_GAP);
-
-    if (children.length === 0) {
-      positions.set(id, { x: xOffset, y });
-      return;
+  // largeur d'un sous-arbre en nombre de « slots » (fiches)
+  const widthCache = new Map<string, number>();
+  function unitWidth(id: string): number {
+    if (widthCache.has(id)) return widthCache.get(id)!;
+    const sp = spouseOf.get(id);
+    const selfSlots = sp ? 2 : 1; // couple = 2 fiches
+    const kids = childMap.get(id) || [];
+    let w: number;
+    if (!kids.length) {
+      w = selfSlots;
+    } else {
+      const kidsW = kids.reduce((s, k) => s + unitWidth(k), 0);
+      w = Math.max(selfSlots, kidsW);
     }
-
-    // Placer les enfants à la suite
-    let cursor = xOffset;
-    children.forEach((cid) => {
-      placeNode(cid, cursor);
-      cursor += (subtreeWidth.get(cid) || 1) * (NODE_W + H_GAP);
-    });
-
-    // Centrer le parent sur ses enfants
-    const firstChildX = positions.get(children[0])!.x;
-    const lastChildX  = positions.get(children[children.length - 1])!.x;
-    positions.set(id, { x: (firstChildX + lastChildX) / 2, y });
+    widthCache.set(id, w);
+    return w;
   }
 
-  // Calculer le décalage de départ pour chaque racine
+  // place une unité (personne + conjoint) à partir de xStart (en px), renvoie [x du centre du couple]
+  function placeUnit(id: string, xStart: number): number {
+    const gen = genMap.get(id) ?? 0;
+    const y = gen * (NODE_H + V_GAP);
+    const sp = spouseOf.get(id);
+    const kids = childMap.get(id) || [];
+
+    const myWidthPx = unitWidth(id) * SLOT;
+
+    // placer d'abord les enfants pour centrer le couple dessus
+    let childCenter: number | null = null;
+    if (kids.length) {
+      let cursor = xStart;
+      const centers: number[] = [];
+      for (const k of kids) {
+        const c = placeUnit(k, cursor);
+        centers.push(c);
+        cursor += unitWidth(k) * SLOT;
+      }
+      childCenter = (centers[0] + centers[centers.length - 1]) / 2;
+    }
+
+    // position du couple : centré sur ses enfants si possible, sinon sur sa propre largeur
+    const coupleW = sp ? NODE_W * 2 + SPOUSE_GAP : NODE_W;
+    let coupleCenter = childCenter ?? xStart + myWidthPx / 2;
+    // garde le couple dans sa bande
+    const leftX = coupleCenter - coupleW / 2;
+
+    positions.set(id, { x: leftX, y });
+    if (sp) {
+      positions.set(sp, { x: leftX + NODE_W + SPOUSE_GAP, y });
+      placedAsSpouse.add(sp);
+    }
+    return coupleCenter;
+  }
+
+  // unités racines = racines qui ne sont pas le conjoint secondaire d'une autre racine
   let xCursor = 0;
-  roots.forEach((rootId) => {
-    placeNode(rootId, xCursor);
-    xCursor += (subtreeWidth.get(rootId) || 1) * (NODE_W + H_GAP);
+  const rootUnits = roots.filter((id) => {
+    const sp = spouseOf.get(id);
+    // si le conjoint est aussi racine, on ne garde qu'un seul des deux (celui qui a des enfants, sinon le 1er)
+    if (sp && roots.includes(sp)) {
+      const idHasKids = (childMap.get(id)?.length ?? 0) > 0;
+      const spHasKids = (childMap.get(sp)?.length ?? 0) > 0;
+      if (spHasKids && !idHasKids) return false;
+      if (!idHasKids && !spHasKids) return id < sp; // ordre stable
+    }
+    return true;
   });
 
-  // Nœuds sans position (orphelins ou conjoints non rattachés) → empiler à droite
+  for (const rootId of rootUnits) {
+    if (positions.has(rootId)) continue;
+    placeUnit(rootId, xCursor);
+    xCursor += Math.max(unitWidth(rootId), spouseOf.get(rootId) ? 2 : 1) * SLOT + SLOT;
+  }
+
+  // tout nœud restant non placé (déconnecté) → rangée du bas
+  let orphanX = 0;
+  const maxGen = Math.max(0, ...Array.from(genMap.values()));
   rawNodes.forEach((n) => {
     if (!positions.has(n.id)) {
-      const gen = genMap.get(n.id) ?? 0;
-      positions.set(n.id, { x: xCursor, y: gen * (NODE_H + V_GAP) });
-      xCursor += NODE_W + H_GAP;
+      positions.set(n.id, { x: orphanX, y: (maxGen + 1) * (NODE_H + V_GAP) });
+      orphanX += SLOT;
     }
   });
 
@@ -129,21 +190,21 @@ function layoutNodes(rawNodes: any[], rawEdges: any[]): { nodes: Node[]; edges: 
     target: e.targetId,
     type: e.type === "PARENT_CHILD" ? "smoothstep" : "straight",
     animated: false,
+    // Couleurs DA « Archive » : filiation = encre estompée, conjoint = sceau, custom = patine
     style: {
       stroke:
-        e.type === "SPOUSE"  ? "#a78bfa" :
-        e.type === "CUSTOM"  ? "#c084fc" :
-        "#94a3b8",
-      strokeWidth:
-        e.type === "PARENT_CHILD" ? 2 : 1.5,
-      strokeDasharray: e.type === "SPOUSE" ? "6 4" : undefined,
+        e.type === "SPOUSE" ? "#7A2E2E" :
+        e.type === "CUSTOM" ? "#A8842C" :
+        "#B9AE96",
+      strokeWidth: e.type === "PARENT_CHILD" ? 1.75 : 1.5,
+      strokeDasharray: e.type === "SPOUSE" ? "5 4" : undefined,
     },
     markerEnd: e.type === "PARENT_CHILD"
-      ? { type: MarkerType.ArrowClosed, color: "#94a3b8", width: 10, height: 10 }
+      ? { type: MarkerType.ArrowClosed, color: "#8A8378", width: 10, height: 10 }
       : undefined,
     label: e.type === "CUSTOM" ? e.label : undefined,
-    labelStyle:     { fill: "#9333ea", fontSize: 9, fontWeight: 700 },
-    labelBgStyle:   { fill: "#faf5ff", fillOpacity: 0.95 },
+    labelStyle:     { fill: "#A8842C", fontSize: 9, fontWeight: 600, fontFamily: "var(--font-mono)" },
+    labelBgStyle:   { fill: "#F2E9CF", fillOpacity: 0.95 },
     labelBgPadding: [4, 2] as [number, number],
     labelBgBorderRadius: 4,
   }));
@@ -254,10 +315,10 @@ function FamilyTreeInner({ focusPersonId }: { focusPersonId?: string | null }) {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-full bg-white">
+      <div className="flex h-full items-center justify-center bg-paper-warm">
         <div className="flex flex-col items-center gap-3">
-          <Loader2 className="h-8 w-8 animate-spin text-zinc-300" />
-          <p className="text-sm text-zinc-400">{t("loading")}</p>
+          <Loader2 className="h-8 w-8 animate-spin text-ink-faint" />
+          <p className="meta-label">{t("loading")}</p>
         </div>
       </div>
     );
@@ -265,10 +326,10 @@ function FamilyTreeInner({ focusPersonId }: { focusPersonId?: string | null }) {
 
   if (error) {
     return (
-      <div className="flex items-center justify-center h-full bg-white">
+      <div className="flex h-full items-center justify-center bg-paper-warm">
         <div className="flex flex-col items-center gap-3 text-center">
-          <AlertTriangle className="h-8 w-8 text-zinc-300" />
-          <p className="text-sm text-zinc-500">{error}</p>
+          <AlertTriangle className="h-8 w-8 text-ink-faint" strokeWidth={1.5} />
+          <p className="text-sm text-ink-soft">{error}</p>
         </div>
       </div>
     );
@@ -290,53 +351,44 @@ function FamilyTreeInner({ focusPersonId }: { focusPersonId?: string | null }) {
         maxZoom={3}
         proOptions={{ hideAttribution: true }}
       >
-        <Background variant={BackgroundVariant.Dots} gap={32} size={1.2} color="#d1d5db" style={{ backgroundColor: "#f8f9fa" }} />
-        <Controls
-          style={{
-            background: "white",
-            border: "1px solid #e5e7eb",
-            borderRadius: 12,
-            boxShadow: "0 4px 16px rgba(0,0,0,0.06)",
-          }}
-        />
+        <Background variant={BackgroundVariant.Dots} gap={32} size={1.1} color="#D8CFBD" style={{ backgroundColor: "#F4EFE4" }} />
+        <Controls />
         <MiniMap
           nodeColor={(node) => {
-            if (node.data?.gender === "MALE") return "#bfdbfe";
-            if (node.data?.gender === "FEMALE") return "#fbcfe8";
-            return "#e5e7eb";
+            if (node.data?.gender === "MALE") return "#3F5B72";
+            if (node.data?.gender === "FEMALE") return "#8A4A52";
+            if (node.data?.gender === "OTHER") return "#5E5070";
+            return "#B9AE96";
           }}
-          maskColor="rgba(255,255,255,0.6)"
-          style={{
-            background: "white",
-            border: "1px solid #e5e7eb",
-            borderRadius: 12,
-          }}
+          nodeStrokeWidth={0}
+          maskColor="rgba(244,239,228,0.6)"
         />
 
         <Panel position="top-left">
-          <div className="flex items-center gap-2 bg-white border border-zinc-200 rounded-xl shadow-sm p-2">
+          <div className="flex items-center gap-2 rounded-[var(--radius)] border border-ink-line bg-paper/95 p-2 shadow-paper-md backdrop-blur-sm">
             <div className="relative">
-              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-400" />
+              <Search className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-ink-faint" strokeWidth={1.75} />
               <input
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder={t("search")}
-                className="pl-8 pr-3 h-8 w-52 rounded-lg border border-zinc-200 bg-white text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-900 transition-colors"
+                aria-label={t("search")}
+                className="h-9 w-52 rounded-full border border-ink-line bg-card pl-8 pr-3 text-sm text-ink placeholder:text-ink-faint transition-colors focus:border-seal focus:outline-none focus:ring-2 focus:ring-seal/30"
               />
             </div>
             <button
               onClick={jumpToSearchResult}
               disabled={!searchMatches.length}
-              className="h-8 px-3 flex items-center gap-1.5 rounded-lg border border-zinc-200 text-xs font-semibold text-zinc-600 hover:border-zinc-900 hover:text-zinc-900 transition-colors disabled:opacity-40"
+              className="flex h-9 items-center gap-1.5 rounded-full border border-ink-line px-3 text-xs font-medium text-ink-soft transition-colors hover:border-ink hover:text-ink disabled:opacity-40"
             >
-              <Search className="h-3.5 w-3.5" />
+              <Search className="h-3.5 w-3.5" strokeWidth={1.75} />
               Trouver
             </button>
             <button
               onClick={handleCenter}
-              className="h-8 px-3 flex items-center gap-1.5 rounded-lg border border-zinc-200 text-xs font-semibold text-zinc-600 hover:border-zinc-900 hover:text-zinc-900 transition-colors"
+              className="flex h-9 items-center gap-1.5 rounded-full border border-ink-line px-3 text-xs font-medium text-ink-soft transition-colors hover:border-ink hover:text-ink"
             >
-              <Crosshair className="h-3.5 w-3.5" />
+              <Crosshair className="h-3.5 w-3.5" strokeWidth={1.75} />
               {focusPersonId ? "Recentrer" : t("center")}
             </button>
           </div>
@@ -344,30 +396,32 @@ function FamilyTreeInner({ focusPersonId }: { focusPersonId?: string | null }) {
 
         {isLimited && (
           <Panel position="top-center">
-            <div className="flex items-center gap-2 bg-white border border-zinc-200 rounded-full px-4 py-2 shadow-sm">
-              <Crown className="h-4 w-4 text-zinc-500" />
-              <span className="text-xs text-zinc-500">
-                Affichage limite a 10 profils.{" "}
-                <a href="/pricing" className="font-semibold text-zinc-900 hover:underline">Passer a Premium</a>
+            <div className="flex items-center gap-2 rounded-full border border-seal/30 bg-seal-tint px-4 py-2 shadow-paper">
+              <Crown className="h-4 w-4 text-seal" strokeWidth={1.75} />
+              <span className="text-xs text-ink-soft">
+                Affichage limité à 10 profils.{" "}
+                <a href="/pricing" className="link-underline font-medium text-seal">
+                  Passer à Premium
+                </a>
               </span>
             </div>
           </Panel>
         )}
 
         <Panel position="bottom-left">
-          <div className="bg-white border border-zinc-200 rounded-xl p-3 text-xs space-y-1.5 shadow-sm">
-            <p className="font-bold text-zinc-400 uppercase tracking-wider mb-2 text-[10px]">Legende</p>
+          <div className="space-y-1.5 rounded-[var(--radius)] border border-ink-line bg-paper/95 p-3 text-xs shadow-paper backdrop-blur-sm">
+            <p className="mb-2 meta-label">Légende</p>
             <div className="flex items-center gap-2">
-              <div className="w-6 h-0.5 bg-zinc-900" />
-              <span className="text-zinc-500">Parent → Enfant</span>
+              <div className="h-px w-6" style={{ background: "#8A8378" }} />
+              <span className="text-ink-soft">Parent → Enfant</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-6 border-t-2 border-dashed border-indigo-400" />
-              <span className="text-zinc-500">Conjoint(e)</span>
+              <div className="w-6 border-t border-dashed" style={{ borderColor: "#7A2E2E" }} />
+              <span className="text-ink-soft">Conjoint(e)</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-6 h-0.5 bg-purple-600" />
-              <span className="text-zinc-500">Relation custom</span>
+              <div className="h-px w-6" style={{ background: "#A8842C" }} />
+              <span className="text-ink-soft">Relation personnalisée</span>
             </div>
           </div>
         </Panel>

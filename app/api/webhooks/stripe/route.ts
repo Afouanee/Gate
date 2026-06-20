@@ -58,7 +58,8 @@ export async function POST(req: NextRequest) {
           }),
           prisma.user.update({
             where: { id: userId },
-            data: { role: "PREMIUM" },
+            // Upgrade : on repart d'une période de quota propre.
+            data: { role: "PREMIUM", searchCount: 0, exportCount: 0, quotaPeriodStart: new Date() },
           }),
         ]);
 
@@ -89,7 +90,8 @@ export async function POST(req: NextRequest) {
               }),
               prisma.user.update({
                 where: { id: sub.userId },
-                data: { role: "FREE" },
+                // Downgrade : quotas FREE remis à zéro (sinon blocage immédiat).
+                data: { role: "FREE", searchCount: 0, exportCount: 0, quotaPeriodStart: new Date() },
               }),
             ]);
             await createAuditLog({
@@ -109,7 +111,8 @@ export async function POST(req: NextRequest) {
           }),
           prisma.user.update({
             where: { id: userId },
-            data: { role: "FREE" },
+            // Downgrade : quotas FREE remis à zéro (sinon blocage immédiat).
+            data: { role: "FREE", searchCount: 0, exportCount: 0, quotaPeriodStart: new Date() },
           }),
         ]);
 
@@ -146,7 +149,8 @@ export async function POST(req: NextRequest) {
           }),
           prisma.user.update({
             where: { id: sub.userId },
-            data: { role: isActive ? "PREMIUM" : "FREE" },
+            // Changement d'état : on repart sur une période de quota propre.
+            data: { role: isActive ? "PREMIUM" : "FREE", searchCount: 0, exportCount: 0, quotaPeriodStart: new Date() },
           }),
         ]);
 
@@ -174,7 +178,8 @@ export async function POST(req: NextRequest) {
           }),
           prisma.user.update({
             where: { id: sub.userId },
-            data: { role: "FREE" },
+            // Paiement échoué → FREE, quotas remis à zéro.
+            data: { role: "FREE", searchCount: 0, exportCount: 0, quotaPeriodStart: new Date() },
           }),
         ]);
 

@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { createAuditLog } from "@/lib/audit";
+import { isUserPremium, canSeeField, canSeePersonalData } from "@/lib/visibility";
 import { z } from "zod";
 
 const updateSchema = z.object({
@@ -57,20 +58,20 @@ export async function GET(
     return NextResponse.json({ error: "NOT_FOUND" }, { status: 404 });
   }
 
-  const isAdmin = session.user.role === "ADMIN";
-  const isPremium = session.user.role === "PREMIUM" || isAdmin;
+  const isPremium = isUserPremium(session.user.role);
+  const seePersonal = canSeePersonalData(isPremium, person);
 
-  // Appliquer la visibilité
+  // Appliquer la visibilité (règle unifiée : Premium OU flag public)
   const sanitized = {
     ...person,
-    birthDate: (isPremium || person.showBirthDate) ? person.birthDate : null,
-    deathDate: (isPremium || person.showDeathDate) ? person.deathDate : null,
-    photoUrl: (isPremium || person.showPhoto) ? person.photoUrl : null,
-    birthPlace: isPremium ? person.birthPlace : null,
-    deathPlace: isPremium ? person.deathPlace : null,
-    description: isPremium ? person.description : null,
-    profession: isPremium ? person.profession : null,
-    currentCity: isPremium ? person.currentCity : null,
+    birthDate: canSeeField(isPremium, person.showBirthDate) ? person.birthDate : null,
+    deathDate: canSeeField(isPremium, person.showDeathDate) ? person.deathDate : null,
+    photoUrl: canSeeField(isPremium, person.showPhoto) ? person.photoUrl : null,
+    birthPlace: seePersonal ? person.birthPlace : null,
+    deathPlace: seePersonal ? person.deathPlace : null,
+    description: seePersonal ? person.description : null,
+    profession: seePersonal ? person.profession : null,
+    currentCity: seePersonal ? person.currentCity : null,
     nickname: person.nickname,
   };
 
@@ -128,13 +129,31 @@ export async function PATCH(
           isAlive: parsed.data.isAlive,
         };
 
+    // Parse + valide les dates (format ISO + cohérence naissance < décès)
+    const parseDate = (v: string | null | undefined) => {
+      if (v === null) return null;
+      if (!v) return undefined;
+      const d = new Date(v);
+      if (isNaN(d.getTime())) throw new Error("INVALID_DATE");
+      return d;
+    };
+
+    let birthDate: Date | null | undefined;
+    let deathDate: Date | null | undefined;
+    try {
+      birthDate = parseDate(allowedData.birthDate);
+      deathDate = parseDate(allowedData.deathDate);
+    } catch {
+      return NextResponse.json({ error: "INVALID_DATE" }, { status: 400 });
+    }
+
+    if (birthDate && deathDate && birthDate > deathDate) {
+      return NextResponse.json({ error: "BIRTH_AFTER_DEATH" }, { status: 400 });
+    }
+
     const person = await prisma.person.update({
       where: { id: params.id },
-      data: {
-        ...allowedData,
-        birthDate: allowedData.birthDate === null ? null : allowedData.birthDate ? new Date(allowedData.birthDate) : undefined,
-        deathDate: allowedData.deathDate === null ? null : allowedData.deathDate ? new Date(allowedData.deathDate) : undefined,
-      },
+      data: { ...allowedData, birthDate, deathDate },
     });
 
     await createAuditLog({

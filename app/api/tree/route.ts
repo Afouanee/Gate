@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { isUserPremium, canSeeField } from "@/lib/visibility";
 
 export async function GET(req: NextRequest) {
   const session = await getServerSession(authOptions);
@@ -9,7 +10,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "UNAUTHORIZED" }, { status: 401 });
   }
 
-  const isPremium = session.user.role === "PREMIUM" || session.user.role === "ADMIN";
+  const isPremium = isUserPremium(session.user.role);
 
   // Pour les FREE, limiter à 10 profils
   const limit = isPremium ? 2000 : 10;
@@ -45,12 +46,12 @@ export async function GET(req: NextRequest) {
     }),
   ]);
 
-  // Sanitiser selon le rôle
+  // Sanitiser selon le rôle (visibilité unifiée : Premium OU flag public)
   const sanitizedPersons = persons.map((p) => ({
     ...p,
-    birthDate: isPremium && p.showBirthDate ? p.birthDate : null,
-    deathDate: isPremium && p.showDeathDate ? p.deathDate : null,
-    photoUrl: isPremium && p.showPhoto ? p.photoUrl : null,
+    birthDate: canSeeField(isPremium, p.showBirthDate) ? p.birthDate : null,
+    deathDate: canSeeField(isPremium, p.showDeathDate) ? p.deathDate : null,
+    photoUrl: canSeeField(isPremium, p.showPhoto) ? p.photoUrl : null,
     blurred: !isPremium,
   }));
 

@@ -5,6 +5,13 @@ import Link from "next/link";
 import { Search, Download, ArrowLeftRight, Loader2 } from "lucide-react";
 import { FamilyTree } from "./family-tree";
 
+const genderAccent: Record<string, string> = {
+  MALE: "#3F5B72",
+  FEMALE: "#8A4A52",
+  OTHER: "#5E5070",
+  UNKNOWN: "#8A8378",
+};
+
 export function TreeExplorer() {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<any[]>([]);
@@ -42,57 +49,77 @@ export function TreeExplorer() {
 
   if (!selectedPerson) {
     return (
-      <div className="h-[calc(100vh-4rem)] bg-white flex items-center justify-center px-6">
+      <div className="flex h-[calc(100svh-4rem)] items-center justify-center bg-paper-warm px-4 sm:px-6">
         <div className="w-full max-w-2xl">
-          <div className="border border-zinc-200 rounded-[2rem] bg-white shadow-[0_24px_80px_rgba(0,0,0,0.06)] p-8 md:p-10">
-            <p className="text-xs font-bold uppercase tracking-[0.2em] text-zinc-400 mb-3">Arbre genealogique</p>
-            <h1 className="text-3xl md:text-4xl font-black font-heading tracking-tight text-zinc-900 mb-3">
-              Rechercher une personne pour ouvrir son arbre
+          <div
+            className="rounded-[var(--radius)] border border-ink-line bg-card p-6 shadow-paper-lg sm:p-8 md:p-10"
+            style={{ animation: "fade-in 0.5s both" }}
+          >
+            <span className="section-no">№ · Arbre généalogique</span>
+            <h1 className="mt-3 font-serif text-3xl font-semibold tracking-tight md:text-4xl">
+              Ouvrir l&apos;arbre d&apos;une personne
             </h1>
-            <p className="text-sm md:text-base text-zinc-500 mb-8">
-              Selectionnez un profil pour afficher l’arbre associe et centrer directement la vue sur cette personne.
+            <p className="mt-3 text-sm text-ink-soft md:text-base">
+              Sélectionnez un profil : l&apos;arbre s&apos;affiche et se centre directement sur lui.
             </p>
 
-            <div className="relative">
-              <Search className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-zinc-400" />
+            <div className="relative mt-8">
+              <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-ink-faint" strokeWidth={1.75} />
               <input
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="Rechercher un prenom ou un nom..."
-                className="w-full h-16 rounded-2xl border border-zinc-200 pl-14 pr-5 text-base text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-900"
+                placeholder="Rechercher un prénom ou un nom…"
+                aria-label="Rechercher une personne"
+                autoFocus
+                className="h-14 w-full rounded-full border border-ink-line bg-paper pl-12 pr-5 text-base text-ink placeholder:text-ink-faint transition-colors focus:border-seal focus:outline-none focus:ring-2 focus:ring-seal/30"
               />
             </div>
 
             <div className="mt-5 min-h-20">
               {loading ? (
-                <div className="flex items-center gap-2 text-sm text-zinc-400">
+                <div className="flex items-center gap-2 text-sm text-ink-faint">
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  Recherche en cours...
+                  Recherche en cours…
                 </div>
               ) : results.length > 0 ? (
                 <div className="space-y-2">
-                  {results.map((person) => (
-                    <button
-                      key={person.id}
-                      onClick={() => setSelectedPerson(person)}
-                      className="w-full flex items-center gap-3 rounded-2xl border border-zinc-200 px-4 py-3 text-left hover:border-zinc-900 hover:bg-zinc-50 transition-colors"
-                    >
-                      <div className="h-11 w-11 rounded-full border border-zinc-200 bg-zinc-50 flex items-center justify-center text-sm font-black text-zinc-700">
-                        {person.firstName?.[0]}{person.lastName?.[0]}
-                      </div>
-                      <div className="min-w-0">
-                        <p className="text-sm font-semibold text-zinc-900 truncate">{person.firstName} {person.lastName}</p>
-                        <p className="text-xs text-zinc-400">
-                          {person.birthDate ? new Date(person.birthDate).getFullYear() : "Date inconnue"}
-                        </p>
-                      </div>
-                    </button>
-                  ))}
+                  {results.map((person) => {
+                    const accent = genderAccent[person.gender] || genderAccent.UNKNOWN;
+                    return (
+                      <button
+                        key={person.id}
+                        onClick={() => setSelectedPerson(person)}
+                        className="flex w-full items-center gap-3 rounded-[var(--radius)] border border-ink-line px-4 py-3 text-left transition-colors hover:border-ink hover:bg-paper-warm"
+                      >
+                        <div
+                          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border bg-paper-warm font-serif text-sm font-semibold"
+                          style={{ borderColor: accent, color: accent }}
+                        >
+                          {person.firstName?.[0]}
+                          {person.lastName?.[0]}
+                        </div>
+                        <div className="min-w-0">
+                          <p className="truncate text-sm font-medium text-ink">
+                            {person.firstName} {person.lastName}
+                          </p>
+                          <p className="font-mono text-xs text-ink-faint tabular">
+                            {person.birthDate
+                              ? new Date(person.birthDate).getFullYear()
+                              : "Date inconnue"}
+                          </p>
+                        </div>
+                      </button>
+                    );
+                  })}
                 </div>
               ) : query.trim() ? (
-                <p className="text-sm text-zinc-400">Aucun profil ne correspond a votre recherche.</p>
+                <p className="text-sm text-ink-faint">
+                  Aucun profil ne correspond à votre recherche.
+                </p>
               ) : (
-                <p className="text-sm text-zinc-400">Commencez par saisir un nom pour afficher des profils.</p>
+                <p className="text-sm text-ink-faint">
+                  Commencez par saisir un nom pour afficher des profils.
+                </p>
               )}
             </div>
           </div>
@@ -102,24 +129,30 @@ export function TreeExplorer() {
   }
 
   return (
-    <div className="h-[calc(100vh-4rem)] flex flex-col bg-white">
-      <div className="shrink-0 h-14 border-b border-zinc-100 bg-white flex items-center px-4 gap-3">
+    <div className="flex h-[calc(100svh-4rem)] flex-col bg-paper-warm">
+      <div className="flex h-14 shrink-0 items-center gap-2 border-b border-ink-line bg-paper px-3 sm:gap-3 sm:px-4">
         <button
           onClick={() => setSelectedPerson(null)}
-          className="h-9 px-3 flex items-center gap-2 rounded-lg border border-zinc-200 text-xs font-semibold text-zinc-600 hover:border-zinc-900 hover:text-zinc-900 transition-colors"
+          aria-label="Changer de personne"
+          className="flex h-9 shrink-0 items-center gap-2 rounded-full border border-ink-line px-3 text-xs font-medium text-ink-soft transition-colors hover:border-ink hover:text-ink"
         >
-          <ArrowLeftRight className="h-3.5 w-3.5" />
-          Changer de personne
+          <ArrowLeftRight className="h-3.5 w-3.5" strokeWidth={1.75} />
+          <span className="hidden sm:inline">Changer de personne</span>
         </button>
         <div className="min-w-0">
-          <p className="text-xs font-bold uppercase tracking-[0.15em] text-zinc-400">Arbre cible</p>
-          <p className="text-sm font-semibold text-zinc-900 truncate">{selectedPerson.firstName} {selectedPerson.lastName}</p>
+          <p className="meta-label">Arbre cible</p>
+          <p className="truncate text-sm font-medium text-ink">
+            {selectedPerson.firstName} {selectedPerson.lastName}
+          </p>
         </div>
         <div className="flex-1" />
-        <Link href="/export">
-          <button className="h-9 px-3 flex items-center gap-1.5 rounded-lg border border-zinc-200 text-xs font-semibold text-zinc-600 hover:border-zinc-900 hover:text-zinc-900 transition-colors">
-            <Download className="h-3.5 w-3.5" />
-            Exporter PDF
+        <Link href="/export" className="shrink-0">
+          <button
+            aria-label="Exporter PDF"
+            className="flex h-9 items-center gap-1.5 rounded-full border border-ink-line px-3 text-xs font-medium text-ink-soft transition-colors hover:border-ink hover:text-ink"
+          >
+            <Download className="h-3.5 w-3.5" strokeWidth={1.75} />
+            <span className="hidden sm:inline">Exporter PDF</span>
           </button>
         </Link>
       </div>

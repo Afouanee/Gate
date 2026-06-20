@@ -4,35 +4,39 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center whitespace-nowrap font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-40 select-none",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-seal focus-visible:ring-offset-2 focus-visible:ring-offset-paper disabled:pointer-events-none disabled:opacity-40 select-none",
   {
     variants: {
       variant: {
+        // Encre pleine — action primaire
         default:
-          "bg-zinc-900 text-white rounded-full hover:bg-zinc-700 active:scale-[0.98]",
+          "bg-ink text-paper rounded-full hover:bg-ink-soft active:scale-[0.98]",
+        // Sceau — action d'engagement (premium, valider une demande)
+        seal:
+          "bg-seal text-paper rounded-full hover:bg-seal-bright active:scale-[0.98] shadow-seal",
         destructive:
-          "bg-red-600 text-white rounded-full hover:bg-red-500 active:scale-[0.98]",
+          "bg-destructive text-paper rounded-full hover:opacity-90 active:scale-[0.98]",
         outline:
-          "border border-zinc-200 bg-white text-zinc-800 rounded-full hover:border-zinc-900 hover:text-zinc-900 active:scale-[0.98]",
+          "border border-ink-line bg-transparent text-ink rounded-full hover:border-ink hover:bg-paper-warm active:scale-[0.98]",
         secondary:
-          "bg-zinc-100 text-zinc-900 rounded-full hover:bg-zinc-200 active:scale-[0.98]",
+          "bg-paper-warm text-ink rounded-full hover:bg-paper-deep active:scale-[0.98]",
         ghost:
-          "text-zinc-600 rounded-lg hover:bg-zinc-100 hover:text-zinc-900",
+          "text-ink-soft rounded-[var(--radius)] hover:bg-paper-warm hover:text-ink",
         link:
-          "text-zinc-900 underline-offset-4 hover:underline p-0 h-auto",
+          "text-ink underline-offset-4 hover:underline p-0 h-auto",
         premium:
-          "bg-zinc-900 text-white rounded-full hover:bg-zinc-700 active:scale-[0.98]",
+          "bg-seal text-paper rounded-full hover:bg-seal-bright active:scale-[0.98] shadow-seal",
         free:
-          "border border-zinc-200 bg-white text-zinc-700 rounded-full hover:border-zinc-900",
+          "border border-ink-line bg-transparent text-ink rounded-full hover:border-ink",
         admin:
-          "bg-zinc-900 text-white text-xs rounded-full",
+          "bg-ink text-paper text-xs rounded-full",
       },
       size: {
-        default: "h-10 px-5 py-2 text-sm",
-        sm:      "h-8 px-4 text-xs",
+        default: "h-11 px-5 py-2 text-sm",
+        sm:      "h-9 px-4 text-xs",
         lg:      "h-12 px-7 text-sm",
-        xl:      "h-13 px-9 text-base",
-        icon:    "h-9 w-9 rounded-lg",
+        xl:      "h-14 px-9 text-base",
+        icon:    "h-10 w-10 rounded-[var(--radius)]",
       },
     },
     defaultVariants: {

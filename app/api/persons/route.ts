@@ -72,12 +72,23 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "INVALID_FIELDS", details: parsed.error.flatten() }, { status: 400 });
     }
 
+    // Valide les dates : format ISO correct + naissance antérieure au décès
+    const toDate = (v: string | null | undefined) => {
+      if (!v) return null;
+      const d = new Date(v);
+      return isNaN(d.getTime()) ? false : d;
+    };
+    const birthDate = toDate(parsed.data.birthDate);
+    const deathDate = toDate(parsed.data.deathDate);
+    if (birthDate === false || deathDate === false) {
+      return NextResponse.json({ error: "INVALID_DATE" }, { status: 400 });
+    }
+    if (birthDate && deathDate && birthDate > deathDate) {
+      return NextResponse.json({ error: "BIRTH_AFTER_DEATH" }, { status: 400 });
+    }
+
     const person = await prisma.person.create({
-      data: {
-        ...parsed.data,
-        birthDate: parsed.data.birthDate ? new Date(parsed.data.birthDate) : null,
-        deathDate: parsed.data.deathDate ? new Date(parsed.data.deathDate) : null,
-      },
+      data: { ...parsed.data, birthDate, deathDate },
     });
 
     await createAuditLog({

@@ -2,8 +2,16 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { isUserPremium, canSeeField } from "@/lib/visibility";
+import { ensureQuotaPeriod, FREE_SEARCH_LIMIT } from "@/lib/quota";
 
-const FREE_SEARCH_LIMIT = 5;
+/** Parse une année (string) en entier valide entre 0 et 9999, sinon null. */
+function parseYear(v: string | null): number | null {
+  if (!v) return null;
+  const n = Number(v);
+  if (!Number.isInteger(n) || n < 0 || n > 9999) return null;
+  return n;
+}
 
 export async function GET(req: NextRequest) {
   const session = await getServerSession(authOptions);
@@ -21,6 +29,9 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ results: [], total: 0, searchCount: 0 });
   }
 
+  // Reset mensuel lazy AVANT toute lecture du compteur (rend le quota « / mois » vrai).
+  await ensureQuotaPeriod(session.user.id);
+
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
     select: { searchCount: true, role: true },
@@ -30,22 +41,24 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "USER_NOT_FOUND" }, { status: 404 });
   }
 
-  const isPremium = user.role === "PREMIUM" || user.role === "ADMIN";
+  const isPremium = isUserPremium(user.role);
 
-  // Vérifier la limite pour les FREE
-  if (!isPremium && user.searchCount >= FREE_SEARCH_LIMIT) {
-    return NextResponse.json(
-      { error: "SEARCH_LIMIT_REACHED", searchCount: user.searchCount },
-      { status: 403 }
-    );
-  }
-
-  // Incrémenter le compteur pour les FREE
+  // Vérifier + incrémenter le compteur de façon ATOMIQUE pour les FREE.
+  // updateMany avec une condition sur searchCount évite la race condition
+  // (deux requêtes parallèles ne peuvent pas dépasser la limite).
+  let nextSearchCount = user.searchCount;
   if (!isPremium) {
-    await prisma.user.update({
-      where: { id: session.user.id },
+    const updated = await prisma.user.updateMany({
+      where: { id: session.user.id, searchCount: { lt: FREE_SEARCH_LIMIT } },
       data: { searchCount: { increment: 1 } },
     });
+    if (updated.count === 0) {
+      return NextResponse.json(
+        { error: "SEARCH_LIMIT_REACHED", searchCount: user.searchCount },
+        { status: 403 }
+      );
+    }
+    nextSearchCount = user.searchCount + 1;
   }
 
   // Construire la query
@@ -62,14 +75,12 @@ export async function GET(req: NextRequest) {
     where.gender = gender;
   }
 
-  if (yearFrom || yearTo) {
+  const yFrom = parseYear(yearFrom);
+  const yTo = parseYear(yearTo);
+  if (yFrom !== null || yTo !== null) {
     where.birthDate = {};
-    if (yearFrom) {
-      where.birthDate.gte = new Date(`${yearFrom}-01-01`);
-    }
-    if (yearTo) {
-      where.birthDate.lte = new Date(`${yearTo}-12-31`);
-    }
+    if (yFrom !== null) where.birthDate.gte = new Date(Date.UTC(yFrom, 0, 1));
+    if (yTo !== null) where.birthDate.lte = new Date(Date.UTC(yTo, 11, 31));
   }
 
   const [results, total] = await prisma.$transaction([
@@ -95,22 +106,34 @@ export async function GET(req: NextRequest) {
     prisma.person.count({ where }),
   ]);
 
-  // Flouter les résultats pour les FREE
+  // M4 — une recherche à 0 résultat ne doit PAS consommer un crédit (FREE).
+  // On rembourse le crédit réservé plus haut (decrement conditionnel, anti-négatif).
+  if (!isPremium && total === 0) {
+    await prisma.user.updateMany({
+      where: { id: session.user.id, searchCount: { gt: 0 } },
+      data: { searchCount: { decrement: 1 } },
+    });
+    nextSearchCount = Math.max(0, nextSearchCount - 1);
+  }
+
+  // Flouter les résultats pour les FREE (visibilité unifiée : Premium OU flag public)
   const sanitizedResults = results.map((person) => ({
     ...person,
     firstName: person.firstName,
-    lastName: isPremium ? person.lastName : `${person.lastName[0]}${"*".repeat(person.lastName.length - 1)}`,
-    birthDate: isPremium && person.showBirthDate ? person.birthDate : null,
-    deathDate: isPremium && person.showDeathDate ? person.deathDate : null,
+    lastName: isPremium
+      ? person.lastName
+      : `${person.lastName[0] || ""}${"*".repeat(Math.max(0, person.lastName.length - 1))}`,
+    birthDate: canSeeField(isPremium, person.showBirthDate) ? person.birthDate : null,
+    deathDate: canSeeField(isPremium, person.showDeathDate) ? person.deathDate : null,
     birthPlace: isPremium ? person.birthPlace : null,
-    photoUrl: isPremium && person.showPhoto ? person.photoUrl : null,
+    photoUrl: canSeeField(isPremium, person.showPhoto) ? person.photoUrl : null,
     blurred: !isPremium,
   }));
 
   return NextResponse.json({
     results: sanitizedResults,
     total,
-    searchCount: isPremium ? null : (user.searchCount + 1),
+    searchCount: isPremium ? null : nextSearchCount,
     isPremium,
   });
 }

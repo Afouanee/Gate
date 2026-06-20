@@ -1,32 +1,35 @@
-@import url('https://fonts.googleapis.com/css2?family=League+Spartan:wght@400;500;600;700;800;900&family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* ════════════════════════════════════════════════════════════
+   GATE — Design System « Éditorial Archive »
+   Papier crème · encre profonde · serif Fraunces · sceau bordeaux
+   ════════════════════════════════════════════════════════════ */
+
 @layer base {
   :root {
-    /* Light theme — noir sur blanc */
-    --background: 0 0% 99%;
-    --foreground: 0 0% 4%;
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 4%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 4%;
-    --primary: 0 0% 4%;
-    --primary-foreground: 0 0% 99%;
-    --secondary: 0 0% 96%;
-    --secondary-foreground: 0 0% 4%;
-    --muted: 0 0% 94%;
-    --muted-foreground: 0 0% 40%;
-    --accent: 0 0% 4%;
-    --accent-foreground: 0 0% 99%;
-    --destructive: 0 72% 51%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 88%;
-    --input: 0 0% 88%;
-    --ring: 0 0% 4%;
-    --radius: 0.375rem;
+    /* Tokens sémantiques (shadcn) mappés sur la palette Archive */
+    --background: 40 33% 96%;        /* paper #FAF7F0 */
+    --foreground: 30 12% 9%;         /* ink  #1A1714 */
+    --card: 40 33% 98%;
+    --card-foreground: 30 12% 9%;
+    --popover: 40 33% 98%;
+    --popover-foreground: 30 12% 9%;
+    --primary: 30 12% 9%;            /* encre */
+    --primary-foreground: 40 33% 96%;
+    --secondary: 39 30% 92%;         /* paper.warm */
+    --secondary-foreground: 30 12% 9%;
+    --muted: 38 26% 88%;             /* paper.deep */
+    --muted-foreground: 33 7% 35%;   /* ink.soft */
+    --accent: 0 45% 33%;             /* seal bordeaux */
+    --accent-foreground: 40 33% 96%;
+    --destructive: 0 55% 38%;
+    --destructive-foreground: 40 33% 96%;
+    --border: 39 32% 79%;            /* ink.line #D8CFBD */
+    --input: 39 32% 79%;
+    --ring: 0 45% 33%;               /* sceau pour le focus */
+    --radius: 0.25rem;               /* angles francs, registre */
   }
 }
 
@@ -37,292 +40,233 @@
 
   html {
     scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
   }
 
   body {
-    @apply bg-white text-zinc-900 font-sans antialiased;
-    font-feature-settings: "rlig" 1, "calt" 1;
+    @apply bg-paper text-ink font-sans;
+    font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
     cursor: none;
   }
 
-  /* Masquer le curseur natif partout */
-  *, *::before, *::after {
-    cursor: none !important;
+  /* Curseur natif masqué (remplacé par CustomCursor) uniquement sur souris fine.
+     Sur tactile / pointeur grossier : on garde le curseur natif. */
+  @media (hover: hover) and (pointer: fine) {
+    *, *::before, *::after { cursor: none; }
+    input, textarea { cursor: text; }
   }
-
-  /* Sauf les inputs texte — on remet le curseur texte natif */
-  input[type="text"], input[type="email"], input[type="password"],
-  input[type="search"], input[type="number"], textarea {
-    cursor: text !important;
+  @media not all and (hover: hover) {
+    body { cursor: auto; }
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-heading;
+    @apply font-serif text-ink;
     letter-spacing: -0.02em;
   }
 
+  /* Chiffres tabulaires partout où c'est de la donnée */
+  .tabular { font-variant-numeric: tabular-nums; }
+
   ::selection {
-    background: #000;
-    color: #fff;
+    background: #7A2E2E;          /* sceau */
+    color: #FAF7F0;
   }
 
-  ::-webkit-scrollbar {
-    width: 5px;
-    height: 5px;
+  /* Scrollbar discrète, teinte papier */
+  ::-webkit-scrollbar { width: 9px; height: 9px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb {
+    background: #D8CFBD;
+    border-radius: 99px;
+    border: 2px solid #FAF7F0;
   }
-  ::-webkit-scrollbar-track { background: #f5f5f5; }
-  ::-webkit-scrollbar-thumb { background: #d4d4d4; border-radius: 99px; }
-  ::-webkit-scrollbar-thumb:hover { background: #000; }
+  ::-webkit-scrollbar-thumb:hover { background: #B9AE96; }
+
+  /* Focus visible cohérent (sceau) — jamais retiré */
+  :focus-visible {
+    outline: 2px solid #7A2E2E;
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
 }
 
-/* ─── Utilitaires Gate ─────────────────────────────── */
+/* ─── Composants / utilitaires Gate ────────────────────────── */
 
 @layer components {
 
-  /* Soulignement animé */
+  /* Étiquette méta : mono, espacé, encre estompée (signature DA) */
+  .meta-label {
+    @apply font-mono text-[11px] uppercase tracking-[0.18em] text-ink-faint;
+  }
+
+  /* Numéro de section façon registre : « № 01 » */
+  .section-no {
+    @apply font-mono text-[11px] tracking-[0.1em] text-seal;
+  }
+
+  /* Filet fin horizontal (séparateur d'archive) */
+  .rule-line {
+    @apply h-px w-full bg-ink-line;
+  }
+
+  /* Filet qui se dessine au scroll-reveal */
+  .rule-draw {
+    @apply relative h-px w-full overflow-hidden;
+    background-color: rgba(216, 207, 189, 0.4);
+  }
+  .rule-draw::after {
+    content: "";
+    @apply absolute inset-0 bg-ink origin-left;
+    transform: scaleX(0);
+    transition: transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .reveal-in .rule-draw::after { transform: scaleX(1); }
+
+  /* Lien souligné qui se révèle */
   .link-underline {
     @apply relative inline-block;
   }
   .link-underline::after {
-    content: '';
-    @apply absolute left-0 bottom-0 w-0 h-px bg-current transition-all duration-300;
+    content: "";
+    @apply absolute left-0 -bottom-0.5 h-px w-0 bg-current transition-all duration-300 ease-out;
   }
-  .link-underline:hover::after { @apply w-full; }
+  .link-underline:hover::after,
+  .link-underline:focus-visible::after { @apply w-full; }
 
-  /* Tag minimaliste */
-  .tag {
-    @apply inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold uppercase tracking-widest
-           border border-zinc-200 rounded-full text-zinc-500 bg-white;
+  /* Carte papier — bordure encre, ombre chaude, lift au hover */
+  .card-paper {
+    @apply bg-card border border-ink-line rounded-[var(--radius)] transition-all duration-300 ease-out;
+    box-shadow: 0 1px 2px rgba(26,23,20,0.04);
   }
-
-  /* Carte avec hover lift */
-  .card-lift {
-    @apply bg-white border border-zinc-100 rounded-2xl p-6 transition-all duration-300 ease-out;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06);
-  }
-  .card-lift:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 40px rgba(0,0,0,0.10), 0 4px 12px rgba(0,0,0,0.06);
+  .card-paper:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 18px 50px -16px rgba(26,23,20,0.18), 0 6px 16px rgba(26,23,20,0.06);
+    border-color: rgba(26,23,20,0.28);
   }
 
-  /* Ligne animée */
-  .divider-animate {
-    @apply relative overflow-hidden h-px bg-zinc-100;
-  }
-  .divider-animate::after {
-    content: '';
-    @apply absolute inset-0 bg-zinc-900;
-    animation: reveal-line 0.8s ease-out forwards;
-    transform: scaleX(0);
-    transform-origin: left;
+  /* Sceau (pastille bordeaux) */
+  .seal-badge {
+    @apply inline-flex items-center gap-1.5 rounded-full bg-seal-tint px-2.5 py-1
+           font-mono text-[10px] uppercase tracking-[0.14em] text-seal;
   }
 
-  /* Révélation de texte */
-  .reveal-text { overflow: hidden; display: block; }
-  .reveal-text > span {
-    display: block;
-    animation: slide-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
-  }
-
-  /* Numéro de step */
-  .step-number {
-    @apply flex items-center justify-center w-8 h-8 rounded-full bg-zinc-900 text-white
-           text-xs font-bold font-heading shrink-0;
-  }
-
-  /* Contenu flou (FREE users) */
+  /* Contenu masqué (FREE) */
   .blurred-content {
     filter: blur(5px);
     user-select: none;
     pointer-events: none;
   }
 
-  /* Glow premium */
-  .premium-glow {
-    position: relative;
-    isolation: isolate;
-  }
-  .premium-glow::before {
-    content: '';
-    position: absolute;
-    inset: -1px;
-    border-radius: inherit;
-    background: linear-gradient(135deg, #000 0%, #444 100%);
-    z-index: -1;
-  }
-
-  /* Skeleton shimmer */
+  /* Skeleton — teinte papier */
   .skeleton {
-    @apply bg-zinc-100 rounded-lg animate-pulse;
+    @apply rounded animate-pulse;
+    background-color: rgba(237, 230, 214, 0.7);
   }
 
-  /* Animate on scroll — classe à appliquer via JS/IntersectionObserver */
-  .aos-init {
+  /* Scroll-reveal : état initial puis classe .reveal-in via IntersectionObserver */
+  .reveal {
     opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
-                transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    transform: translateY(18px);
+    transition: opacity 0.7s cubic-bezier(0.16,1,0.3,1),
+                transform 0.7s cubic-bezier(0.16,1,0.3,1);
   }
-  .aos-animate {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  .reveal-in { opacity: 1; transform: translateY(0); }
 
-  /* Stagger children */
+  /* Stagger des enfants (listes, grilles) */
   .stagger > * {
     opacity: 0;
-    transform: translateY(16px);
-    animation: fade-in-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    transform: translateY(14px);
+    animation: gate-fade-up 0.6s cubic-bezier(0.16,1,0.3,1) forwards;
   }
-  .stagger > *:nth-child(1) { animation-delay: 0ms; }
-  .stagger > *:nth-child(2) { animation-delay: 60ms; }
-  .stagger > *:nth-child(3) { animation-delay: 120ms; }
-  .stagger > *:nth-child(4) { animation-delay: 180ms; }
-  .stagger > *:nth-child(5) { animation-delay: 240ms; }
-  .stagger > *:nth-child(6) { animation-delay: 300ms; }
+  .stagger > *:nth-child(1) { animation-delay: 40ms; }
+  .stagger > *:nth-child(2) { animation-delay: 100ms; }
+  .stagger > *:nth-child(3) { animation-delay: 160ms; }
+  .stagger > *:nth-child(4) { animation-delay: 220ms; }
+  .stagger > *:nth-child(5) { animation-delay: 280ms; }
+  .stagger > *:nth-child(6) { animation-delay: 340ms; }
+  .stagger > *:nth-child(7) { animation-delay: 400ms; }
+  .stagger > *:nth-child(8) { animation-delay: 460ms; }
+}
 
-  /* Gradient text */
-  .text-gradient {
-    background: linear-gradient(135deg, #09090b 0%, #52525b 100%);
+@layer utilities {
+  /* Dégradé d'encre pour titres signature */
+  .text-ink-gradient {
+    background: linear-gradient(135deg, #1A1714 0%, #46413A 100%);
     -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
     background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  /* Masque de dégradé bas (indique « scroll for more ») */
+  .fade-bottom {
+    -webkit-mask-image: linear-gradient(to bottom, #000 78%, transparent 100%);
+    mask-image: linear-gradient(to bottom, #000 78%, transparent 100%);
   }
 }
 
-/* ─── Keyframes ────────────────────────────────────── */
+/* ─── Keyframes ────────────────────────────────────────────── */
 
-@keyframes slide-up {
-  from { transform: translateY(110%); opacity: 0; }
-  to   { transform: translateY(0);    opacity: 1; }
-}
-
-@keyframes slide-down {
-  from { transform: translateY(-20px); opacity: 0; }
-  to   { transform: translateY(0);     opacity: 1; }
-}
-
-@keyframes fade-in {
-  from { opacity: 0; transform: translateY(8px); }
+@keyframes gate-fade-up {
+  from { opacity: 0; transform: translateY(14px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes fade-in-up {
-  from { opacity: 0; transform: translateY(16px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
+/* ─── React Flow (arbre) — habillage Archive ───────────────── */
 
-@keyframes fade-in-scale {
-  from { opacity: 0; transform: scale(0.97); }
-  to   { opacity: 1; transform: scale(1); }
-}
+.react-flow__renderer { background: transparent; }
 
-@keyframes reveal-line {
-  to { transform: scaleX(1); }
-}
-
-@keyframes ticker {
-  0%   { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50%       { transform: translateY(-8px); }
-}
-
-@keyframes spin-slow {
-  to { transform: rotate(360deg); }
-}
-
-@keyframes pulse-ring {
-  0%   { transform: scale(1);    opacity: 0.6; }
-  100% { transform: scale(1.6);  opacity: 0; }
-}
-
-@keyframes draw-line {
-  from { stroke-dashoffset: 1; }
-  to   { stroke-dashoffset: 0; }
-}
-
-@keyframes count-up {
-  from { opacity: 0; transform: translateY(10px) scale(0.9); }
-  to   { opacity: 1; transform: translateY(0)    scale(1); }
-}
-
-/* ─── Animations utilitaires (Tailwind arbitrary) ───── */
-
-.animate-fade-in   { animation: fade-in 0.4s ease-out both; }
-.animate-slide-up  { animation: slide-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; }
-.animate-float     { animation: float 3s ease-in-out infinite; }
-.animate-ticker    { animation: ticker 20s linear infinite; }
-.animate-spin-slow { animation: spin-slow 8s linear infinite; }
-.animate-count-up  { animation: count-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) both; }
-
-/* Pulse ring — pour les indicateurs d'état actif */
-.pulse-ring {
-  position: relative;
-}
-.pulse-ring::before {
-  content: '';
-  position: absolute;
-  inset: -4px;
-  border-radius: 50%;
-  border: 2px solid currentColor;
-  animation: pulse-ring 1.5s ease-out infinite;
-}
-
-/* ─── React Flow ─────────────────────────────────────── */
-
-.react-flow__node {
-  border-radius: 10px;
-}
+.react-flow__background { background-color: #F4EFE4; }
 
 .react-flow__edge-path {
-  stroke: #18181b;
-  stroke-opacity: 0.35;
+  stroke: #B9AE96;
+  stroke-width: 1.5;
+  transition: stroke 0.2s, stroke-width 0.2s;
 }
-
+.react-flow__edge:hover .react-flow__edge-path { stroke: #46413A; }
 .react-flow__edge.selected .react-flow__edge-path {
-  stroke: #09090b;
-  stroke-opacity: 0.9;
+  stroke: #7A2E2E;
+  stroke-width: 2;
+}
+.react-flow__edge.edge-spouse .react-flow__edge-path {
+  stroke: #7A2E2E;
 }
 
 .react-flow__controls {
-  background: #fff;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+  background: #FAF7F0;
+  border: 1px solid #D8CFBD;
+  border-radius: 6px;
+  box-shadow: 0 6px 24px -8px rgba(26,23,20,0.18);
+  overflow: hidden;
 }
-
 .react-flow__controls-button {
-  background: #fff;
-  border-bottom: 1px solid #f4f4f5;
-  color: #71717a;
+  background: #FAF7F0;
+  border-bottom: 1px solid #EDE6D6;
+  color: #8A8378;
+  transition: background 0.15s, color 0.15s;
 }
-
-.react-flow__controls-button:hover {
-  background: #f9fafb;
-  color: #09090b;
-}
+.react-flow__controls-button:hover { background: #F4EFE4; color: #1A1714; }
+.react-flow__controls-button svg { fill: currentColor; }
 
 .react-flow__minimap {
-  background: #fff;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
+  background: #FAF7F0;
+  border: 1px solid #D8CFBD;
+  border-radius: 6px;
 }
 
-.react-flow__background {
-  background-color: #fafafa;
-}
+.react-flow__attribution { display: none; }
 
-/* ─── .gitignore hint pour la navbar active dot ──────── */
+.react-flow__node { transition: transform 0.18s cubic-bezier(0.16,1,0.3,1); }
 
-/* Indicateur de page active dans la navbar */
-.nav-dot {
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background: #09090b;
-  animation: fade-in-scale 0.2s ease-out both;
+/* ─── prefers-reduced-motion : couper le superflu ──────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  .reveal { opacity: 1; transform: none; }
+  .stagger > * { opacity: 1; transform: none; }
 }
