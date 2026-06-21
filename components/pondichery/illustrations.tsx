@@ -39,12 +39,12 @@ export function CoromandelMap({ className }: { className?: string }) {
         stroke="currentColor" strokeWidth="1.5" opacity="0.6"
       />
       {/* point Pondichéry */}
-      <circle cx="44" cy="120" r="3.5" fill="#7A2E2E" />
+      <circle cx="44" cy="120" r="3.5" fill="#E8A33D" />
       <text x="52" y="124" fontFamily="var(--font-mono)" fontSize="9" fill="currentColor" opacity="0.7">Pondichéry</text>
       {/* traversée (pointillé courbe vers la France) */}
       <path
         d="M48 118 C140 70 220 60 296 40"
-        stroke="#7A2E2E" strokeWidth="1.25" strokeDasharray="4 5" opacity="0.8"
+        stroke="#E8A33D" strokeWidth="1.25" strokeDasharray="4 5" opacity="0.8"
       />
       {/* point France */}
       <circle cx="296" cy="40" r="3.5" fill="currentColor" />
@@ -87,7 +87,7 @@ export function Compass({ className }: { className?: string }) {
       <circle cx="40" cy="40" r="30" stroke="currentColor" strokeWidth="1.25" opacity="0.5" />
       <path d="M40 12 L46 40 L40 68 L34 40 Z" fill="currentColor" opacity="0.18" />
       <path d="M12 40 L40 34 L68 40 L40 46 Z" fill="currentColor" opacity="0.1" />
-      <path d="M40 12 L46 40 L40 40 Z" fill="#7A2E2E" />
+      <path d="M40 12 L46 40 L40 40 Z" fill="#E8A33D" />
       <circle cx="40" cy="40" r="2.5" fill="currentColor" />
     </svg>
   );

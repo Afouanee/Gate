@@ -204,12 +204,12 @@ function layoutNodes(rawNodes: any[], rawEdges: any[]): { nodes: Node[]; edges: 
     sourceHandle: isSpouse ? (srcLeft ? "right" : "left") : undefined,
     targetHandle: isSpouse ? (srcLeft ? "left" : "right") : undefined,
     animated: false,
-    // Couleurs DA « Archive » : filiation = encre estompée, conjoint = sceau, custom = patine pointillée
+    // Couleurs DA « Pondichéry » : filiation = gris froid, conjoint = bleu, custom = terracotta pointillée
     style: {
       stroke:
-        e.type === "SPOUSE" ? "#7A2E2E" :
-        e.type === "CUSTOM" ? "#A8842C" :
-        "#B9AE96",
+        e.type === "SPOUSE" ? "#2B6CB0" :
+        e.type === "CUSTOM" ? "#C2563B" :
+        "#C4CAD4",
       strokeWidth: e.type === "PARENT_CHILD" ? 1.75 : 1.5,
       strokeDasharray:
         e.type === "SPOUSE" ? "5 4" :
@@ -218,11 +218,11 @@ function layoutNodes(rawNodes: any[], rawEdges: any[]): { nodes: Node[]; edges: 
       opacity: e.type === "CUSTOM" ? 0.6 : 1,
     },
     markerEnd: e.type === "PARENT_CHILD"
-      ? { type: MarkerType.ArrowClosed, color: "#8A8378", width: 10, height: 10 }
+      ? { type: MarkerType.ArrowClosed, color: "#7A828F", width: 10, height: 10 }
       : undefined,
     label: e.type === "CUSTOM" ? e.label : undefined,
-    labelStyle:     { fill: "#A8842C", fontSize: 9, fontWeight: 600, fontFamily: "var(--font-mono)" },
-    labelBgStyle:   { fill: "#F2E9CF", fillOpacity: 0.95 },
+    labelStyle:     { fill: "#C2563B", fontSize: 9, fontWeight: 600, fontFamily: "var(--font-mono)" },
+    labelBgStyle:   { fill: "#F7F8FA", fillOpacity: 0.95 },
     labelBgPadding: [4, 2] as [number, number],
     labelBgBorderRadius: 4,
     };
@@ -370,17 +370,17 @@ function FamilyTreeInner({ focusPersonId }: { focusPersonId?: string | null }) {
         maxZoom={3}
         proOptions={{ hideAttribution: true }}
       >
-        <Background variant={BackgroundVariant.Dots} gap={32} size={1.1} color="#D8CFBD" style={{ backgroundColor: "#F4EFE4" }} />
+        <Background variant={BackgroundVariant.Dots} gap={32} size={1.1} color="#E6E9EF" style={{ backgroundColor: "#F7F8FA" }} />
         <Controls />
         <MiniMap
           nodeColor={(node) => {
             if (node.data?.gender === "MALE") return "#3F5B72";
             if (node.data?.gender === "FEMALE") return "#8A4A52";
             if (node.data?.gender === "OTHER") return "#5E5070";
-            return "#B9AE96";
+            return "#C4CAD4";
           }}
           nodeStrokeWidth={0}
-          maskColor="rgba(244,239,228,0.6)"
+          maskColor="rgba(247,248,250,0.6)"
         />
 
         <Panel position="top-left">
@@ -431,15 +431,15 @@ function FamilyTreeInner({ focusPersonId }: { focusPersonId?: string | null }) {
           <div className="space-y-1.5 rounded-[var(--radius)] border border-ink-line bg-paper/95 p-3 text-xs shadow-paper backdrop-blur-sm">
             <p className="mb-2 meta-label">Légende</p>
             <div className="flex items-center gap-2">
-              <div className="h-px w-6" style={{ background: "#8A8378" }} />
+              <div className="h-px w-6" style={{ background: "#7A828F" }} />
               <span className="text-ink-soft">Parent → Enfant</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-6 border-t border-dashed" style={{ borderColor: "#7A2E2E" }} />
+              <div className="w-6 border-t border-dashed" style={{ borderColor: "#2B6CB0" }} />
               <span className="text-ink-soft">Conjoint(e)</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="h-px w-6" style={{ background: "#A8842C" }} />
+              <div className="h-px w-6" style={{ background: "#C2563B" }} />
               <span className="text-ink-soft">Relation personnalisée</span>
             </div>
           </div>

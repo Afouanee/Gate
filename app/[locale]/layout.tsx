@@ -27,10 +27,14 @@ export default async function LocaleLayout({
   return (
     <NextIntlClientProvider messages={messages}>
       <SessionProvider session={session}>
-        {/* Grain papier global — overlay non interactif */}
+        {/* Fond premium clair : halo très subtil ocre/bleu (touche Pondichéry ~10%) */}
         <div
           aria-hidden
-          className="pointer-events-none fixed inset-0 z-[1] bg-grain opacity-[0.5] mix-blend-multiply"
+          className="pointer-events-none fixed inset-0 -z-10"
+          style={{
+            background:
+              "radial-gradient(60rem 40rem at 12% -5%, rgba(232,163,61,0.07), transparent 60%), radial-gradient(50rem 38rem at 95% 8%, rgba(43,108,176,0.06), transparent 55%)",
+          }}
         />
         <Navbar />
         <main className="flex-1 pt-16">{children}</main>

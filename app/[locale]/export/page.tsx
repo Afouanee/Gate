@@ -148,18 +148,18 @@ export default function ExportPage() {
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;");
 
-    // Palette Archive
-    const PAPER = "#FAF7F0";
-    const PAPER_WARM = "#F4EFE4";
-    const INK = "#1A1714";
-    const INK_SOFT = "#46413A";
-    const INK_FAINT = "#8A8378";
-    const INK_LINE = "#D8CFBD";
-    const SEAL = "#7A2E2E";
+    // Palette Light Premium (Pondichéry)
+    const PAPER = "#FFFFFF";
+    const PAPER_WARM = "#F7F8FA";
+    const INK = "#0E1320";
+    const INK_SOFT = "#3F4654";
+    const INK_FAINT = "#7A828F";
+    const INK_LINE = "#E6E9EF";
+    const SEAL = "#2B6CB0";
     const CARD = "#FFFFFF";
     // Teintes de genre désaturées (filet en tête de fiche)
     const genderColor = (g: string) =>
-      g === "MALE" ? "#3F5B72" : g === "FEMALE" ? "#8A4A52" : g === "OTHER" ? "#5E5070" : "#8A8378";
+      g === "MALE" ? "#3F5B72" : g === "FEMALE" ? "#8A4A52" : g === "OTHER" ? "#5E5070" : "#7A828F";
 
     // Fiche
     const CARD_W = 168;
@@ -223,7 +223,7 @@ export default function ExportPage() {
         const x2 = child.cx;
         const y2 = child.top;
         const midY = y1 + (y2 - y1) / 2;
-        const stroke = e.type === "CUSTOM" ? "#A8842C" : INK_FAINT;
+        const stroke = e.type === "CUSTOM" ? "#C2563B" : INK_FAINT;
         const dash = e.type === "CUSTOM" ? ` stroke-dasharray="2,3"` : "";
         return `<path d="M${x1},${y1} V${midY} H${x2} V${y2}" fill="none" stroke="${stroke}" stroke-width="1.25"${dash}/>`;
       })
@@ -319,7 +319,7 @@ export default function ExportPage() {
   .legend span{display:flex;align-items:center;gap:8px}
   .legend i{display:inline-block;width:22px;height:0;border-top:1.25px solid ${INK_FAINT}}
   .legend i.spouse{border-top:1.5px dashed ${SEAL}}
-  .legend i.custom{border-top:1.5px dotted #A8842C}
+  .legend i.custom{border-top:1.5px dotted #C2563B}
   .seal{display:inline-block;width:9px;height:9px;border-radius:50%;background:${SEAL}}
   .doc-foot{display:flex;justify-content:space-between;align-items:center;border-top:1px solid ${INK_LINE};margin-top:26px;padding-top:16px;font-family:'Courier New',monospace;font-size:10.5px;letter-spacing:.06em;color:${INK_FAINT}}
   .doc-foot b{font-family:Georgia,serif;font-weight:600;color:${INK_SOFT};letter-spacing:0}

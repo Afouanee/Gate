@@ -9,27 +9,27 @@
 
 @layer base {
   :root {
-    /* Tokens sémantiques (shadcn) mappés sur la palette Archive */
-    --background: 40 33% 96%;        /* paper #FAF7F0 */
-    --foreground: 30 12% 9%;         /* ink  #1A1714 */
-    --card: 40 33% 98%;
-    --card-foreground: 30 12% 9%;
-    --popover: 40 33% 98%;
-    --popover-foreground: 30 12% 9%;
-    --primary: 30 12% 9%;            /* encre */
-    --primary-foreground: 40 33% 96%;
-    --secondary: 39 30% 92%;         /* paper.warm */
-    --secondary-foreground: 30 12% 9%;
-    --muted: 38 26% 88%;             /* paper.deep */
-    --muted-foreground: 33 7% 35%;   /* ink.soft */
-    --accent: 0 45% 33%;             /* seal bordeaux */
-    --accent-foreground: 40 33% 96%;
-    --destructive: 0 55% 38%;
-    --destructive-foreground: 40 33% 96%;
-    --border: 39 32% 79%;            /* ink.line #D8CFBD */
-    --input: 39 32% 79%;
-    --ring: 0 45% 33%;               /* sceau pour le focus */
-    --radius: 0.25rem;               /* angles francs, registre */
+    /* DA « Daylight » — light premium moderne (blanc net, 10% accents indo) */
+    --background: 0 0% 100%;          /* blanc pur */
+    --foreground: 224 24% 8%;         /* presque noir bleuté */
+    --card: 0 0% 100%;
+    --card-foreground: 224 24% 8%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 224 24% 8%;
+    --primary: 224 24% 8%;            /* encre sombre (sur fond clair) */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 220 20% 97%;         /* gris très clair */
+    --secondary-foreground: 224 24% 8%;
+    --muted: 220 18% 95%;
+    --muted-foreground: 220 9% 46%;
+    --accent: 28 90% 52%;             /* safran (accent indo) */
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 220 16% 90%;
+    --input: 220 16% 90%;
+    --ring: 28 90% 52%;               /* safran pour le focus */
+    --radius: 0.75rem;               /* angles doux, moderne */
   }
 }
 
@@ -77,23 +77,23 @@
   .tabular { font-variant-numeric: tabular-nums; }
 
   ::selection {
-    background: #D98324;          /* safran (chaleur) */
-    color: #1A1714;
+    background: #E8A33D;          /* ocre Pondichéry */
+    color: #0E1320;
   }
 
-  /* Scrollbar discrète, teinte papier */
+  /* Scrollbar discrète, teinte claire */
   ::-webkit-scrollbar { width: 9px; height: 9px; }
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb {
-    background: #D8CFBD;
+    background: #E6E9EF;
     border-radius: 99px;
-    border: 2px solid #FAF7F0;
+    border: 2px solid #FFFFFF;
   }
-  ::-webkit-scrollbar-thumb:hover { background: #B9AE96; }
+  ::-webkit-scrollbar-thumb:hover { background: #C4CAD4; }
 
-  /* Focus visible cohérent (sceau) — jamais retiré */
+  /* Focus visible cohérent (accent ocre) — jamais retiré */
   :focus-visible {
-    outline: 2px solid #7A2E2E;
+    outline: 2px solid #E8A33D;
     outline-offset: 2px;
     border-radius: 2px;
   }
@@ -121,7 +121,7 @@
   /* Filet qui se dessine au scroll-reveal */
   .rule-draw {
     @apply relative h-px w-full overflow-hidden;
-    background-color: rgba(216, 207, 189, 0.4);
+    background-color: rgba(230, 233, 239, 0.6);
   }
   .rule-draw::after {
     content: "";
@@ -145,19 +145,19 @@
   /* Carte papier — bordure encre, ombre chaude, lift au hover */
   .card-paper {
     @apply bg-card border border-ink-line rounded-[var(--radius)] transition-all duration-300 ease-out;
-    box-shadow: 0 1px 2px rgba(26,23,20,0.04);
+    box-shadow: 0 1px 2px rgba(14,19,32,0.04);
   }
   .card-paper:hover {
     transform: translateY(-3px);
-    box-shadow: 0 18px 50px -16px rgba(26,23,20,0.18), 0 6px 16px rgba(26,23,20,0.06);
-    border-color: rgba(26,23,20,0.28);
+    box-shadow: 0 18px 50px -16px rgba(14,19,32,0.18), 0 6px 16px rgba(14,19,32,0.06);
+    border-color: rgba(14,19,32,0.28);
   }
 
-  /* Bouton signature indo-français : encre au repos, dégradé chaud animé au survol */
+  /* Bouton signature indo-français : encre au repos, dégradé moderne animé au survol */
   .btn-indo {
     position: relative;
-    background: #1A1714;
-    color: #FAF7F0;
+    background: #0E1320;
+    color: #FFFFFF;
     overflow: hidden;
     isolation: isolate;
   }
@@ -166,7 +166,7 @@
     position: absolute;
     inset: 0;
     z-index: -1;
-    background: linear-gradient(110deg, #D98324 0%, #7A2E2E 50%, #2E4A6B 100%);
+    background: linear-gradient(110deg, #E8A33D 0%, #C2563B 50%, #2B6CB0 100%);
     background-size: 200% auto;
     opacity: 0;
     transition: opacity 0.35s ease;
@@ -189,7 +189,7 @@
   /* Skeleton — teinte papier */
   .skeleton {
     @apply rounded animate-pulse;
-    background-color: rgba(237, 230, 214, 0.7);
+    background-color: rgba(238, 241, 245, 0.8);
   }
 
   /* Scroll-reveal : état initial puis classe .reveal-in via IntersectionObserver */
@@ -220,15 +220,15 @@
 @layer utilities {
   /* Dégradé d'encre pour titres signature */
   .text-ink-gradient {
-    background: linear-gradient(135deg, #1A1714 0%, #46413A 100%);
+    background: linear-gradient(135deg, #0E1320 0%, #3F4654 100%);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
   }
 
-  /* Dégradé signature indo-français (safran → bordeaux → indigo), animé */
+  /* Dégradé signature indo-français (ocre → terracotta → bleu), animé */
   .text-gradient-indo {
-    background: linear-gradient(110deg, #D98324 0%, #7A2E2E 45%, #2E4A6B 100%);
+    background: linear-gradient(110deg, #E8A33D 0%, #C2563B 50%, #2B6CB0 100%);
     background-size: 200% auto;
     -webkit-background-clip: text;
     background-clip: text;
@@ -271,41 +271,41 @@
 .tree-canvas .react-flow__node { cursor: pointer; }
 .tree-canvas .react-flow__controls-button { cursor: pointer; }
 
-.react-flow__background { background-color: #F4EFE4; }
+.react-flow__background { background-color: #F7F8FA; }
 
 .react-flow__edge-path {
-  stroke: #B9AE96;
+  stroke: #C4CAD4;
   stroke-width: 1.5;
   transition: stroke 0.2s, stroke-width 0.2s;
 }
-.react-flow__edge:hover .react-flow__edge-path { stroke: #46413A; }
+.react-flow__edge:hover .react-flow__edge-path { stroke: #3F4654; }
 .react-flow__edge.selected .react-flow__edge-path {
-  stroke: #7A2E2E;
+  stroke: #E8A33D;
   stroke-width: 2;
 }
 .react-flow__edge.edge-spouse .react-flow__edge-path {
-  stroke: #7A2E2E;
+  stroke: #2B6CB0;
 }
 
 .react-flow__controls {
-  background: #FAF7F0;
-  border: 1px solid #D8CFBD;
+  background: #FFFFFF;
+  border: 1px solid #E6E9EF;
   border-radius: 6px;
-  box-shadow: 0 6px 24px -8px rgba(26,23,20,0.18);
+  box-shadow: 0 6px 24px -8px rgba(14,19,32,0.18);
   overflow: hidden;
 }
 .react-flow__controls-button {
-  background: #FAF7F0;
-  border-bottom: 1px solid #EDE6D6;
-  color: #8A8378;
+  background: #FFFFFF;
+  border-bottom: 1px solid #EEF1F5;
+  color: #7A828F;
   transition: background 0.15s, color 0.15s;
 }
-.react-flow__controls-button:hover { background: #F4EFE4; color: #1A1714; }
+.react-flow__controls-button:hover { background: #F7F8FA; color: #0E1320; }
 .react-flow__controls-button svg { fill: currentColor; }
 
 .react-flow__minimap {
-  background: #FAF7F0;
-  border: 1px solid #D8CFBD;
+  background: #FFFFFF;
+  border: 1px solid #E6E9EF;
   border-radius: 6px;
 }
 
