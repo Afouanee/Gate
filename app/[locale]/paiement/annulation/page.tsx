@@ -17,7 +17,7 @@ export default function PaiementAnnulationPage() {
         <p className="text-sm text-ink-soft mb-2">{t("subtitle")}</p>
         <p className="text-sm text-ink-soft mb-10">{t("message")}</p>
 
-        <p className="text-xs text-ink-faint mb-8">Aucun montant n'a été débité.</p>
+        <p className="text-xs text-ink-faint mb-8">{t("noCharge")}</p>
 
         <div className="flex flex-col gap-3">
           <Link
@@ -32,7 +32,7 @@ export default function PaiementAnnulationPage() {
             className="w-full inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-medium text-ink-soft border border-ink-line rounded-full hover:border-ink hover:text-ink transition-all duration-200"
           >
             <ArrowLeft className="h-4 w-4" strokeWidth={1.75} />
-            Retour à l'accueil
+            {t("backHome")}
           </Link>
         </div>
       </div>

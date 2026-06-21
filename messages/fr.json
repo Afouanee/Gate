@@ -46,7 +46,57 @@
       "subtitle": "Explorez, construisez et partagez votre arbre généalogique avec une précision et une élégance incomparables.",
       "cta": "Commencer gratuitement",
       "ctaPremium": "Découvrir Premium",
-      "badge": "Plateforme généalogique avancée"
+      "badge": "Plateforme généalogique avancée",
+      "registerLabel": "№ 001 · Registre familial",
+      "route": "Pondichéry vers France",
+      "titleLine1": "La porte",
+      "titleLine2": "vers vos",
+      "titleLine3": "origines.",
+      "verified": "Vérifié",
+      "lead": "Un registre familial vivant. Reliez les générations, conservez la mémoire des vôtres et remontez le fil.",
+      "leadEmphasis": "Un nom, une date, un lien à la fois.",
+      "openTree": "Ouvrir l'arbre",
+      "startFree": "Commencer, c'est gratuit",
+      "login": "Se connecter",
+      "quote": "« Dis-moi qui tu es, je te dirai d'où tu viens. »",
+      "statProfiles": "profils",
+      "statLinks": "liens",
+      "scroll": "défiler"
+    },
+    "howItWorks": {
+      "sectionNo": "№ 02",
+      "title": "Trois gestes, un arbre.",
+      "step1Title": "Cherchez les vôtres",
+      "step1Body": "Retrouvez un parent, un aïeul, une branche. Chaque profil est une fiche d'archive.",
+      "step2Title": "Tissez les liens",
+      "step2Body": "Parent, enfant, conjoint : reliez les générations et voyez l'arbre se dessiner.",
+      "step3Title": "Transmettez",
+      "step3Body": "Exportez un arbre soigné en PDF et partagez la mémoire familiale."
+    },
+    "contribute": {
+      "sectionNo": "№ 03 · Contribuer",
+      "title": "Votre famille mérite d'être dans l'arbre.",
+      "body": "Vous ne vous retrouvez pas, ou vous souhaitez enrichir une branche ? Écrivez-nous, chaque lien compte.",
+      "cta": "Nous contacter"
+    },
+    "pricingTeaser": {
+      "sectionNo": "№ 04 · Tarifs",
+      "title": "Commencez gratuitement.",
+      "freeLabel": "Gratuit",
+      "freePrice": "0 €",
+      "freePeriod": "pour toujours",
+      "freeFeature1": "5 recherches / mois",
+      "freeFeature2": "10 profils",
+      "freeFeature3": "1 export / mois",
+      "freeCta": "Commencer",
+      "premiumBadge": "✦ Premium",
+      "premiumLabel": "Premium",
+      "premiumPrice": "3,99 €",
+      "premiumPeriod": "tous les 3 mois",
+      "premiumFeature1": "Illimité",
+      "premiumFeature2": "Arbre complet",
+      "premiumFeature3": "Exports PDF",
+      "premiumCta": "Voir les détails"
     },
     "features": {
       "title": "Fonctionnalités",
@@ -85,7 +135,26 @@
       "register": "S'inscrire",
       "magicLink": "Connexion par lien magique",
       "magicLinkSent": "Un lien de connexion a été envoyé à votre adresse email.",
-      "orDivider": "ou continuer avec"
+      "orDivider": "ou continuer avec",
+      "asideLabel": "№ · Accès",
+      "asideRegister": "Le registre",
+      "asideTitleLine1": "Votre histoire,",
+      "asideTitleLine2": "préservée.",
+      "asideBody": "Reprenez le fil de votre arbre, là où vous l'avez laissé.",
+      "asideQuote": "« Dis-moi qui tu es, je te dirai d'où tu viens. »",
+      "sectionNo": "№ · Connexion",
+      "welcomeBack": "Content de vous revoir.",
+      "modePassword": "Mot de passe",
+      "modeMagic": "Lien magique",
+      "emailSent": "Email envoyé",
+      "emailSentBody": "Vérifiez votre boîte mail et cliquez sur le lien.",
+      "emailPlaceholder": "votre@email.com",
+      "passwordPlaceholder": "••••••••",
+      "showPassword": "Afficher le mot de passe",
+      "hidePassword": "Masquer le mot de passe",
+      "receiveLink": "Recevoir le lien",
+      "errorEmailNotVerified": "Vérifiez votre email avant de vous connecter.",
+      "errorMagicLink": "Impossible d'envoyer le lien."
     },
     "register": {
       "title": "Créer un compte",
@@ -105,7 +174,38 @@
       "enterCode": "Entrez le code reçu par email",
       "verifyCode": "Vérifier le code",
       "resendCode": "Renvoyer le code",
-      "disposableEmail": "Les adresses email temporaires ne sont pas autorisées."
+      "disposableEmail": "Les adresses email temporaires ne sont pas autorisées.",
+      "asideLabel": "№ · Bienvenue",
+      "asideRegister": "Le registre",
+      "asideTitleLine1": "Commencez",
+      "asideTitleLine2": "votre registre.",
+      "asideBenefit1": "Inscription en deux minutes",
+      "asideBenefit2": "Email vérifié, données protégées",
+      "asideBenefit3": "Arbre interactif inclus",
+      "asideFree": "Gratuit pour toujours.",
+      "sectionNo": "№ · Inscription",
+      "createTitle": "Créer un compte",
+      "createSubtitle": "C'est gratuit, pour toujours.",
+      "fieldName": "Nom",
+      "fieldEmail": "Email",
+      "fieldPassword": "Mot de passe",
+      "fieldConfirm": "Confirmer",
+      "namePlaceholder": "Jean Dupont",
+      "emailPlaceholder": "votre@email.com",
+      "passwordPlaceholder": "Minimum 8 caractères",
+      "confirmPlaceholder": "Répéter le mot de passe",
+      "alreadyAccount": "Déjà un compte ?",
+      "verifyTitle": "Vérification",
+      "codeSentTo": "Code envoyé à",
+      "enterCodeLabel": "Entrez le code à 6 chiffres",
+      "verify": "Vérifier",
+      "verifiedTitle": "Email vérifié !",
+      "verifiedBody": "Vous pouvez maintenant vous connecter.",
+      "codeInvalidTitle": "Code invalide",
+      "codeResentTitle": "Code renvoyé",
+      "codeResentBody": "Vérifiez votre boîte mail.",
+      "errorGeneric": "Une erreur est survenue.",
+      "errorConnection": "Connexion impossible, réessayez."
     },
     "errors": {
       "invalidCredentials": "Email ou mot de passe incorrect.",
@@ -115,7 +215,8 @@
       "invalidEmail": "Adresse email invalide.",
       "codeExpired": "Le code de vérification a expiré.",
       "codeInvalid": "Code de vérification invalide.",
-      "disposableEmail": "Les adresses email temporaires ne sont pas autorisées."
+      "disposableEmail": "Les adresses email temporaires ne sont pas autorisées.",
+      "title": "Erreur"
     }
   },
   "tree": {
@@ -203,7 +304,50 @@
     "limitReached": "Vous avez atteint la limite d'1 export gratuit.",
     "upgradeToPremium": "Passer à Premium pour des exports illimités",
     "success": "PDF généré avec succès !",
-    "error": "Erreur lors de la génération du PDF"
+    "error": "Erreur lors de la génération du PDF",
+    "sectionNo": "№ · Export",
+    "upgradeCta": "Passer à Premium",
+    "configuration": "Configuration",
+    "result": "Résultat",
+    "searchAria": "Rechercher",
+    "removeSelection": "Retirer la sélection",
+    "typeAscendance": "Ascendance",
+    "typeDescendance": "Descendance",
+    "typeMixte": "Mixte",
+    "typeCustom": "Personnalisé",
+    "depthOne": "1 génération",
+    "depthTen": "10 générations",
+    "generating": "Génération…",
+    "generatingFull": "Génération en cours…",
+    "successProfiles": "{count} profils inclus",
+    "preview": "Aperçu",
+    "rowTargetPerson": "Personne cible",
+    "rowType": "Type",
+    "rowDepth": "Profondeur",
+    "rowProfiles": "Profils",
+    "rowRelations": "Relations",
+    "generationsCount": "{count} génération{plural}",
+    "downloadPdf": "Télécharger le PDF",
+    "preparingPdf": "Préparation du PDF…",
+    "downloadHtml": "Version HTML (imprimable)",
+    "emptyState": "Configurez et générez votre arbre.",
+    "errorTitle": "Erreur",
+    "errorConnection": "Connexion impossible, réessayez.",
+    "successTitle": "Succès !",
+    "limitTitle": "Limite atteinte",
+    "pdfUnavailableTitle": "PDF indisponible",
+    "pdfUnavailableBody": "Téléchargement de la version imprimable (HTML) à la place.",
+    "downloadFailed": "Le téléchargement a échoué.",
+    "lineageMixte": "Lignée mixte",
+    "docKicker": "№ · Registre généalogique",
+    "docProfilesLinks": "{profiles} profils · {links} liens",
+    "docEstablished": "Établi le {date}",
+    "legendFiliation": "Filiation",
+    "legendSpouse": "Conjoint(e)",
+    "legendCustom": "Relation personnalisée",
+    "legendReference": "Personne de référence",
+    "footTagline": "La porte vers vos origines",
+    "printHint": "Astuce : imprimez cette page (Ctrl/Cmd + P) et choisissez « Enregistrer au format PDF »."
   },
   "pricing": {
     "title": "Nos offres",
@@ -233,6 +377,64 @@
       ],
       "cta": "Passer à Premium",
       "badge": "Recommandé"
+    },
+    "page": {
+      "sectionNo": "№ · Le projet",
+      "headingBefore": "Gratuit, pour ",
+      "headingHighlight": "rassembler",
+      "headingAfter": ".",
+      "intro": "Gate est un projet familial, pas un commerce. L'arbre et toutes ses fonctionnalités sont gratuits. Si vous le souhaitez, vous pouvez soutenir l'hébergement, mais rien n'est jamais bloqué.",
+      "reassureStrong": "La priorité, c'est de partager et de réunir la famille.",
+      "reassureRest": "Le soutien est une attention, jamais une condition.",
+      "activeAdmin": "Administrateur : accès total activé.",
+      "activeSupporter": "Merci, votre soutien au projet est actif.",
+      "freeLabel": "Pour toute la famille",
+      "freePrice": "0 €",
+      "freePeriod": "pour toujours",
+      "currentPlan": "Plan actuel",
+      "joinFamily": "Rejoindre la famille",
+      "supportOptional": "✦ Optionnel",
+      "supportLabel": "Soutien",
+      "supportPrice": "3,99 €",
+      "supportPeriod": "/ 3 mois",
+      "supportActive": "Merci pour votre soutien",
+      "supportAdmin": "Administrateur",
+      "supportCta": "Soutenir le projet",
+      "supportNote": "Paiement via Stripe · Résiliable à tout moment",
+      "faqLabel": "№ · FAQ",
+      "errorTitle": "Erreur",
+      "errorCheckout": "Impossible de démarrer le paiement.",
+      "errorGeneric": "Une erreur est survenue.",
+      "freeFeatures": [
+        "Arbre familial complet",
+        "Recherche dans tous les profils",
+        "Export PDF de l'arbre",
+        "Pages mémoire (Pondichéry, Karaikal)"
+      ],
+      "premiumFeatures": [
+        "Tout le gratuit, sans limite",
+        "Vous soutenez l'hébergement",
+        "Badge de soutien sur votre profil",
+        "Notre gratitude éternelle"
+      ],
+      "faq": [
+        {
+          "q": "Faut-il payer pour utiliser l'arbre ?",
+          "a": "Non. L'arbre, la recherche, les profils et l'export sont entièrement gratuits. Le but du projet est de rassembler la famille, pas de gagner de l'argent."
+        },
+        {
+          "q": "À quoi sert le soutien alors ?",
+          "a": "Uniquement à aider à couvrir les frais d'hébergement. C'est une attention facultative ; rien n'est jamais bloqué si vous ne soutenez pas."
+        },
+        {
+          "q": "Puis-je arrêter mon soutien à tout moment ?",
+          "a": "Oui. L'arrêt prend effet à la fin de la période en cours, et vous gardez exactement le même accès qu'avant : tout reste gratuit."
+        },
+        {
+          "q": "Le paiement est-il sécurisé ?",
+          "a": "Oui, il est traité par Stripe. Gate ne stocke jamais vos informations bancaires."
+        }
+      ]
     }
   },
   "account": {
@@ -250,7 +452,38 @@
     "renewSubscription": "Renouveler",
     "consentRgpd": "Consentement RGPD",
     "downloadData": "Télécharger mes données",
-    "anonymize": "Anonymiser mes données"
+    "anonymize": "Anonymiser mes données",
+    "sectionNo": "№ · Mon compte",
+    "yourSpace": "Votre espace",
+    "sectionProfile": "Profil",
+    "sectionSubscription": "Abonnement",
+    "sectionLink": "Rattachement profil",
+    "sectionDanger": "Zone de danger",
+    "badgeAdmin": "Admin",
+    "badgePremium": "Premium",
+    "badgeFree": "Gratuit",
+    "noName": "Sans nom",
+    "adminAccess": "Accès administrateur",
+    "premiumActive": "Premium actif",
+    "renewalOn": "Renouvellement le",
+    "perkUnlimitedSearches": "Recherches illimitées",
+    "perkUnlimitedExports": "Exports PDF illimités",
+    "perkFullTree": "Arbre complet",
+    "onFreePlan": "Vous êtes sur le plan gratuit.",
+    "premiumName": "Gate Premium",
+    "premiumPrice": "3,99 €",
+    "premiumPeriod": "/ 3 mois",
+    "premiumBadge": "✦ Pro",
+    "goPremium": "Passer Premium",
+    "linkBody": "Liez votre compte à un profil de l'arbre.",
+    "manage": "Gérer",
+    "deleteWarning": "Cette action est irréversible. Vos données seront anonymisées.",
+    "confirmDelete": "Confirmer la suppression",
+    "deleteAccountBtn": "Supprimer mon compte",
+    "cancel": "Annuler",
+    "errorTitle": "Erreur",
+    "errorConnection": "Connexion impossible, réessayez.",
+    "errorDelete": "Impossible de supprimer le compte."
   },
   "linkRequest": {
     "title": "Demande de rattachement",
@@ -266,7 +499,23 @@
     "noRequests": "Aucune demande en cours",
     "alreadyLinked": "Vous êtes déjà rattaché à un profil.",
     "success": "Demande envoyée avec succès.",
-    "error": "Erreur lors de l'envoi de la demande."
+    "error": "Erreur lors de l'envoi de la demande.",
+    "sectionNo": "№ · Rattachement",
+    "statusPending": "En attente",
+    "statusApproved": "Approuvée",
+    "statusRejected": "Rejetée",
+    "newRequest": "Nouvelle demande",
+    "activeRequestNotice": "Vous avez déjà une demande active. Elle sera traitée par un administrateur.",
+    "searchProfile": "Rechercher un profil",
+    "searchPlaceholder": "Nom, prénom...",
+    "searchAria": "Rechercher",
+    "removeSelection": "Retirer la sélection",
+    "presentationMessage": "Message de présentation",
+    "requestSentTitle": "Demande envoyée",
+    "errorTitle": "Erreur",
+    "errorConnection": "Connexion impossible, réessayez.",
+    "errorRequestPending": "Vous avez déjà une demande en attente.",
+    "errorPersonAlreadyLinked": "Ce profil est déjà pris."
   },
   "admin": {
     "title": "Administration",
@@ -301,31 +550,109 @@
     "submit": "Envoyer",
     "success": "Message envoyé avec succès !",
     "error": "Erreur lors de l'envoi du message.",
-    "responseTime": "Réponse sous 48h ouvrées"
+    "responseTime": "Réponse sous 48h ouvrées",
+    "sectionNo": "№ · Contact",
+    "heading": "On vous répond.",
+    "intro": "Une question, un problème, une suggestion ? Écrivez-nous.",
+    "directEmailLabel": "Email direct",
+    "directEmail": "contact@gate.afouanee.dev",
+    "responseDelayLabel": "Délai de réponse",
+    "responseDelay": "Sous 24h en jours ouvrés",
+    "sentTitle": "Message envoyé",
+    "sentBody": "On vous répondra dans les plus brefs délais.",
+    "fieldName": "Nom",
+    "fieldEmail": "Email",
+    "namePlaceholder": "Jean Dupont",
+    "emailPlaceholder": "jean@email.com",
+    "subjectPlaceholder": "En quelques mots...",
+    "messagePlaceholder": "Décrivez votre demande...",
+    "errorTitle": "Erreur"
   },
   "charter": {
     "title": "Charte d'utilisation",
-    "subtitle": "Règles et conditions d'utilisation de Gate"
+    "subtitle": "Règles et conditions d'utilisation de Gate",
+    "page": {
+      "sectionNo": "№ · Légal",
+      "heading": "Charte d'utilisation",
+      "lastUpdated": "Dernière mise à jour :",
+      "sections": {
+        "utilisation": {
+          "title": "Conditions d'utilisation",
+          "content": [
+            "Gate est une plateforme dédiée à la généalogie. En utilisant nos services, vous acceptez les présentes conditions.",
+            "Il est strictement interdit de publier des informations fausses, diffamatoires, portant atteinte à la vie privée de tiers, ou illégales sur la plateforme Gate.",
+            "Tout abus peut entraîner la suspension immédiate du compte, sans remboursement."
+          ]
+        },
+        "rgpd": {
+          "title": "Protection des données · RGPD",
+          "content": [
+            "Conformément au RGPD, Gate s'engage à traiter vos données personnelles de manière transparente et sécurisée."
+          ],
+          "listCollectedTitle": "Données collectées",
+          "listCollected": [
+            "Email et nom (création de compte)",
+            "Données de profil généalogique (optionnelles)",
+            "Paiements gérés exclusivement par Stripe",
+            "Logs de connexion et d'audit (sécurité)"
+          ],
+          "listRightsTitle": "Vos droits",
+          "listRights": [
+            "Droit d'accès : consultez vos données depuis votre compte.",
+            "Droit à l'effacement : suppression = anonymisation immédiate.",
+            "Droit à la portabilité : export de vos données sur demande.",
+            "Contact : privacy@gate.afouanee.dev"
+          ]
+        },
+        "visibilite": {
+          "title": "Visibilité des profils",
+          "content": [
+            "Par défaut, seuls prénom et nom sont visibles. Les données sensibles (dates, photos, infos personnelles) sont masquées.",
+            "Les administrateurs configurent la visibilité de chaque champ. Les utilisateurs Premium accèdent aux données complètes selon ces paramètres."
+          ]
+        },
+        "mentions": {
+          "title": "Mentions légales",
+          "legalEditorLabel": "Éditeur",
+          "legalEditorValue": "Afouanee.dev",
+          "legalHostingLabel": "Hébergement",
+          "legalHostingValue": "Vercel Inc. (San Francisco, CA) / Supabase",
+          "legalContactLabel": "Contact",
+          "legalContactValue": "contact@gate.afouanee.dev",
+          "legalPaymentsLabel": "Paiements",
+          "legalPaymentsValue": "Stripe Inc. (San Francisco, CA)"
+        }
+      }
+    }
   },
   "payment": {
     "success": {
       "title": "Paiement réussi !",
       "subtitle": "Bienvenue dans Gate Premium",
       "message": "Votre abonnement est maintenant actif. Profitez de toutes les fonctionnalités Premium.",
-      "cta": "Accéder à l'arbre"
+      "cta": "Accéder à l'arbre",
+      "sectionNo": "№ · Paiement confirmé",
+      "unlockedLabel": "Débloqué",
+      "unlocked1": "Recherches illimitées",
+      "unlocked2": "Profils illimités",
+      "unlocked3": "Exports PDF illimités",
+      "unlocked4": "Arbre complet"
     },
     "cancel": {
       "title": "Paiement annulé",
       "subtitle": "Votre paiement n'a pas été effectué.",
       "message": "Vous pouvez réessayer à tout moment.",
-      "cta": "Voir les offres"
+      "cta": "Voir les offres",
+      "noCharge": "Aucun montant n'a été débité.",
+      "backHome": "Retour à l'accueil"
     }
   },
   "errors": {
     "403": {
       "title": "Accès refusé",
       "subtitle": "Vous n'avez pas les permissions nécessaires.",
-      "cta": "Retour à l'accueil"
+      "cta": "Retour à l'accueil",
+      "sectionNo": "№ · Accès refusé"
     },
     "404": {
       "title": "Page introuvable",

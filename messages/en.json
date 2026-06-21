@@ -46,7 +46,57 @@
       "subtitle": "Explore, build, and share your family tree with unparalleled precision and elegance.",
       "cta": "Start for free",
       "ctaPremium": "Discover Premium",
-      "badge": "Advanced genealogy platform"
+      "badge": "Advanced genealogy platform",
+      "registerLabel": "№ 001 · Family Register",
+      "route": "Pondicherry to France",
+      "titleLine1": "The gateway",
+      "titleLine2": "to your",
+      "titleLine3": "origins.",
+      "verified": "Verified",
+      "lead": "A living family register. Connect the generations, keep the memory of your loved ones, and trace the thread back.",
+      "leadEmphasis": "One name, one date, one link at a time.",
+      "openTree": "Open the tree",
+      "startFree": "Get started, it's free",
+      "login": "Sign in",
+      "quote": "\"Tell me who you are, and I'll tell you where you come from.\"",
+      "statProfiles": "profiles",
+      "statLinks": "links",
+      "scroll": "scroll"
+    },
+    "howItWorks": {
+      "sectionNo": "№ 02",
+      "title": "Three gestures, one tree.",
+      "step1Title": "Find your kin",
+      "step1Body": "Track down a parent, a forebear, a branch. Each profile is an archival record.",
+      "step2Title": "Weave the links",
+      "step2Body": "Parent, child, spouse: connect the generations and watch the tree take shape.",
+      "step3Title": "Pass it on",
+      "step3Body": "Export a carefully crafted tree as a PDF and share your family's memory."
+    },
+    "contribute": {
+      "sectionNo": "№ 03 · Contribute",
+      "title": "Your family deserves a place in the tree.",
+      "body": "Can't find yourself, or would you like to enrich a branch? Write to us, every link matters.",
+      "cta": "Contact us"
+    },
+    "pricingTeaser": {
+      "sectionNo": "№ 04 · Pricing",
+      "title": "Start for free.",
+      "freeLabel": "Free",
+      "freePrice": "€0",
+      "freePeriod": "forever",
+      "freeFeature1": "5 searches / month",
+      "freeFeature2": "10 profiles",
+      "freeFeature3": "1 export / month",
+      "freeCta": "Get started",
+      "premiumBadge": "✦ Premium",
+      "premiumLabel": "Premium",
+      "premiumPrice": "€3.99",
+      "premiumPeriod": "every 3 months",
+      "premiumFeature1": "Unlimited",
+      "premiumFeature2": "Full tree",
+      "premiumFeature3": "PDF exports",
+      "premiumCta": "See the details"
     },
     "features": {
       "title": "Features",
@@ -85,7 +135,26 @@
       "register": "Sign Up",
       "magicLink": "Sign in with magic link",
       "magicLinkSent": "A sign-in link has been sent to your email address.",
-      "orDivider": "or continue with"
+      "orDivider": "or continue with",
+      "asideLabel": "№ · Access",
+      "asideRegister": "The register",
+      "asideTitleLine1": "Your story,",
+      "asideTitleLine2": "preserved.",
+      "asideBody": "Pick up your tree right where you left off.",
+      "asideQuote": "\"Tell me who you are, and I'll tell you where you come from.\"",
+      "sectionNo": "№ · Sign in",
+      "welcomeBack": "Good to see you again.",
+      "modePassword": "Password",
+      "modeMagic": "Magic link",
+      "emailSent": "Email sent",
+      "emailSentBody": "Check your inbox and click the link.",
+      "emailPlaceholder": "you@email.com",
+      "passwordPlaceholder": "••••••••",
+      "showPassword": "Show password",
+      "hidePassword": "Hide password",
+      "receiveLink": "Get the link",
+      "errorEmailNotVerified": "Please verify your email before signing in.",
+      "errorMagicLink": "Unable to send the link."
     },
     "register": {
       "title": "Create an account",
@@ -105,7 +174,38 @@
       "enterCode": "Enter the code received by email",
       "verifyCode": "Verify code",
       "resendCode": "Resend code",
-      "disposableEmail": "Disposable email addresses are not allowed."
+      "disposableEmail": "Disposable email addresses are not allowed.",
+      "asideLabel": "№ · Welcome",
+      "asideRegister": "The register",
+      "asideTitleLine1": "Begin",
+      "asideTitleLine2": "your register.",
+      "asideBenefit1": "Sign up in two minutes",
+      "asideBenefit2": "Verified email, protected data",
+      "asideBenefit3": "Interactive tree included",
+      "asideFree": "Free forever.",
+      "sectionNo": "№ · Sign up",
+      "createTitle": "Create an account",
+      "createSubtitle": "It's free, forever.",
+      "fieldName": "Name",
+      "fieldEmail": "Email",
+      "fieldPassword": "Password",
+      "fieldConfirm": "Confirm",
+      "namePlaceholder": "John Smith",
+      "emailPlaceholder": "you@email.com",
+      "passwordPlaceholder": "At least 8 characters",
+      "confirmPlaceholder": "Repeat the password",
+      "alreadyAccount": "Already have an account?",
+      "verifyTitle": "Verification",
+      "codeSentTo": "Code sent to",
+      "enterCodeLabel": "Enter the 6-digit code",
+      "verify": "Verify",
+      "verifiedTitle": "Email verified!",
+      "verifiedBody": "You can now sign in.",
+      "codeInvalidTitle": "Invalid code",
+      "codeResentTitle": "Code resent",
+      "codeResentBody": "Check your inbox.",
+      "errorGeneric": "An error occurred.",
+      "errorConnection": "Connection failed, please try again."
     },
     "errors": {
       "invalidCredentials": "Invalid email or password.",
@@ -115,7 +215,8 @@
       "invalidEmail": "Invalid email address.",
       "codeExpired": "The verification code has expired.",
       "codeInvalid": "Invalid verification code.",
-      "disposableEmail": "Disposable email addresses are not allowed."
+      "disposableEmail": "Disposable email addresses are not allowed.",
+      "title": "Error"
     }
   },
   "tree": {
@@ -203,7 +304,50 @@
     "limitReached": "You have reached the 1 free export limit.",
     "upgradeToPremium": "Upgrade to Premium for unlimited exports",
     "success": "PDF generated successfully!",
-    "error": "Error generating PDF"
+    "error": "Error generating PDF",
+    "sectionNo": "№ · Export",
+    "upgradeCta": "Upgrade to Premium",
+    "configuration": "Configuration",
+    "result": "Result",
+    "searchAria": "Search",
+    "removeSelection": "Remove selection",
+    "typeAscendance": "Ancestry",
+    "typeDescendance": "Descendants",
+    "typeMixte": "Mixed",
+    "typeCustom": "Custom",
+    "depthOne": "1 generation",
+    "depthTen": "10 generations",
+    "generating": "Generating…",
+    "generatingFull": "Generating…",
+    "successProfiles": "{count} profiles included",
+    "preview": "Preview",
+    "rowTargetPerson": "Target person",
+    "rowType": "Type",
+    "rowDepth": "Depth",
+    "rowProfiles": "Profiles",
+    "rowRelations": "Relations",
+    "generationsCount": "{count} generation{plural}",
+    "downloadPdf": "Download the PDF",
+    "preparingPdf": "Preparing the PDF…",
+    "downloadHtml": "HTML version (printable)",
+    "emptyState": "Configure and generate your tree.",
+    "errorTitle": "Error",
+    "errorConnection": "Connection failed, please try again.",
+    "successTitle": "Success!",
+    "limitTitle": "Limit reached",
+    "pdfUnavailableTitle": "PDF unavailable",
+    "pdfUnavailableBody": "Downloading the printable version (HTML) instead.",
+    "downloadFailed": "The download failed.",
+    "lineageMixte": "Mixed lineage",
+    "docKicker": "№ · Genealogical register",
+    "docProfilesLinks": "{profiles} profiles · {links} links",
+    "docEstablished": "Drawn up on {date}",
+    "legendFiliation": "Lineage",
+    "legendSpouse": "Spouse",
+    "legendCustom": "Custom relation",
+    "legendReference": "Reference person",
+    "footTagline": "The gateway to your origins",
+    "printHint": "Tip: print this page (Ctrl/Cmd + P) and choose \"Save as PDF\"."
   },
   "pricing": {
     "title": "Our plans",
@@ -233,6 +377,64 @@
       ],
       "cta": "Go Premium",
       "badge": "Recommended"
+    },
+    "page": {
+      "sectionNo": "№ · The project",
+      "headingBefore": "Free, to ",
+      "headingHighlight": "bring us together",
+      "headingAfter": ".",
+      "intro": "Gate is a family project, not a business. The tree and all its features are free. If you wish, you can help cover hosting costs, but nothing is ever locked away.",
+      "reassureStrong": "The priority is to share and reunite the family.",
+      "reassureRest": "Support is a kind gesture, never a condition.",
+      "activeAdmin": "Administrator: full access enabled.",
+      "activeSupporter": "Thank you, your support for the project is active.",
+      "freeLabel": "For the whole family",
+      "freePrice": "€0",
+      "freePeriod": "forever",
+      "currentPlan": "Current plan",
+      "joinFamily": "Join the family",
+      "supportOptional": "✦ Optional",
+      "supportLabel": "Support",
+      "supportPrice": "€3.99",
+      "supportPeriod": "/ 3 months",
+      "supportActive": "Thank you for your support",
+      "supportAdmin": "Administrator",
+      "supportCta": "Support the project",
+      "supportNote": "Payment via Stripe · Cancel anytime",
+      "faqLabel": "№ · FAQ",
+      "errorTitle": "Error",
+      "errorCheckout": "Unable to start the payment.",
+      "errorGeneric": "An error occurred.",
+      "freeFeatures": [
+        "Complete family tree",
+        "Search across all profiles",
+        "PDF export of the tree",
+        "Memorial pages (Pondicherry, Karaikal)"
+      ],
+      "premiumFeatures": [
+        "Everything free, without limits",
+        "You help cover hosting",
+        "Supporter badge on your profile",
+        "Our eternal gratitude"
+      ],
+      "faq": [
+        {
+          "q": "Do I have to pay to use the tree?",
+          "a": "No. The tree, search, profiles, and export are entirely free. The aim of this project is to bring the family together, not to make money."
+        },
+        {
+          "q": "What is support for, then?",
+          "a": "Solely to help cover hosting costs. It's an optional gesture; nothing is ever locked away if you choose not to support."
+        },
+        {
+          "q": "Can I stop my support at any time?",
+          "a": "Yes. Cancellation takes effect at the end of the current period, and you keep exactly the same access as before: everything stays free."
+        },
+        {
+          "q": "Is the payment secure?",
+          "a": "Yes, it is handled by Stripe. Gate never stores your banking information."
+        }
+      ]
     }
   },
   "account": {
@@ -250,7 +452,38 @@
     "renewSubscription": "Renew",
     "consentRgpd": "GDPR Consent",
     "downloadData": "Download my data",
-    "anonymize": "Anonymize my data"
+    "anonymize": "Anonymize my data",
+    "sectionNo": "№ · My account",
+    "yourSpace": "Your space",
+    "sectionProfile": "Profile",
+    "sectionSubscription": "Subscription",
+    "sectionLink": "Profile link",
+    "sectionDanger": "Danger zone",
+    "badgeAdmin": "Admin",
+    "badgePremium": "Premium",
+    "badgeFree": "Free",
+    "noName": "No name",
+    "adminAccess": "Administrator access",
+    "premiumActive": "Premium active",
+    "renewalOn": "Renews on",
+    "perkUnlimitedSearches": "Unlimited searches",
+    "perkUnlimitedExports": "Unlimited PDF exports",
+    "perkFullTree": "Full tree",
+    "onFreePlan": "You are on the free plan.",
+    "premiumName": "Gate Premium",
+    "premiumPrice": "€3.99",
+    "premiumPeriod": "/ 3 months",
+    "premiumBadge": "✦ Pro",
+    "goPremium": "Go Premium",
+    "linkBody": "Link your account to a profile in the tree.",
+    "manage": "Manage",
+    "deleteWarning": "This action is irreversible. Your data will be anonymized.",
+    "confirmDelete": "Confirm deletion",
+    "deleteAccountBtn": "Delete my account",
+    "cancel": "Cancel",
+    "errorTitle": "Error",
+    "errorConnection": "Connection failed, please try again.",
+    "errorDelete": "Unable to delete the account."
   },
   "linkRequest": {
     "title": "Link Request",
@@ -266,7 +499,23 @@
     "noRequests": "No pending requests",
     "alreadyLinked": "You are already linked to a profile.",
     "success": "Request sent successfully.",
-    "error": "Error sending request."
+    "error": "Error sending request.",
+    "sectionNo": "№ · Link request",
+    "statusPending": "Pending",
+    "statusApproved": "Approved",
+    "statusRejected": "Rejected",
+    "newRequest": "New request",
+    "activeRequestNotice": "You already have an active request. It will be reviewed by an administrator.",
+    "searchProfile": "Search for a profile",
+    "searchPlaceholder": "Last name, first name...",
+    "searchAria": "Search",
+    "removeSelection": "Remove selection",
+    "presentationMessage": "Introduction message",
+    "requestSentTitle": "Request sent",
+    "errorTitle": "Error",
+    "errorConnection": "Connection failed, please try again.",
+    "errorRequestPending": "You already have a pending request.",
+    "errorPersonAlreadyLinked": "This profile is already taken."
   },
   "admin": {
     "title": "Administration",
@@ -301,31 +550,109 @@
     "submit": "Send",
     "success": "Message sent successfully!",
     "error": "Error sending message.",
-    "responseTime": "Response within 48 working hours"
+    "responseTime": "Response within 48 working hours",
+    "sectionNo": "№ · Contact",
+    "heading": "We'll get back to you.",
+    "intro": "A question, an issue, a suggestion? Write to us.",
+    "directEmailLabel": "Direct email",
+    "directEmail": "contact@gate.afouanee.dev",
+    "responseDelayLabel": "Response time",
+    "responseDelay": "Within 24h on working days",
+    "sentTitle": "Message sent",
+    "sentBody": "We'll get back to you as soon as possible.",
+    "fieldName": "Name",
+    "fieldEmail": "Email",
+    "namePlaceholder": "John Smith",
+    "emailPlaceholder": "john@email.com",
+    "subjectPlaceholder": "In a few words...",
+    "messagePlaceholder": "Describe your request...",
+    "errorTitle": "Error"
   },
   "charter": {
     "title": "Terms of Use",
-    "subtitle": "Rules and conditions of use for Gate"
+    "subtitle": "Rules and conditions of use for Gate",
+    "page": {
+      "sectionNo": "№ · Legal",
+      "heading": "Terms of Use",
+      "lastUpdated": "Last updated:",
+      "sections": {
+        "utilisation": {
+          "title": "Terms of use",
+          "content": [
+            "Gate is a platform dedicated to genealogy. By using our services, you agree to these terms.",
+            "Publishing false, defamatory, or unlawful information, or content that infringes on the privacy of others, is strictly prohibited on the Gate platform.",
+            "Any misuse may result in the immediate suspension of the account, without refund."
+          ]
+        },
+        "rgpd": {
+          "title": "Data protection · GDPR",
+          "content": [
+            "In accordance with the GDPR, Gate is committed to processing your personal data transparently and securely."
+          ],
+          "listCollectedTitle": "Data collected",
+          "listCollected": [
+            "Email and name (account creation)",
+            "Genealogical profile data (optional)",
+            "Payments handled exclusively by Stripe",
+            "Sign-in and audit logs (security)"
+          ],
+          "listRightsTitle": "Your rights",
+          "listRights": [
+            "Right of access: view your data from your account.",
+            "Right to erasure: deletion means immediate anonymization.",
+            "Right to portability: export your data on request.",
+            "Contact: privacy@gate.afouanee.dev"
+          ]
+        },
+        "visibilite": {
+          "title": "Profile visibility",
+          "content": [
+            "By default, only first and last names are visible. Sensitive data (dates, photos, personal details) is hidden.",
+            "Administrators configure the visibility of each field. Premium users access full data according to these settings."
+          ]
+        },
+        "mentions": {
+          "title": "Legal notice",
+          "legalEditorLabel": "Publisher",
+          "legalEditorValue": "Afouanee.dev",
+          "legalHostingLabel": "Hosting",
+          "legalHostingValue": "Vercel Inc. (San Francisco, CA) / Supabase",
+          "legalContactLabel": "Contact",
+          "legalContactValue": "contact@gate.afouanee.dev",
+          "legalPaymentsLabel": "Payments",
+          "legalPaymentsValue": "Stripe Inc. (San Francisco, CA)"
+        }
+      }
+    }
   },
   "payment": {
     "success": {
       "title": "Payment successful!",
       "subtitle": "Welcome to Gate Premium",
       "message": "Your subscription is now active. Enjoy all Premium features.",
-      "cta": "Access the tree"
+      "cta": "Access the tree",
+      "sectionNo": "№ · Payment confirmed",
+      "unlockedLabel": "Unlocked",
+      "unlocked1": "Unlimited searches",
+      "unlocked2": "Unlimited profiles",
+      "unlocked3": "Unlimited PDF exports",
+      "unlocked4": "Full tree"
     },
     "cancel": {
       "title": "Payment cancelled",
       "subtitle": "Your payment was not processed.",
       "message": "You can try again at any time.",
-      "cta": "View plans"
+      "cta": "View plans",
+      "noCharge": "No amount was charged.",
+      "backHome": "Back to home"
     }
   },
   "errors": {
     "403": {
       "title": "Access denied",
       "subtitle": "You don't have the required permissions.",
-      "cta": "Back to home"
+      "cta": "Back to home",
+      "sectionNo": "№ · Access denied"
     },
     "404": {
       "title": "Page not found",

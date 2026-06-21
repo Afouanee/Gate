@@ -69,8 +69,8 @@
   .tabular { font-variant-numeric: tabular-nums; }
 
   ::selection {
-    background: #7A2E2E;          /* sceau */
-    color: #FAF7F0;
+    background: #D98324;          /* safran (chaleur) */
+    color: #1A1714;
   }
 
   /* Scrollbar discrète, teinte papier */
@@ -145,6 +145,26 @@
     border-color: rgba(26,23,20,0.28);
   }
 
+  /* Bouton signature indo-français : encre au repos, dégradé chaud animé au survol */
+  .btn-indo {
+    position: relative;
+    background: #1A1714;
+    color: #FAF7F0;
+    overflow: hidden;
+    isolation: isolate;
+  }
+  .btn-indo::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(110deg, #D98324 0%, #7A2E2E 50%, #2E4A6B 100%);
+    background-size: 200% auto;
+    opacity: 0;
+    transition: opacity 0.35s ease;
+  }
+  .btn-indo:hover::before { opacity: 1; animation: gate-gradient-pan 6s ease infinite; }
+
   /* Sceau (pastille bordeaux) */
   .seal-badge {
     @apply inline-flex items-center gap-1.5 rounded-full bg-seal-tint px-2.5 py-1
@@ -198,6 +218,19 @@
     -webkit-text-fill-color: transparent;
   }
 
+  /* Dégradé signature indo-français (safran → bordeaux → indigo), animé */
+  .text-gradient-indo {
+    background: linear-gradient(110deg, #D98324 0%, #7A2E2E 45%, #2E4A6B 100%);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: gate-gradient-pan 12s ease infinite;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .text-gradient-indo { animation: none; }
+  }
+
   /* Masque de dégradé bas (indique « scroll for more ») */
   .fade-bottom {
     -webkit-mask-image: linear-gradient(to bottom, #000 78%, transparent 100%);
@@ -210,6 +243,11 @@
 @keyframes gate-fade-up {
   from { opacity: 0; transform: translateY(14px); }
   to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes gate-gradient-pan {
+  0%, 100% { background-position: 0% 50%; }
+  50%      { background-position: 100% 50%; }
 }
 
 /* ─── React Flow (arbre) — habillage Archive ───────────────── */

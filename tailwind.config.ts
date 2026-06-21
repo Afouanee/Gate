@@ -76,13 +76,27 @@ const config: Config = {
           faint:   "#8A8378", // encre estompée (légendes, méta)
           line:    "#D8CFBD", // filets / bordures
         },
-        // Sceau (accent unique — bordeaux d'encre)
+        // Sceau (accent signature — bordeaux d'encre)
         seal: {
           DEFAULT: "#7A2E2E", // bordeaux profond
           bright:  "#9B3A38", // bordeaux vif (hover)
           tint:    "#F0E2DE", // bordeaux très clair (fonds doux)
         },
-        // Patine (accent secondaire chaud — states "vivant"/premium)
+        // Safran / ocre (chaleur de l'Inde)
+        saffron: {
+          DEFAULT: "#D98324", // safran
+          bright:  "#E89B3C", // safran clair (hover)
+          deep:    "#A85E13", // safran foncé (texte sur clair)
+          tint:    "#F7E8D2", // fond doux
+        },
+        // Indigo / bleu (mer de Pondichéry, héritage français)
+        indigo: {
+          DEFAULT: "#2E4A6B", // bleu profond
+          bright:  "#3C5E86",
+          deep:    "#1E3147",
+          tint:    "#E2E8F0",
+        },
+        // Patine (or vieilli — Premium)
         patina: {
           DEFAULT: "#A8842C", // or patiné
           tint:    "#F2E9CF",
@@ -152,6 +166,14 @@ const config: Config = {
           "60%":  { opacity: "1" },
           "100%": { opacity: "1", transform: "scale(1) rotate(0deg)" },
         },
+        "gradient-pan": {
+          "0%, 100%": { backgroundPosition: "0% 50%" },
+          "50%":      { backgroundPosition: "100% 50%" },
+        },
+        "shimmer": {
+          "0%":   { backgroundPosition: "-200% 0" },
+          "100%": { backgroundPosition: "200% 0" },
+        },
       },
       animation: {
         "accordion-down":  "accordion-down 0.24s ease-out",
@@ -163,11 +185,15 @@ const config: Config = {
         "float":           "float 5s ease-in-out infinite",
         "spin-slow":       "spin-slow 14s linear infinite",
         "seal-in":         "seal-in 0.6s cubic-bezier(0.34,1.56,0.64,1) both",
+        "gradient-pan":    "gradient-pan 14s ease infinite",
+        "shimmer":         "shimmer 2.4s linear infinite",
       },
       backgroundImage: {
         // Grain papier discret (overlay)
         grain:
           "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E\")",
+        // Dégradé signature indo-français (safran → bordeaux → indigo)
+        "gradient-indo": "linear-gradient(120deg, #D98324 0%, #7A2E2E 50%, #2E4A6B 100%)",
       },
     },
   },

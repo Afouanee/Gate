@@ -1,23 +1,25 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { useSession } from "next-auth/react";
 import { Search, Loader2, CheckCircle, XCircle, Clock, AlertCircle, ArrowRight, Link2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 type Status = "PENDING" | "APPROVED" | "REJECTED";
 
-const statusConfig: Record<Status, { label: string; icon: any; color: string }> = {
-  PENDING:  { label: "En attente", icon: Clock,         color: "bg-paper-deep text-ink-soft" },
-  APPROVED: { label: "Approuvée",  icon: CheckCircle,   color: "bg-seal-tint text-seal" },
-  REJECTED: { label: "Rejetée",    icon: XCircle,       color: "border border-destructive/30 text-destructive bg-seal-tint" },
-};
-
 export default function RattachementPage() {
   const t = useTranslations("linkRequest");
+  const locale = useLocale();
+  const dateLocale = locale === "fr" ? "fr-FR" : "en-US";
   const { data: session } = useSession();
   const { toast } = useToast();
+
+  const statusConfig: Record<Status, { label: string; icon: any; color: string }> = {
+    PENDING:  { label: t("statusPending"),  icon: Clock,       color: "bg-paper-deep text-ink-soft" },
+    APPROVED: { label: t("statusApproved"), icon: CheckCircle, color: "bg-seal-tint text-seal" },
+    REJECTED: { label: t("statusRejected"), icon: XCircle,     color: "border border-destructive/30 text-destructive bg-seal-tint" },
+  };
 
   const [requests, setRequests]           = useState<any[]>([]);
   const [searchQuery, setSearchQuery]     = useState("");
@@ -42,7 +44,7 @@ export default function RattachementPage() {
       const data = await res.json().catch(() => ({}));
       setSearchResults(data.results || []);
     } catch {
-      toast({ title: "Erreur", description: "Connexion impossible, réessayez.", variant: "destructive" });
+      toast({ title: t("errorTitle"), description: t("errorConnection"), variant: "destructive" });
     } finally {
       setSearching(false);
     }
@@ -60,18 +62,18 @@ export default function RattachementPage() {
       });
       const data = await res.json().catch(() => ({}));
       if (res.ok) {
-        toast({ title: "Demande envoyée", description: t("success") });
+        toast({ title: t("requestSentTitle"), description: t("success") });
         setSelectedPerson(null); setMessage(""); setSearchQuery(""); setSearchResults([]);
         fetchRequests();
       } else {
         const msg = data.error === "ALREADY_LINKED"       ? t("alreadyLinked")
-                  : data.error === "REQUEST_PENDING"      ? "Vous avez déjà une demande en attente."
-                  : data.error === "PERSON_ALREADY_LINKED" ? "Ce profil est déjà pris."
+                  : data.error === "REQUEST_PENDING"      ? t("errorRequestPending")
+                  : data.error === "PERSON_ALREADY_LINKED" ? t("errorPersonAlreadyLinked")
                   : t("error");
-        toast({ title: "Erreur", description: msg, variant: "destructive" });
+        toast({ title: t("errorTitle"), description: msg, variant: "destructive" });
       }
     } catch {
-      toast({ title: "Erreur", description: "Connexion impossible, réessayez.", variant: "destructive" });
+      toast({ title: t("errorTitle"), description: t("errorConnection"), variant: "destructive" });
     } finally {
       setLoading(false);
     }
@@ -85,7 +87,7 @@ export default function RattachementPage() {
 
         {/* Header */}
         <div className="mb-10" style={{ animation: "fade-in 0.4s ease-out both" }}>
-          <span className="section-no mb-2 block">№ · Rattachement</span>
+          <span className="section-no mb-2 block">{t("sectionNo")}</span>
           <h1 className="font-serif text-3xl font-semibold tracking-tight mb-2">{t("title")}</h1>
           <p className="text-sm text-ink-soft">{t("subtitle")}</p>
         </div>
@@ -97,14 +99,14 @@ export default function RattachementPage() {
             <div className="bg-card border border-ink-line rounded-[var(--radius)] overflow-hidden shadow-paper">
               <div className="px-6 py-4 border-b border-ink-line bg-paper-warm flex items-center gap-2">
                 <Link2 className="h-4 w-4 text-ink-faint" strokeWidth={1.75} />
-                <h2 className="meta-label">Nouvelle demande</h2>
+                <h2 className="meta-label">{t("newRequest")}</h2>
               </div>
               <div className="p-6">
                 {hasPendingOrApproved ? (
                   <div className="flex items-start gap-3 p-4 rounded-[var(--radius)] border border-ink-line bg-paper-warm">
                     <AlertCircle className="h-4 w-4 text-ink-soft mt-0.5 shrink-0" strokeWidth={1.75} />
                     <p className="text-sm text-ink-soft">
-                      Vous avez déjà une demande active. Elle sera traitée par un administrateur.
+                      {t("activeRequestNotice")}
                     </p>
                   </div>
                 ) : (
@@ -113,7 +115,7 @@ export default function RattachementPage() {
                     {/* Recherche */}
                     <div>
                       <label htmlFor="rattachement-search" className="meta-label mb-2 block">
-                        Rechercher un profil
+                        {t("searchProfile")}
                       </label>
                       <div className="flex gap-2">
                         <input
@@ -121,7 +123,7 @@ export default function RattachementPage() {
                           value={searchQuery}
                           onChange={(e) => setSearchQuery(e.target.value)}
                           onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), handleSearch())}
-                          placeholder="Nom, prénom..."
+                          placeholder={t("searchPlaceholder")}
                           autoComplete="off"
                           className="flex-1 h-10 px-4 rounded-[var(--radius)] border border-ink-line bg-paper-deep text-sm text-ink placeholder:text-ink-faint focus:outline-none focus:ring-2 focus:ring-seal focus:border-seal transition-colors"
                         />
@@ -129,7 +131,7 @@ export default function RattachementPage() {
                           type="button"
                           onClick={handleSearch}
                           disabled={searching}
-                          aria-label="Rechercher"
+                          aria-label={t("searchAria")}
                           className="h-10 w-10 rounded-full border border-ink-line flex items-center justify-center text-ink-soft hover:border-ink hover:text-ink transition-colors disabled:opacity-40"
                         >
                           {searching ? <Loader2 className="h-4 w-4 animate-spin" strokeWidth={1.75} /> : <Search className="h-4 w-4" strokeWidth={1.75} />}
@@ -169,7 +171,7 @@ export default function RattachementPage() {
                               {selectedPerson.firstName} {selectedPerson.lastName}
                             </span>
                           </div>
-                          <button type="button" onClick={() => setSelectedPerson(null)} aria-label="Retirer la sélection" className="text-ink-faint hover:text-ink transition-colors">
+                          <button type="button" onClick={() => setSelectedPerson(null)} aria-label={t("removeSelection")} className="text-ink-faint hover:text-ink transition-colors">
                             <XCircle className="h-4 w-4" strokeWidth={1.75} />
                           </button>
                         </div>
@@ -179,7 +181,7 @@ export default function RattachementPage() {
                     {/* Message */}
                     <div>
                       <label htmlFor="rattachement-message" className="meta-label mb-2 block">
-                        Message de présentation
+                        {t("presentationMessage")}
                       </label>
                       <textarea
                         id="rattachement-message"
@@ -235,7 +237,7 @@ export default function RattachementPage() {
                           </div>
                           <p className="text-xs text-ink-soft truncate">{r.message}</p>
                           <p className="text-[11px] text-ink-faint mt-1 tabular">
-                            {new Date(r.createdAt).toLocaleDateString("fr-FR")}
+                            {new Date(r.createdAt).toLocaleDateString(dateLocale)}
                           </p>
                         </div>
                       );

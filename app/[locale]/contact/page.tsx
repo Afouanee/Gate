@@ -22,9 +22,9 @@ export default function ContactPage() {
         body: JSON.stringify(form),
       });
       if (res.ok) setSent(true);
-      else toast({ title: "Erreur", description: t("error"), variant: "destructive" });
+      else toast({ title: t("errorTitle"), description: t("error"), variant: "destructive" });
     } catch {
-      toast({ title: "Erreur", description: t("error"), variant: "destructive" });
+      toast({ title: t("errorTitle"), description: t("error"), variant: "destructive" });
     } finally {
       setLoading(false);
     }
@@ -38,12 +38,12 @@ export default function ContactPage() {
 
           {/* ── Colonne gauche ─────────────────────────── */}
           <div className="lg:col-span-2" style={{ animation: "fade-in 0.5s ease-out both" }}>
-            <span className="section-no mb-4 block">№ · Contact</span>
+            <span className="section-no mb-4 block">{t("sectionNo")}</span>
             <h1 className="font-serif text-3xl md:text-4xl font-semibold tracking-tight leading-tight mb-6">
-              On vous répond.
+              {t("heading")}
             </h1>
             <p className="text-sm text-ink-soft leading-relaxed mb-10">
-              Une question, un problème, une suggestion ? Écrivez-nous.
+              {t("intro")}
             </p>
 
             <div className="rule-line mb-8" />
@@ -54,8 +54,8 @@ export default function ContactPage() {
                   <Mail className="h-4 w-4 text-ink-soft" strokeWidth={1.75} />
                 </div>
                 <div>
-                  <p className="meta-label mb-1">Email direct</p>
-                  <p className="text-sm text-ink">contact@gate.afouanee.dev</p>
+                  <p className="meta-label mb-1">{t("directEmailLabel")}</p>
+                  <p className="text-sm text-ink">{t("directEmail")}</p>
                 </div>
               </div>
               <div className="flex items-start gap-4">
@@ -63,8 +63,8 @@ export default function ContactPage() {
                   <Clock className="h-4 w-4 text-ink-soft" strokeWidth={1.75} />
                 </div>
                 <div>
-                  <p className="meta-label mb-1">Délai de réponse</p>
-                  <p className="text-sm text-ink">Sous 24h en jours ouvrés</p>
+                  <p className="meta-label mb-1">{t("responseDelayLabel")}</p>
+                  <p className="text-sm text-ink">{t("responseDelay")}</p>
                 </div>
               </div>
             </div>
@@ -77,15 +77,15 @@ export default function ContactPage() {
                 <div className="w-16 h-16 rounded-full bg-seal-tint flex items-center justify-center mb-6">
                   <CheckCircle className="h-8 w-8 text-seal" strokeWidth={1.75} />
                 </div>
-                <h2 className="font-serif text-2xl font-semibold tracking-tight mb-2">Message envoyé</h2>
-                <p className="text-sm text-ink-soft">On vous répondra dans les plus brefs délais.</p>
+                <h2 className="font-serif text-2xl font-semibold tracking-tight mb-2">{t("sentTitle")}</h2>
+                <p className="text-sm text-ink-soft">{t("sentBody")}</p>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-5">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                   {[
-                    { id: "name",  label: "Nom",   type: "text",  placeholder: "Jean Dupont",   field: "name" as const,  autoComplete: "name" },
-                    { id: "email", label: "Email",  type: "email", placeholder: "jean@email.com", field: "email" as const, autoComplete: "email" },
+                    { id: "name",  label: t("fieldName"),  type: "text",  placeholder: t("namePlaceholder"),  field: "name" as const,  autoComplete: "name" },
+                    { id: "email", label: t("fieldEmail"), type: "email", placeholder: t("emailPlaceholder"), field: "email" as const, autoComplete: "email" },
                   ].map(({ id, label, type, placeholder, field, autoComplete }) => (
                     <div key={id}>
                       <label htmlFor={id} className="meta-label mb-1.5 block">
@@ -107,14 +107,14 @@ export default function ContactPage() {
 
                 <div>
                   <label htmlFor="subject" className="meta-label mb-1.5 block">
-                    Sujet
+                    {t("subject")}
                   </label>
                   <input
                     id="subject"
                     type="text"
                     value={form.subject}
                     onChange={(e) => setForm({ ...form, subject: e.target.value })}
-                    placeholder="En quelques mots..."
+                    placeholder={t("subjectPlaceholder")}
                     required
                     minLength={3}
                     className="w-full h-11 px-4 rounded-[var(--radius)] border border-ink-line bg-card text-sm text-ink placeholder:text-ink-faint focus:outline-none focus:ring-2 focus:ring-seal focus:border-seal transition-colors"
@@ -123,13 +123,13 @@ export default function ContactPage() {
 
                 <div>
                   <label htmlFor="message" className="meta-label mb-1.5 block">
-                    Message
+                    {t("message")}
                   </label>
                   <textarea
                     id="message"
                     value={form.message}
                     onChange={(e) => setForm({ ...form, message: e.target.value })}
-                    placeholder="Décrivez votre demande..."
+                    placeholder={t("messagePlaceholder")}
                     required
                     minLength={10}
                     rows={7}
@@ -143,7 +143,7 @@ export default function ContactPage() {
                   className="group w-full h-11 bg-ink text-paper text-sm font-semibold rounded-full flex items-center justify-center gap-2 hover:bg-ink-soft active:scale-[0.98] transition-all duration-200 disabled:opacity-40"
                 >
                   {loading ? <Loader2 className="h-4 w-4 animate-spin" strokeWidth={1.75} /> : (
-                    <>Envoyer <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" strokeWidth={1.75} /></>
+                    <>{t("submit")} <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" strokeWidth={1.75} /></>
                   )}
                 </button>
               </form>

@@ -102,6 +102,17 @@ Sessions use JWT strategy. The `jwt()` callback **re-fetches `User.role` from th
 
 Registration uses a custom 6-digit code flow (`EmailVerificationCode` model), separate from NextAuth's built-in `VerificationToken`.
 
+### Modèle communautaire (IMPORTANT)
+
+Gate est un **projet familial**, pas un commerce. Priorité = partager et rassembler la communauté, PAS gagner de l'argent. Conséquences dans le code :
+- **Aucun mur premium** : l'arbre (`/api/tree`), la recherche (`/api/search`) et l'export (`/api/export/pdf`) sont **illimités et complets pour tous les membres connectés**. Plus de quotas FREE (l'ancien `lib/quota.ts` a été supprimé ; les colonnes `searchCount/exportCount/quotaPeriodStart` subsistent en base mais ne sont plus utilisées).
+- La **confidentialité par champ** reste pilotée par les flags admin `showXxx` sur `Person` (et non plus par le rôle). Un champ est renvoyé si son flag est vrai.
+- Le plan « Premium » est reframé en **« Soutien »** optionnel (page `/pricing`) : il ne débloque rien, il aide à couvrir l'hébergement. Le checkout Stripe reste en place pour ce soutien.
+
+### Internationalisation (branchée)
+
+Les pages passent par `next-intl` : clés dans `messages/{fr,en}.json` (mêmes chemins des deux côtés). Client : `useTranslations("namespace")` + `t("key")` / `t.raw("key")` pour listes. Server Components : `getTranslations("namespace")` depuis `next-intl/server`. Exceptions : `pondichery` et `karaikal` sont bilingues via leur propre mécanisme (`params.locale` + objets `{fr,en}`). FR par défaut, pas de détection navigateur (`localeDetection: false`).
+
 ### Role-Based Access
 
 Three roles: `FREE`, `PREMIUM`, `ADMIN`. Role is the source of truth on `User.role` and is updated exclusively by the Stripe webhook (`app/api/webhooks/stripe/route.ts`).
