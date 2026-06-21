@@ -85,7 +85,7 @@ export function LivingTree({ className }: { className?: string }) {
               }
             >
               <circle cx={x} cy={y} r={isRoot ? 13 : 8} fill="currentColor" opacity={isRoot ? 0.9 : 0.32} />
-              {isRoot && <circle cx={x} cy={y} r={5} fill="#7A2E2E" />}
+              {isRoot && <circle cx={x} cy={y} r={5} fill="#E8A33D" />}
             </g>
           );
         })}

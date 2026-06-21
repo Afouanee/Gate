@@ -287,11 +287,11 @@ export default function RegisterPage() {
           color: hsl(var(--foreground));
           transition: border-color .15s, box-shadow .15s;
         }
-        .input-archive::placeholder { color: #8A8378; }
+        .input-archive::placeholder { color: #7A828F; }
         .input-archive:focus {
           outline: none;
-          border-color: #7A2E2E;
-          box-shadow: 0 0 0 3px rgba(122,46,46,0.12);
+          border-color: #E8A33D;
+          box-shadow: 0 0 0 3px rgba(232,163,61,0.18);
         }
       `}</style>
     </div>

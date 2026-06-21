@@ -62,44 +62,50 @@ const config: Config = {
           foreground: "hsl(var(--card-foreground))",
         },
 
-        /* ── Palette Éditorial Archive ─────────────────── */
-        // Papier (fonds)
+        /* ── Palette « Daylight » — light premium ──────────
+           Noms historiques (paper/ink/seal) conservés mais remappés en CLAIR :
+           - paper  = blancs / gris très clairs (fonds)
+           - ink    = texte sombre / bordures
+           - seal   = accent magenta (signature)
+           - saffron / indigo = pôles du dégradé signature (touche indo, ~10%) */
         paper: {
-          DEFAULT: "#FAF7F0", // crème principal
-          warm:    "#F4EFE4", // crème chaud (sections alternées)
-          deep:    "#EDE6D6", // crème appuyé (zones)
+          DEFAULT: "#FFFFFF", // blanc pur (fond principal)
+          warm:    "#F7F8FA", // gris très clair (sections alternées)
+          deep:    "#EEF1F5", // zones appuyées
         },
-        // Encre (texte / structure)
         ink: {
-          DEFAULT: "#1A1714", // encre principale (presque noir chaud)
-          soft:    "#46413A", // encre adoucie (texte secondaire)
-          faint:   "#8A8378", // encre estompée (légendes, méta)
-          line:    "#D8CFBD", // filets / bordures
+          DEFAULT: "#0E1320", // presque noir bleuté (texte principal)
+          soft:    "#3F4654", // texte secondaire
+          faint:   "#7A828F", // méta / légendes
+          line:    "#E6E9EF", // filets / bordures (subtil sur clair)
         },
-        // Sceau (accent signature — bordeaux d'encre)
+        /* Accents = vraies couleurs de Pondichéry :
+           le JAUNE OCRE des murs coloniaux (signature), le BLEU des portes/mer,
+           le TERRACOTTA. Light premium = blanc dominant, ces teintes en ~10%. */
+        // Accent signature : jaune ocre « Pondichéry »
         seal: {
-          DEFAULT: "#7A2E2E", // bordeaux profond
-          bright:  "#9B3A38", // bordeaux vif (hover)
-          tint:    "#F0E2DE", // bordeaux très clair (fonds doux)
+          DEFAULT: "#E8A33D",   // ocre safran (murs de la ville)
+          bright:  "#F4B65A",
+          tint:    "rgba(232,163,61,0.12)",
         },
-        // Safran / ocre (chaleur de l'Inde)
+        // Safran chaud (dégradé / chaleur)
         saffron: {
-          DEFAULT: "#D98324", // safran
-          bright:  "#E89B3C", // safran clair (hover)
-          deep:    "#A85E13", // safran foncé (texte sur clair)
-          tint:    "#F7E8D2", // fond doux
+          DEFAULT: "#E8A33D",
+          bright:  "#F4B65A",
+          deep:    "#B9781E",
+          tint:    "rgba(232,163,61,0.12)",
         },
-        // Indigo / bleu (mer de Pondichéry, héritage français)
+        // Bleu Pondichéry (portes, mer, héritage français)
         indigo: {
-          DEFAULT: "#2E4A6B", // bleu profond
-          bright:  "#3C5E86",
-          deep:    "#1E3147",
-          tint:    "#E2E8F0",
+          DEFAULT: "#2B6CB0",
+          bright:  "#3B82C4",
+          deep:    "#1E4E8C",
+          tint:    "rgba(43,108,176,0.10)",
         },
-        // Patine (or vieilli — Premium)
+        // Terracotta (toits, accents chauds)
         patina: {
-          DEFAULT: "#A8842C", // or patiné
-          tint:    "#F2E9CF",
+          DEFAULT: "#C2563B",
+          tint:    "rgba(194,86,59,0.10)",
         },
       },
       fontFamily: {

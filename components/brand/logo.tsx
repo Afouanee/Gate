@@ -52,7 +52,7 @@ export function GateMark({ className, size = 32, seal = true }: MarkProps) {
         strokeLinejoin="miter"
       />
       {/* Sceau */}
-      {seal && <circle cx="20" cy="32.8" r="2" fill="#7A2E2E" />}
+      {seal && <circle cx="20" cy="32.8" r="2" fill="#E8A33D" />}
     </svg>
   );
 }

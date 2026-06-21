@@ -77,8 +77,8 @@ export function CustomCursor() {
 
   if (!enabled || hidden) return null;
 
-  const ink = "#1A1714";
-  const saffron = "#D98324"; // accent chaud (Inde) au survol
+  const ink = "#0E1320";
+  const saffron = "#E8A33D"; // accent ocre (Pondichéry) au survol
 
   return (
     <>
@@ -96,7 +96,7 @@ export function CustomCursor() {
           height: clicking ? 5 : hovering ? 6 : 5,
           borderRadius: "50%",
           background: hovering ? saffron : ink,
-          boxShadow: hovering ? "0 0 10px rgba(217,131,36,0.6)" : "none",
+          boxShadow: hovering ? "0 0 10px rgba(232,163,61,0.6)" : "none",
           transition: "width 0.15s, height 0.15s, background 0.2s, box-shadow 0.2s",
           willChange: "transform",
         }}
@@ -114,8 +114,8 @@ export function CustomCursor() {
           width: clicking ? 26 : hovering ? 38 : 30,
           height: clicking ? 26 : hovering ? 38 : 30,
           borderRadius: "50%",
-          border: `1.5px solid ${hovering ? "rgba(217,131,36,0.6)" : "rgba(26,23,20,0.28)"}`,
-          background: hovering ? "rgba(217,131,36,0.07)" : "transparent",
+          border: `1.5px solid ${hovering ? "rgba(232,163,61,0.6)" : "rgba(14,19,32,0.28)"}`,
+          background: hovering ? "rgba(232,163,61,0.07)" : "transparent",
           transition:
             "width 0.25s cubic-bezier(0.16,1,0.3,1), height 0.25s cubic-bezier(0.16,1,0.3,1), border-color 0.2s, background 0.2s",
           willChange: "transform",
