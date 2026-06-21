@@ -36,7 +36,9 @@ export function CustomCursor() {
       pos.current = { x: e.clientX, y: e.clientY };
       const el = document.elementFromPoint(e.clientX, e.clientY);
       setHovering(!!el?.closest("a, button, [role='button'], select, label[for], summary, [data-cursor='link']"));
-      setHidden(!!el?.closest("input:not([type='checkbox']):not([type='radio']), textarea, [contenteditable='true']"));
+      // Masquer le curseur custom sur les champs texte ET sur le canvas de l'arbre
+      // (où l'on rend le curseur natif grab/pointer).
+      setHidden(!!el?.closest("input:not([type='checkbox']):not([type='radio']), textarea, [contenteditable='true'], .tree-canvas"));
     };
     const onDown = () => setClicking(true);
     const onUp = () => setClicking(false);
