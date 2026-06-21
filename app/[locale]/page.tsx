@@ -8,6 +8,7 @@ import { GateMark } from "@/components/brand/logo";
 import { Reveal } from "@/components/layout/reveal";
 import { LivingTree } from "@/components/brand/living-tree";
 import { SpotlightBanner } from "@/components/home/spotlight-banner";
+import { CountUp } from "@/components/ui/count-up";
 
 async function getStats() {
   try {
@@ -156,7 +157,7 @@ export default async function HomePage({
                 {stats.persons > 0 && (
                   <div>
                     <p className="font-serif text-4xl font-semibold tabular">
-                      {stats.persons.toLocaleString(numberLocale)}
+                      <CountUp value={stats.persons} locale={numberLocale} />
                     </p>
                     <p className="meta-label mt-1">{t("hero.statProfiles")}</p>
                   </div>
@@ -165,7 +166,7 @@ export default async function HomePage({
                 {stats.relations > 0 && (
                   <div>
                     <p className="font-serif text-4xl font-semibold tabular">
-                      {stats.relations.toLocaleString(numberLocale)}
+                      <CountUp value={stats.relations} locale={numberLocale} />
                     </p>
                     <p className="meta-label mt-1">{t("hero.statLinks")}</p>
                   </div>

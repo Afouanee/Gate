@@ -3,6 +3,7 @@ import { ArrowRight } from "lucide-react";
 import { Reveal } from "@/components/layout/reveal";
 import { Kolam, CoromandelMap, WhiteTown, Compass } from "@/components/pondichery/illustrations";
 import { ArchivePhoto } from "@/components/pondichery/archive-photo";
+import { ScrollTimeline } from "@/components/ui/scroll-timeline";
 
 type Lang = "fr" | "en";
 type Bi = { fr: string; en: string };
@@ -741,15 +742,7 @@ export default function PondicheryPage({ params }: { params: { locale: string } 
             <div className="rule-line" />
             <Compass className="hidden h-12 w-12 shrink-0 text-ink md:block" />
           </div>
-          <ol className="relative ml-2 space-y-5 border-l border-ink-line pl-6">
-            {TIMELINE.map((item) => (
-              <li key={item.year.fr} className="relative">
-                <span className="absolute -left-[27px] top-1.5 h-2.5 w-2.5 rounded-full border-2 border-paper bg-seal" />
-                <span className="font-mono text-sm font-semibold text-seal">{t(item.year)}</span>
-                <p className="mt-0.5 text-[15px] leading-relaxed text-ink-soft">{t(item.text)}</p>
-              </li>
-            ))}
-          </ol>
+          <ScrollTimeline items={TIMELINE.map((item) => ({ year: t(item.year), text: t(item.text) }))} />
         </Reveal>
 
         <div className="rule-line my-12" />
