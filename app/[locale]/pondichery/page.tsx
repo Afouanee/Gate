@@ -595,6 +595,77 @@ export default function PondicheryPage({ params }: { params: { locale: string } 
               </>
             )}
           </div>
+
+          {/* Figures du rattachement : la dynastie *** (père & fils) */}
+          <div className="mt-8 flex flex-wrap gap-4">
+            {/* Le maire : photo */}
+            <figure className="w-[132px] overflow-hidden rounded-[var(--radius)] border border-ink-line bg-card">
+              <img
+                src="/pondichery/view-1857.jpg"
+                alt={lang === "fr" ? "une figure de la communauté, maire de Pondichéry" : "une figure de la communauté, Mayor of Pondicherry"}
+                loading="lazy"
+                className="aspect-[3/4] w-full object-cover"
+                style={{ filter: "sepia(0.25) contrast(1.02)" }}
+              />
+              <figcaption className="border-t border-ink-line px-2.5 py-1.5">
+                <p className="font-serif text-xs font-semibold text-ink">une figure locale</p>
+                <p className="font-mono text-[10px] text-ink-faint">{lang === "fr" ? "Maire · 1956-1961" : "Mayor · 1956-1961"}</p>
+              </figcaption>
+            </figure>
+
+            {/* Le fils : carte à initiales (pas de photo disponible) */}
+            <figure className="flex w-[132px] flex-col overflow-hidden rounded-[var(--radius)] border border-ink-line bg-card">
+              <div
+                className="flex aspect-[3/4] w-full items-center justify-center"
+                style={{ background: "linear-gradient(150deg, rgba(43,108,176,0.12), rgba(232,163,61,0.12))" }}
+              >
+                <span className="font-serif text-3xl font-semibold text-indigo">CA</span>
+              </div>
+              <figcaption className="border-t border-ink-line px-2.5 py-1.5">
+                <p className="font-serif text-xs font-semibold text-ink">une figure locale</p>
+                <p className="font-mono text-[10px] text-ink-faint">{lang === "fr" ? "Député · 1964-1999" : "MLA · 1964-1999"}</p>
+              </figcaption>
+            </figure>
+          </div>
+
+          <div className="mt-6 space-y-4 text-[15px] leading-relaxed text-ink-soft">
+              {lang === "fr" ? (
+                <>
+                  <p>
+                    <span className="text-ink">une figure de la communauté</span> (1900-1986),
+                    commerçant et figure de la communauté musulmane, fut maire de
+                    Pondichéry de 1956 à 1961, au cœur même du rattachement. Il fut
+                    l&apos;un des responsables qui plaidèrent pour la cession des
+                    comptoirs à l&apos;Inde. Une rue de la ville porte aujourd&apos;hui
+                    son nom (une rue de la ville).
+                  </p>
+                  <p>
+                    Son fils, <span className="text-ink">une figure locale</span>, poursuivit
+                    l&apos;engagement familial : élu sept fois à l&apos;Assemblée de
+                    Pondichéry de 1964 à 1999, adjoint au maire puis ministre. À Karaikal,
+                    la même époque vit s&apos;élever <span className="text-ink">une figure locale</span>,
+                    de la famille Maricar, premier Chief Minister musulman d&apos;Inde.
+                  </p>
+                </>
+              ) : (
+                <>
+                  <p>
+                    <span className="text-ink">une figure de la communauté</span> (1900-1986), a
+                    merchant and a figure of the Muslim community, was mayor of Pondicherry
+                    from 1956 to 1961, at the very heart of the union with India. He was one
+                    of the leaders who argued for ceding the trading posts to India. A street
+                    in the city now bears his name (une rue de la ville).
+                  </p>
+                  <p>
+                    His son, <span className="text-ink">une figure locale</span>, continued the
+                    family commitment: elected seven times to the Pondicherry Assembly from
+                    1964 to 1999, deputy mayor and then minister. In Karaikal, the same era
+                    saw the rise of <span className="text-ink">une figure locale</span>, of the
+                    Maricar family, the first Muslim Chief Minister in India.
+                  </p>
+                </>
+              )}
+            </div>
         </Reveal>
 
         <div className="rule-line my-12" />
