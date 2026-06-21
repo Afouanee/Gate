@@ -50,7 +50,7 @@ export default function MonComptePage() {
       if (data.url) window.location.href = data.url;
       setLoading(false);
     } catch {
-      toast({ title: "Erreur", description: "Connexion impossible, réessayez.", variant: "destructive" });
+      toast({ title: t("errorTitle"), description: t("errorConnection"), variant: "destructive" });
       setLoading(false);
     }
   };
@@ -63,11 +63,11 @@ export default function MonComptePage() {
       if (res.ok) {
         await signOut({ callbackUrl: "/" });
       } else {
-        toast({ title: "Erreur", description: "Impossible de supprimer le compte.", variant: "destructive" });
+        toast({ title: t("errorTitle"), description: t("errorDelete"), variant: "destructive" });
         setLoading(false);
       }
     } catch {
-      toast({ title: "Erreur", description: "Connexion impossible, réessayez.", variant: "destructive" });
+      toast({ title: t("errorTitle"), description: t("errorConnection"), variant: "destructive" });
       setLoading(false);
     }
   };
@@ -92,37 +92,37 @@ export default function MonComptePage() {
 
         {/* Header */}
         <div className="mb-10" style={{ animation: "fade-in 0.4s ease-out both" }}>
-          <span className="section-no mb-2 block">№ · Mon compte</span>
+          <span className="section-no mb-2 block">{t("sectionNo")}</span>
           <h1 className="font-serif text-3xl font-semibold tracking-tight">
-            {session.user.name || "Votre espace"}
+            {session.user.name || t("yourSpace")}
           </h1>
         </div>
 
         <div className="space-y-4">
 
           {/* Profil */}
-          <Section title="Profil">
+          <Section title={t("sectionProfile")}>
             <div className="flex items-center gap-4">
               <div className="w-14 h-14 rounded-full bg-ink flex items-center justify-center text-paper text-xl font-serif font-semibold shrink-0">
                 {initial}
               </div>
               <div>
-                <p className="font-semibold text-ink">{session.user.name || "Sans nom"}</p>
+                <p className="font-semibold text-ink">{session.user.name || t("noName")}</p>
                 <p className="text-sm text-ink-soft">{session.user.email}</p>
                 <div className="mt-1.5">
                   {isAdmin && (
                     <span className="inline-flex items-center px-2.5 py-0.5 rounded-full font-mono text-[10px] uppercase tracking-[0.14em] bg-ink text-paper">
-                      Admin
+                      {t("badgeAdmin")}
                     </span>
                   )}
                   {isPremium && (
                     <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full font-mono text-[10px] uppercase tracking-[0.14em] bg-seal-tint text-seal">
-                      <Crown className="h-2.5 w-2.5" strokeWidth={1.75} /> Premium
+                      <Crown className="h-2.5 w-2.5" strokeWidth={1.75} /> {t("badgePremium")}
                     </span>
                   )}
                   {!isPremium && !isAdmin && (
                     <span className="inline-flex items-center px-2.5 py-0.5 rounded-full font-mono text-[10px] uppercase tracking-[0.14em] bg-paper-deep text-ink-soft">
-                      Gratuit
+                      {t("badgeFree")}
                     </span>
                   )}
                 </div>
@@ -131,7 +131,7 @@ export default function MonComptePage() {
           </Section>
 
           {/* Abonnement */}
-          <Section title="Abonnement">
+          <Section title={t("sectionSubscription")}>
             {isPremium || isAdmin ? (
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
@@ -140,17 +140,17 @@ export default function MonComptePage() {
                   </div>
                   <div>
                     <p className="text-sm font-semibold text-ink">
-                      {isAdmin ? "Accès administrateur" : "Premium actif"}
+                      {isAdmin ? t("adminAccess") : t("premiumActive")}
                     </p>
                     {subscription?.stripeCurrentPeriodEnd && (
                       <p className="text-xs text-ink-faint">
-                        Renouvellement le <span className="tabular">{formatDate(subscription.stripeCurrentPeriodEnd)}</span>
+                        {t("renewalOn")} <span className="tabular">{formatDate(subscription.stripeCurrentPeriodEnd)}</span>
                       </p>
                     )}
                   </div>
                 </div>
                 <div className="border-t border-ink-line pt-4 grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  {["Recherches illimitées", "Exports PDF illimités", "Arbre complet"].map((f) => (
+                  {[t("perkUnlimitedSearches"), t("perkUnlimitedExports"), t("perkFullTree")].map((f) => (
                     <div key={f} className="flex items-center gap-2 text-xs text-ink-soft">
                       <span className="w-1 h-1 rounded-full bg-seal shrink-0" />
                       {f}
@@ -160,14 +160,14 @@ export default function MonComptePage() {
               </div>
             ) : (
               <div className="space-y-4">
-                <p className="text-sm text-ink-soft">Vous êtes sur le plan gratuit.</p>
+                <p className="text-sm text-ink-soft">{t("onFreePlan")}</p>
                 <div className="rounded-[var(--radius)] p-5 bg-ink text-paper">
                   <div className="flex items-center justify-between mb-3">
                     <div>
-                      <p className="font-serif font-semibold text-base">Gate Premium</p>
-                      <p className="text-paper/60 text-xs"><span className="tabular">3,99 €</span> / 3 mois</p>
+                      <p className="font-serif font-semibold text-base">{t("premiumName")}</p>
+                      <p className="text-paper/60 text-xs"><span className="tabular">{t("premiumPrice")}</span> {t("premiumPeriod")}</p>
                     </div>
-                    <span className="seal-badge bg-seal text-paper">✦ Pro</span>
+                    <span className="seal-badge bg-seal text-paper">{t("premiumBadge")}</span>
                   </div>
                   <button
                     onClick={handleCheckout}
@@ -175,7 +175,7 @@ export default function MonComptePage() {
                     className="w-full h-10 bg-seal hover:bg-seal-bright text-paper text-sm font-semibold rounded-full flex items-center justify-center gap-2 active:scale-[0.98] transition-all duration-200 disabled:opacity-40"
                   >
                     {loading ? <Loader2 className="h-4 w-4 animate-spin" strokeWidth={1.75} /> : (
-                      <>Passer Premium <ArrowRight className="h-4 w-4" strokeWidth={1.75} /></>
+                      <>{t("goPremium")} <ArrowRight className="h-4 w-4" strokeWidth={1.75} /></>
                     )}
                   </button>
                 </div>
@@ -184,26 +184,26 @@ export default function MonComptePage() {
           </Section>
 
           {/* Rattachement */}
-          <Section title="Rattachement profil">
+          <Section title={t("sectionLink")}>
             <div className="flex items-center justify-between">
-              <p className="text-sm text-ink-soft">Liez votre compte à un profil de l'arbre.</p>
+              <p className="text-sm text-ink-soft">{t("linkBody")}</p>
               <Link
                 href="/rattachement"
                 className="group inline-flex items-center gap-1.5 text-sm font-semibold text-ink hover:text-seal transition-colors"
               >
-                Gérer
+                {t("manage")}
                 <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" strokeWidth={1.75} />
               </Link>
             </div>
           </Section>
 
           {/* Supprimer le compte */}
-          <Section title="Zone de danger">
+          <Section title={t("sectionDanger")}>
             <div className="space-y-4">
               {deleteConfirm && (
                 <div className="flex items-center gap-3 p-4 rounded-[var(--radius)] border border-destructive/30 bg-seal-tint text-sm text-destructive">
                   <AlertTriangle className="h-4 w-4 shrink-0" strokeWidth={1.75} />
-                  Cette action est irréversible. Vos données seront anonymisées.
+                  {t("deleteWarning")}
                 </div>
               )}
               <div className="flex flex-wrap gap-3">
@@ -213,14 +213,14 @@ export default function MonComptePage() {
                   className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-destructive border border-destructive/30 rounded-full hover:bg-destructive hover:text-paper hover:border-destructive transition-all duration-200 disabled:opacity-40"
                 >
                   {loading ? <Loader2 className="h-4 w-4 animate-spin" strokeWidth={1.75} /> : <Trash2 className="h-4 w-4" strokeWidth={1.75} />}
-                  {deleteConfirm ? "Confirmer la suppression" : "Supprimer mon compte"}
+                  {deleteConfirm ? t("confirmDelete") : t("deleteAccountBtn")}
                 </button>
                 {deleteConfirm && (
                   <button
                     onClick={() => setDeleteConfirm(false)}
                     className="px-4 py-2 text-sm font-medium text-ink-soft hover:text-ink transition-colors"
                   >
-                    Annuler
+                    {t("cancel")}
                   </button>
                 )}
               </div>

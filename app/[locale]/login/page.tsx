@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { GateMark, Logo } from "@/components/brand/logo";
 
 export default function LoginPage() {
+  const t = useTranslations("auth.login");
   const te = useTranslations("auth.errors");
   const { toast } = useToast();
   const router = useRouter();
@@ -36,9 +37,9 @@ export default function LoginPage() {
       if (result?.error) {
         const message =
           result.error === "EMAIL_NOT_VERIFIED"
-            ? "Vérifiez votre email avant de vous connecter."
+            ? t("errorEmailNotVerified")
             : te("invalidCredentials");
-        toast({ title: "Erreur", description: message, variant: "destructive" });
+        toast({ title: te("title"), description: message, variant: "destructive" });
       } else {
         router.push(callbackUrl);
       }
@@ -55,8 +56,8 @@ export default function LoginPage() {
       setMagicSent(true);
     } catch {
       toast({
-        title: "Erreur",
-        description: "Impossible d'envoyer le lien.",
+        title: te("title"),
+        description: t("errorMagicLink"),
         variant: "destructive",
       });
     } finally {
@@ -72,7 +73,7 @@ export default function LoginPage() {
         <div className="flex items-center justify-between">
           <Logo size={26} className="text-paper" seal={false} />
           <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-paper/40">
-            Le registre
+            {t("asideRegister")}
           </span>
         </div>
 
@@ -85,20 +86,20 @@ export default function LoginPage() {
 
         <div className="relative z-10 max-w-sm">
           <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-seal-bright">
-            № · Accès
+            {t("asideLabel")}
           </span>
           <h2 className="mt-4 font-serif text-4xl font-semibold leading-tight tracking-tight">
-            Votre histoire,
+            {t("asideTitleLine1")}
             <br />
-            <span className="italic">préservée.</span>
+            <span className="italic">{t("asideTitleLine2")}</span>
           </h2>
           <p className="mt-4 text-sm leading-relaxed text-paper/50">
-            Reprenez le fil de votre arbre, là où vous l&apos;avez laissé.
+            {t("asideBody")}
           </p>
         </div>
 
         <p className="relative z-10 font-serif text-sm italic text-paper/40">
-          « Dis-moi qui tu es, je te dirai d&apos;où tu viens. »
+          {t("asideQuote")}
         </p>
       </aside>
 
@@ -110,9 +111,9 @@ export default function LoginPage() {
             <Logo size={26} />
           </div>
 
-          <span className="section-no">№ · Connexion</span>
+          <span className="section-no">{t("sectionNo")}</span>
           <h1 className="mt-2 font-serif text-3xl font-semibold tracking-tight">
-            Content de vous revoir.
+            {t("welcomeBack")}
           </h1>
 
           {/* Sélecteur de mode */}
@@ -130,7 +131,7 @@ export default function LoginPage() {
                 }`}
               >
                 {m === "magic" && <Sparkles className="h-3 w-3" strokeWidth={1.75} />}
-                {m === "credentials" ? "Mot de passe" : "Lien magique"}
+                {m === "credentials" ? t("modePassword") : t("modeMagic")}
               </button>
             ))}
           </div>
@@ -140,14 +141,14 @@ export default function LoginPage() {
               <span className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-seal-tint">
                 <Mail className="h-6 w-6 text-seal" strokeWidth={1.75} />
               </span>
-              <p className="font-serif text-lg font-semibold">Email envoyé</p>
+              <p className="font-serif text-lg font-semibold">{t("emailSent")}</p>
               <p className="mt-1 text-sm text-ink-soft">
-                Vérifiez votre boîte mail et cliquez sur le lien.
+                {t("emailSentBody")}
               </p>
             </div>
           ) : mode === "credentials" ? (
             <form onSubmit={handleCredentialsLogin} className="space-y-4">
-              <Field label="Email" htmlFor="email">
+              <Field label={t("email")} htmlFor="email">
                 <Mail className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-faint" strokeWidth={1.75} />
                 <input
                   id="email"
@@ -155,13 +156,13 @@ export default function LoginPage() {
                   autoComplete="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="votre@email.com"
+                  placeholder={t("emailPlaceholder")}
                   required
                   className="input-archive pl-9 pr-4"
                 />
               </Field>
 
-              <Field label="Mot de passe" htmlFor="password">
+              <Field label={t("password")} htmlFor="password">
                 <Lock className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-faint" strokeWidth={1.75} />
                 <input
                   id="password"
@@ -169,14 +170,14 @@ export default function LoginPage() {
                   autoComplete="current-password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
+                  placeholder={t("passwordPlaceholder")}
                   required
                   className="input-archive pl-9 pr-10"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword((v) => !v)}
-                  aria-label={showPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
+                  aria-label={showPassword ? t("hidePassword") : t("showPassword")}
                   className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-ink-faint hover:text-ink"
                 >
                   {showPassword ? <EyeOff className="h-4 w-4" strokeWidth={1.75} /> : <Eye className="h-4 w-4" strokeWidth={1.75} />}
@@ -184,12 +185,12 @@ export default function LoginPage() {
               </Field>
 
               <SubmitButton loading={loading}>
-                Se connecter <ArrowRight className="h-4 w-4" />
+                {t("submit")} <ArrowRight className="h-4 w-4" />
               </SubmitButton>
             </form>
           ) : (
             <form onSubmit={handleMagicLink} className="space-y-4">
-              <Field label="Email" htmlFor="magic-email">
+              <Field label={t("email")} htmlFor="magic-email">
                 <Mail className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-faint" strokeWidth={1.75} />
                 <input
                   id="magic-email"
@@ -197,21 +198,21 @@ export default function LoginPage() {
                   autoComplete="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="votre@email.com"
+                  placeholder={t("emailPlaceholder")}
                   required
                   className="input-archive pl-9 pr-4"
                 />
               </Field>
               <SubmitButton loading={loading}>
-                <Sparkles className="h-4 w-4" /> Recevoir le lien
+                <Sparkles className="h-4 w-4" /> {t("receiveLink")}
               </SubmitButton>
             </form>
           )}
 
           <p className="mt-6 text-center text-xs text-ink-faint">
-            Pas encore de compte ?{" "}
+            {t("noAccount")}{" "}
             <Link href="/register" className="link-underline font-medium text-ink">
-              S&apos;inscrire
+              {t("register")}
             </Link>
           </p>
         </div>

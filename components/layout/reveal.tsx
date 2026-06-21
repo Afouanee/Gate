@@ -14,17 +14,21 @@ export function Reveal({
   className,
   as: As = "div",
   delay,
+  id,
 }: {
   children: ReactNode;
   className?: string;
   as?: ElementType;
   /** délai d'apparition en ms */
   delay?: number;
+  /** ancre (pour les liens de sommaire) */
+  id?: string;
 }) {
   const ref = useReveal<HTMLElement>();
   return (
     <As
       ref={ref as never}
+      id={id}
       className={cn("reveal", className)}
       style={delay ? { transitionDelay: `${delay}ms` } : undefined}
     >

@@ -1,76 +1,79 @@
+import { useTranslations } from "next-intl";
 import { Shield, Eye, Lock, FileText } from "lucide-react";
 
-const sections = [
-  {
-    id: "utilisation",
-    icon: Shield,
-    num: "01",
-    title: "Conditions d'utilisation",
-    content: [
-      "Gate est une plateforme dédiée à la généalogie. En utilisant nos services, vous acceptez les présentes conditions.",
-      "Il est strictement interdit de publier des informations fausses, diffamatoires, portant atteinte à la vie privée de tiers, ou illégales sur la plateforme Gate.",
-      "Tout abus peut entraîner la suspension immédiate du compte, sans remboursement.",
-    ],
-  },
-  {
-    id: "rgpd",
-    icon: Eye,
-    num: "02",
-    title: "Protection des données · RGPD",
-    content: [
-      "Conformément au RGPD, Gate s'engage à traiter vos données personnelles de manière transparente et sécurisée.",
-    ],
-    lists: [
-      {
-        title: "Données collectées",
-        items: ["Email et nom (création de compte)", "Données de profil généalogique (optionnelles)", "Paiements gérés exclusivement par Stripe", "Logs de connexion et d'audit (sécurité)"],
-      },
-      {
-        title: "Vos droits",
-        items: ["Droit d'accès : consultez vos données depuis votre compte.", "Droit à l'effacement : suppression = anonymisation immédiate.", "Droit à la portabilité : export de vos données sur demande.", "Contact : privacy@gate.afouanee.dev"],
-      },
-    ],
-  },
-  {
-    id: "visibilite",
-    icon: Lock,
-    num: "03",
-    title: "Visibilité des profils",
-    content: [
-      "Par défaut, seuls prénom et nom sont visibles. Les données sensibles (dates, photos, infos personnelles) sont masquées.",
-      "Les administrateurs configurent la visibilité de chaque champ. Les utilisateurs Premium accèdent aux données complètes selon ces paramètres.",
-    ],
-  },
-  {
-    id: "mentions",
-    icon: FileText,
-    num: "04",
-    title: "Mentions légales",
-    content: [],
-    legal: {
-      Éditeur: "Afouanee.dev",
-      Hébergement: "Vercel Inc. (San Francisco, CA) / Supabase",
-      Contact: "contact@gate.afouanee.dev",
-      Paiements: "Stripe Inc. (San Francisco, CA)",
-    },
-  },
-];
+const SECTION_META = [
+  { id: "utilisation", icon: Shield,   num: "01" },
+  { id: "rgpd",        icon: Eye,      num: "02" },
+  { id: "visibilite",  icon: Lock,     num: "03" },
+  { id: "mentions",    icon: FileText, num: "04" },
+] as const;
 
-export default function ChartePage() {
+export default function ChartePage({
+  params: { locale },
+}: {
+  params: { locale: string };
+}) {
+  const t = useTranslations("charter.page");
+  const dateLocale = locale === "fr" ? "fr-FR" : "en-US";
+
+  // Construit les sections à partir de l'i18n (textes) et des métadonnées (icônes, ids).
+  const sections = SECTION_META.map((meta) => {
+    const base = `sections.${meta.id}`;
+    const section: {
+      id: string;
+      icon: typeof meta.icon;
+      num: string;
+      title: string;
+      content: string[];
+      lists?: { title: string; items: string[] }[];
+      legal?: Record<string, string>;
+    } = {
+      id: meta.id,
+      icon: meta.icon,
+      num: meta.num,
+      title: t(`${base}.title`),
+      content: (t.raw(`${base}.content`) as string[]) ?? [],
+    };
+
+    if (meta.id === "rgpd") {
+      section.lists = [
+        {
+          title: t(`${base}.listCollectedTitle`),
+          items: t.raw(`${base}.listCollected`) as string[],
+        },
+        {
+          title: t(`${base}.listRightsTitle`),
+          items: t.raw(`${base}.listRights`) as string[],
+        },
+      ];
+    }
+
+    if (meta.id === "mentions") {
+      section.legal = {
+        [t(`${base}.legalEditorLabel`)]: t(`${base}.legalEditorValue`),
+        [t(`${base}.legalHostingLabel`)]: t(`${base}.legalHostingValue`),
+        [t(`${base}.legalContactLabel`)]: t(`${base}.legalContactValue`),
+        [t(`${base}.legalPaymentsLabel`)]: t(`${base}.legalPaymentsValue`),
+      };
+    }
+
+    return section;
+  });
+
   return (
     <div className="min-h-[calc(100svh-4rem)] bg-paper">
       <div className="container mx-auto max-w-3xl px-4 py-20 sm:px-6">
 
         {/* Header */}
         <div className="mb-16" style={{ animation: "fade-in 0.5s ease-out both" }}>
-          <span className="section-no mb-4 block">№ · Légal</span>
+          <span className="section-no mb-4 block">{t("sectionNo")}</span>
           <h1 className="font-serif text-3xl md:text-4xl font-semibold tracking-tight leading-tight mb-4">
-            Charte d'utilisation
+            {t("heading")}
           </h1>
           <p className="meta-label">
-            Dernière mise à jour :{" "}
+            {t("lastUpdated")}{" "}
             <span className="tabular">
-              {new Date().toLocaleDateString("fr-FR", { year: "numeric", month: "long", day: "numeric" })}
+              {new Date().toLocaleDateString(dateLocale, { year: "numeric", month: "long", day: "numeric" })}
             </span>
           </p>
         </div>

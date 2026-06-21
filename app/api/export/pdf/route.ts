@@ -3,8 +3,6 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { createAuditLog } from "@/lib/audit";
-import { isUserPremium, canSeeField } from "@/lib/visibility";
-import { ensureQuotaPeriod, FREE_EXPORT_LIMIT } from "@/lib/quota";
 import { z } from "zod";
 
 const MAX_NODES = 1000;
@@ -123,8 +121,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "UNAUTHORIZED" }, { status: 401 });
   }
 
-  const isPremium = isUserPremium(session.user.role);
-
   try {
     const body = await req.json();
     const parsed = schema.safeParse(body);
@@ -141,21 +137,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "PERSON_NOT_FOUND" }, { status: 404 });
     }
 
-    // Reset mensuel lazy AVANT de lire le quota (rend « 1 export / mois » vrai).
-    await ensureQuotaPeriod(session.user.id);
-
-    // Vérifier + réserver le quota d'export de façon ATOMIQUE pour les FREE
-    // (updateMany conditionnel : pas de race condition entre check et incrément).
-    if (!isPremium) {
-      const reserved = await prisma.user.updateMany({
-        where: { id: session.user.id, exportCount: { lt: FREE_EXPORT_LIMIT } },
-        data: { exportCount: { increment: 1 } },
-      });
-      if (reserved.count === 0) {
-        return NextResponse.json({ error: "EXPORT_LIMIT_REACHED" }, { status: 403 });
-      }
-    }
-
+    // Projet communautaire : export illimité pour tous les membres connectés.
     // Construire le graphe
     const graph = await buildGraph(
       parsed.data.personId,
@@ -165,12 +147,12 @@ export async function POST(req: NextRequest) {
       parsed.data.includeCustom
     );
 
-    // Sanitiser selon la visibilité (helper unifié)
+    // Confidentialité par champ selon les flags admin + options d'export.
     const sanitizedNodes = graph.nodes.map((n) => ({
       ...n,
-      birthDate: parsed.data.showDates && canSeeField(isPremium, n.showBirthDate) ? n.birthDate : null,
-      deathDate: parsed.data.showDates && canSeeField(isPremium, n.showDeathDate) ? n.deathDate : null,
-      photoUrl: parsed.data.showPhotos && canSeeField(isPremium, n.showPhoto) ? n.photoUrl : null,
+      birthDate: parsed.data.showDates && n.showBirthDate ? n.birthDate : null,
+      deathDate: parsed.data.showDates && n.showDeathDate ? n.deathDate : null,
+      photoUrl: parsed.data.showPhotos && n.showPhoto ? n.photoUrl : null,
       description: parsed.data.showDescriptions ? n.description : null,
     }));
 

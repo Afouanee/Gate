@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import {
@@ -10,17 +10,19 @@ import {
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
-const EXPORT_TYPES = [
-  { value: "ASCENDANCE",  label: "Ascendance" },
-  { value: "DESCENDANCE", label: "Descendance" },
-  { value: "MIXTE",       label: "Mixte" },
-  { value: "CUSTOM",      label: "Personnalisé" },
-];
-
 export default function ExportPage() {
   const t = useTranslations("export");
+  const locale = useLocale();
+  const dateLocale = locale === "fr" ? "fr-FR" : "en-US";
   const { data: session } = useSession();
   const { toast } = useToast();
+
+  const EXPORT_TYPES = [
+    { value: "ASCENDANCE",  label: t("typeAscendance") },
+    { value: "DESCENDANCE", label: t("typeDescendance") },
+    { value: "MIXTE",       label: t("typeMixte") },
+    { value: "CUSTOM",      label: t("typeCustom") },
+  ];
 
   const [searchQuery,    setSearchQuery]    = useState("");
   const [searchResults,  setSearchResults]  = useState<any[]>([]);
@@ -51,7 +53,7 @@ export default function ExportPage() {
       const data = await res.json().catch(() => ({}));
       setSearchResults(data.results || []);
     } catch {
-      toast({ title: "Erreur", description: "Connexion impossible, réessayez.", variant: "destructive" });
+      toast({ title: t("errorTitle"), description: t("errorConnection"), variant: "destructive" });
     } finally {
       setSearching(false);
     }
@@ -70,16 +72,16 @@ export default function ExportPage() {
       const data = await res.json().catch(() => ({}));
       if (res.ok && data.success) {
         setExportData(data.data);
-        toast({ title: "Succès !", description: t("success") });
+        toast({ title: t("successTitle"), description: t("success") });
       } else {
         toast({
-          title:       data.error === "EXPORT_LIMIT_REACHED" ? "Limite atteinte" : "Erreur",
+          title:       data.error === "EXPORT_LIMIT_REACHED" ? t("limitTitle") : t("errorTitle"),
           description: data.error === "EXPORT_LIMIT_REACHED" ? t("limitReached") : t("error"),
           variant:     "destructive",
         });
       }
     } catch {
-      toast({ title: "Erreur", description: "Connexion impossible, réessayez.", variant: "destructive" });
+      toast({ title: t("errorTitle"), description: t("errorConnection"), variant: "destructive" });
     } finally {
       setLoading(false);
     }
@@ -268,7 +270,7 @@ export default function ExportPage() {
       })
       .join("\n");
 
-    const exportDate = new Date().toLocaleDateString("fr-FR", {
+    const exportDate = new Date().toLocaleDateString(dateLocale, {
       day: "numeric",
       month: "long",
       year: "numeric",
@@ -276,12 +278,12 @@ export default function ExportPage() {
     const rootName = `${exportData.rootPerson.firstName} ${exportData.rootPerson.lastName}`;
     const typeLabel =
       exportData.type === "ASCENDANCE"
-        ? "Ascendance"
+        ? t("typeAscendance")
         : exportData.type === "DESCENDANCE"
-        ? "Descendance"
+        ? t("typeDescendance")
         : exportData.type === "MIXTE"
-        ? "Lignée mixte"
-        : "Personnalisé";
+        ? t("lineageMixte")
+        : t("typeCustom");
 
     // SVG seul, réutilisé pour l'aperçu inline dans la page.
     const svg = `<svg width="${canvasW}" height="${canvasH}" viewBox="0 0 ${canvasW} ${canvasH}" xmlns="http://www.w3.org/2000/svg" style="display:block;margin:0 auto;max-width:100%;height:auto">
@@ -294,8 +296,11 @@ export default function ExportPage() {
       ${svgNodes}
     </svg>`;
 
+    const genCount = exportData.depth;
+    const genLabel = t("generationsCount", { count: genCount, plural: genCount > 1 ? "s" : "" });
+
     const content = `<!DOCTYPE html>
-<html lang="fr">
+<html lang="${locale}">
 <head>
 <meta charset="UTF-8">
 <title>Arbre · ${escapeXml(rootName)}</title>
@@ -331,14 +336,14 @@ export default function ExportPage() {
 <div class="sheet">
 
   <div class="doc-head">
-    <div class="doc-kicker">№ · Registre généalogique</div>
+    <div class="doc-kicker">${escapeXml(t("docKicker"))}</div>
     <h1>${escapeXml(rootName)}</h1>
-    <div class="sub">${escapeXml(typeLabel)} · ${exportData.depth} génération${exportData.depth > 1 ? "s" : ""}</div>
+    <div class="sub">${escapeXml(typeLabel)} · ${escapeXml(genLabel)}</div>
   </div>
 
   <div class="meta-row">
-    <span>${exportData.nodes.length} profils · ${exportData.edges.length} liens</span>
-    <span>Établi le ${escapeXml(exportDate)}</span>
+    <span>${escapeXml(t("docProfilesLinks", { profiles: exportData.nodes.length, links: exportData.edges.length }))}</span>
+    <span>${escapeXml(t("docEstablished", { date: exportDate }))}</span>
   </div>
 
   <div class="tree-wrap">
@@ -354,18 +359,18 @@ export default function ExportPage() {
   </div>
 
   <div class="legend">
-    <span><i></i> Filiation</span>
-    <span><i class="spouse"></i> Conjoint(e)</span>
-    <span><i class="custom"></i> Relation personnalisée</span>
-    <span style="margin-left:auto"><span class="seal"></span> Personne de référence</span>
+    <span><i></i> ${escapeXml(t("legendFiliation"))}</span>
+    <span><i class="spouse"></i> ${escapeXml(t("legendSpouse"))}</span>
+    <span><i class="custom"></i> ${escapeXml(t("legendCustom"))}</span>
+    <span style="margin-left:auto"><span class="seal"></span> ${escapeXml(t("legendReference"))}</span>
   </div>
 
   <div class="doc-foot">
-    <span><b>Gate</b> · La porte vers vos origines</span>
+    <span><b>Gate</b> · ${escapeXml(t("footTagline"))}</span>
     <span>by Afouanee.dev</span>
   </div>
 
-  <p class="print-hint">Astuce : imprimez cette page (Ctrl/Cmd + P) et choisissez « Enregistrer au format PDF ».</p>
+  <p class="print-hint">${escapeXml(t("printHint"))}</p>
 
 </div>
 </body>
@@ -427,8 +432,8 @@ export default function ExportPage() {
       if (!res.ok) {
         // repli : on télécharge le HTML imprimable si le rendu PDF échoue
         toast({
-          title: "PDF indisponible",
-          description: "Téléchargement de la version imprimable (HTML) à la place.",
+          title: t("pdfUnavailableTitle"),
+          description: t("pdfUnavailableBody"),
           variant: "destructive",
         });
         handleDownloadHtml();
@@ -436,7 +441,7 @@ export default function ExportPage() {
       }
       triggerDownload(await res.blob(), `${fileBase()}.pdf`);
     } catch {
-      toast({ title: "Erreur", description: "Le téléchargement a échoué.", variant: "destructive" });
+      toast({ title: t("errorTitle"), description: t("downloadFailed"), variant: "destructive" });
     } finally {
       setPdfLoading(false);
     }
@@ -448,7 +453,7 @@ export default function ExportPage() {
 
         {/* Header */}
         <div className="mb-10">
-          <span className="section-no">№ · Export</span>
+          <span className="section-no">{t("sectionNo")}</span>
           <h1 className="mt-2 font-serif text-3xl font-semibold tracking-tight">{t("title")}</h1>
           <p className="mt-2 text-sm text-ink-soft">{t("subtitle")}</p>
         </div>
@@ -463,7 +468,7 @@ export default function ExportPage() {
               <Link href="/pricing">
                 <button className="flex h-9 items-center gap-2 rounded-full bg-seal px-4 text-sm font-medium text-paper transition-colors hover:bg-seal-bright">
                   <Crown className="h-3.5 w-3.5" strokeWidth={1.75} />
-                  Passer à Premium
+                  {t("upgradeCta")}
                 </button>
               </Link>
             </div>
@@ -476,7 +481,7 @@ export default function ExportPage() {
           <div className="overflow-hidden rounded-[var(--radius)] border border-ink-line bg-card">
             <div className="flex items-center gap-2 border-b border-ink-line bg-paper-warm px-6 py-4">
               <Sliders className="h-4 w-4 text-ink-faint" strokeWidth={1.75} />
-              <h2 className="meta-label">Configuration</h2>
+              <h2 className="meta-label">{t("configuration")}</h2>
             </div>
             <div className="space-y-6 p-6">
 
@@ -496,7 +501,7 @@ export default function ExportPage() {
                     type="button"
                     onClick={handleSearch}
                     disabled={searching}
-                    aria-label="Rechercher"
+                    aria-label={t("searchAria")}
                     className="flex h-11 w-11 items-center justify-center rounded-full border border-ink-line text-ink-soft transition-colors hover:border-ink hover:text-ink disabled:opacity-40"
                   >
                     {searching ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" strokeWidth={1.75} />}
@@ -524,7 +529,7 @@ export default function ExportPage() {
                 {selectedPerson && (
                   <div className="mt-2 flex items-center justify-between rounded-[var(--radius)] border border-ink-line bg-paper-warm p-3">
                     <span className="text-sm font-medium text-ink">{selectedPerson.firstName} {selectedPerson.lastName}</span>
-                    <button onClick={() => setSelectedPerson(null)} aria-label="Retirer la sélection" className="text-ink-faint transition-colors hover:text-seal">
+                    <button onClick={() => setSelectedPerson(null)} aria-label={t("removeSelection")} className="text-ink-faint transition-colors hover:text-seal">
                       <XCircle className="h-4 w-4" strokeWidth={1.75} />
                     </button>
                   </div>
@@ -568,8 +573,8 @@ export default function ExportPage() {
                   className="w-full accent-seal"
                 />
                 <div className="mt-1 flex justify-between font-mono text-[11px] text-ink-faint">
-                  <span>1 génération</span>
-                  <span>10 générations</span>
+                  <span>{t("depthOne")}</span>
+                  <span>{t("depthTen")}</span>
                 </div>
               </div>
 
@@ -612,7 +617,7 @@ export default function ExportPage() {
                 className="flex h-11 w-full items-center justify-center gap-2 rounded-full bg-ink text-sm font-medium text-paper transition-all hover:bg-ink-soft active:scale-[0.98] disabled:opacity-40"
               >
                 {loading ? (
-                  <><Loader2 className="h-4 w-4 animate-spin" /> Génération…</>
+                  <><Loader2 className="h-4 w-4 animate-spin" /> {t("generating")}</>
                 ) : (
                   <><Download className="h-4 w-4" strokeWidth={1.75} /> {t("generate")}</>
                 )}
@@ -624,13 +629,13 @@ export default function ExportPage() {
           <div className="overflow-hidden rounded-[var(--radius)] border border-ink-line bg-card">
             <div className="flex items-center gap-2 border-b border-ink-line bg-paper-warm px-6 py-4">
               <FileDown className="h-4 w-4 text-ink-faint" strokeWidth={1.75} />
-              <h2 className="meta-label">Résultat</h2>
+              <h2 className="meta-label">{t("result")}</h2>
             </div>
             <div className="p-6">
               {loading ? (
                 <div className="flex flex-col items-center justify-center gap-4 py-16">
                   <Loader2 className="h-10 w-10 animate-spin text-ink-faint" />
-                  <p className="meta-label">Génération en cours…</p>
+                  <p className="meta-label">{t("generatingFull")}</p>
                 </div>
               ) : exportData ? (
                 <div className="space-y-5">
@@ -638,14 +643,14 @@ export default function ExportPage() {
                     <CheckCircle className="h-5 w-5 shrink-0 text-seal" strokeWidth={1.75} />
                     <div>
                       <p className="text-sm font-medium text-ink">{t("success")}</p>
-                      <p className="text-xs text-ink-soft">{exportData.nodes.length} profils inclus</p>
+                      <p className="text-xs text-ink-soft">{t("successProfiles", { count: exportData.nodes.length })}</p>
                     </div>
                   </div>
 
                   {/* Aperçu de l'arbre AVANT téléchargement */}
                   {previewSvg && (
                     <div>
-                      <p className="mb-2 meta-label">Aperçu</p>
+                      <p className="mb-2 meta-label">{t("preview")}</p>
                       <div
                         className="max-h-[420px] overflow-auto rounded-[var(--radius)] border border-ink-line bg-paper-warm p-3"
                         dangerouslySetInnerHTML={{ __html: previewSvg }}
@@ -655,11 +660,11 @@ export default function ExportPage() {
 
                   <div className="space-y-px">
                     {[
-                      { label: "Personne cible", value: `${exportData.rootPerson.firstName} ${exportData.rootPerson.lastName}` },
-                      { label: "Type",            value: exportData.type },
-                      { label: "Profondeur",      value: `${exportData.depth} génération${exportData.depth > 1 ? "s" : ""}` },
-                      { label: "Profils",         value: exportData.nodes.length },
-                      { label: "Relations",       value: exportData.edges.length },
+                      { label: t("rowTargetPerson"), value: `${exportData.rootPerson.firstName} ${exportData.rootPerson.lastName}` },
+                      { label: t("rowType"),         value: exportData.type },
+                      { label: t("rowDepth"),        value: t("generationsCount", { count: exportData.depth, plural: exportData.depth > 1 ? "s" : "" }) },
+                      { label: t("rowProfiles"),     value: exportData.nodes.length },
+                      { label: t("rowRelations"),    value: exportData.edges.length },
                     ].map((row) => (
                       <div key={row.label} className="flex justify-between border-b border-ink-line py-2 text-sm last:border-0">
                         <span className="text-ink-faint">{row.label}</span>
@@ -675,9 +680,9 @@ export default function ExportPage() {
                       className="flex h-11 w-full items-center justify-center gap-2 rounded-full bg-seal text-sm font-medium text-paper transition-all hover:bg-seal-bright active:scale-[0.98] disabled:opacity-50"
                     >
                       {pdfLoading ? (
-                        <><Loader2 className="h-4 w-4 animate-spin" /> Préparation du PDF…</>
+                        <><Loader2 className="h-4 w-4 animate-spin" /> {t("preparingPdf")}</>
                       ) : (
-                        <><FileDown className="h-4 w-4" strokeWidth={1.75} /> Télécharger le PDF</>
+                        <><FileDown className="h-4 w-4" strokeWidth={1.75} /> {t("downloadPdf")}</>
                       )}
                     </button>
                     <button
@@ -686,14 +691,14 @@ export default function ExportPage() {
                       className="flex h-10 w-full items-center justify-center gap-2 rounded-full border border-ink-line text-sm font-medium text-ink-soft transition-colors hover:border-ink hover:text-ink disabled:opacity-50"
                     >
                       <Download className="h-4 w-4" strokeWidth={1.75} />
-                      Version HTML (imprimable)
+                      {t("downloadHtml")}
                     </button>
                   </div>
                 </div>
               ) : (
                 <div className="flex flex-col items-center justify-center gap-3 py-16 text-center">
                   <Download className="h-10 w-10 text-ink-line" strokeWidth={1.25} />
-                  <p className="text-sm text-ink-faint">Configurez et générez votre arbre.</p>
+                  <p className="text-sm text-ink-faint">{t("emptyState")}</p>
                 </div>
               )}
             </div>

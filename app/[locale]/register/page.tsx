@@ -11,6 +11,7 @@ import { GateMark, Logo } from "@/components/brand/logo";
 type Step = "form" | "verify";
 
 export default function RegisterPage() {
+  const t = useTranslations("auth.register");
   const te = useTranslations("auth.errors");
   const { toast } = useToast();
   const router = useRouter();
@@ -24,11 +25,11 @@ export default function RegisterPage() {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     if (formData.password !== formData.confirmPassword) {
-      toast({ title: "Erreur", description: te("passwordMismatch"), variant: "destructive" });
+      toast({ title: te("title"), description: te("passwordMismatch"), variant: "destructive" });
       return;
     }
     if (formData.password.length < 8) {
-      toast({ title: "Erreur", description: te("weakPassword"), variant: "destructive" });
+      toast({ title: te("title"), description: te("weakPassword"), variant: "destructive" });
       return;
     }
     setLoading(true);
@@ -45,14 +46,14 @@ export default function RegisterPage() {
             ? te("emailExists")
             : data.error === "DISPOSABLE_EMAIL"
             ? te("disposableEmail")
-            : "Une erreur est survenue.";
-        toast({ title: "Erreur", description: msg, variant: "destructive" });
+            : t("errorGeneric");
+        toast({ title: te("title"), description: msg, variant: "destructive" });
         return;
       }
       setVerifyEmail(data.email);
       setStep("verify");
     } catch {
-      toast({ title: "Erreur", description: "Connexion impossible, réessayez.", variant: "destructive" });
+      toast({ title: te("title"), description: t("errorConnection"), variant: "destructive" });
     } finally {
       setLoading(false);
     }
@@ -80,23 +81,23 @@ export default function RegisterPage() {
       });
       await res.json().catch(() => ({}));
       if (!res.ok) {
-        toast({ title: "Code invalide", description: te("codeExpired"), variant: "destructive" });
+        toast({ title: t("codeInvalidTitle"), description: te("codeExpired"), variant: "destructive" });
         return;
       }
-      toast({ title: "Email vérifié !", description: "Vous pouvez maintenant vous connecter." });
+      toast({ title: t("verifiedTitle"), description: t("verifiedBody") });
       router.push("/login");
     } catch {
-      toast({ title: "Erreur", description: "Connexion impossible, réessayez.", variant: "destructive" });
+      toast({ title: te("title"), description: t("errorConnection"), variant: "destructive" });
     } finally {
       setLoading(false);
     }
   };
 
   const FIELDS = [
-    { id: "name", label: "Nom", type: "text", icon: User, placeholder: "Jean Dupont", field: "name" as const, autoComplete: "name" },
-    { id: "email", label: "Email", type: "email", icon: Mail, placeholder: "votre@email.com", field: "email" as const, autoComplete: "email" },
-    { id: "pwd", label: "Mot de passe", type: "password", icon: Lock, placeholder: "Minimum 8 caractères", field: "password" as const, autoComplete: "new-password" },
-    { id: "cpwd", label: "Confirmer", type: "password", icon: Lock, placeholder: "Répéter le mot de passe", field: "confirmPassword" as const, autoComplete: "new-password" },
+    { id: "name", label: t("fieldName"), type: "text", icon: User, placeholder: t("namePlaceholder"), field: "name" as const, autoComplete: "name" },
+    { id: "email", label: t("fieldEmail"), type: "email", icon: Mail, placeholder: t("emailPlaceholder"), field: "email" as const, autoComplete: "email" },
+    { id: "pwd", label: t("fieldPassword"), type: "password", icon: Lock, placeholder: t("passwordPlaceholder"), field: "password" as const, autoComplete: "new-password" },
+    { id: "cpwd", label: t("fieldConfirm"), type: "password", icon: Lock, placeholder: t("confirmPlaceholder"), field: "confirmPassword" as const, autoComplete: "new-password" },
   ];
 
   return (
@@ -107,7 +108,7 @@ export default function RegisterPage() {
         <div className="flex items-center justify-between">
           <Logo size={26} className="text-paper" seal={false} />
           <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-paper/40">
-            Le registre
+            {t("asideRegister")}
           </span>
         </div>
 
@@ -119,18 +120,18 @@ export default function RegisterPage() {
 
         <div className="relative z-10 max-w-sm">
           <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-seal-bright">
-            № · Bienvenue
+            {t("asideLabel")}
           </span>
           <h2 className="mt-4 font-serif text-4xl font-semibold leading-tight tracking-tight">
-            Commencez
+            {t("asideTitleLine1")}
             <br />
-            <span className="italic">votre registre.</span>
+            <span className="italic">{t("asideTitleLine2")}</span>
           </h2>
           <ul className="mt-8 space-y-3">
             {[
-              "Inscription en deux minutes",
-              "Email vérifié, données protégées",
-              "Arbre interactif inclus",
+              t("asideBenefit1"),
+              t("asideBenefit2"),
+              t("asideBenefit3"),
             ].map((item) => (
               <li key={item} className="flex items-center gap-3 text-sm text-paper/60">
                 <CheckCircle className="h-4 w-4 shrink-0 text-seal-bright" strokeWidth={1.75} />
@@ -141,7 +142,7 @@ export default function RegisterPage() {
         </div>
 
         <p className="relative z-10 font-serif text-sm italic text-paper/40">
-          Gratuit pour toujours.
+          {t("asideFree")}
         </p>
       </aside>
 
@@ -155,11 +156,11 @@ export default function RegisterPage() {
 
           {step === "form" ? (
             <>
-              <span className="section-no">№ · Inscription</span>
+              <span className="section-no">{t("sectionNo")}</span>
               <h1 className="mt-2 font-serif text-3xl font-semibold tracking-tight">
-                Créer un compte
+                {t("createTitle")}
               </h1>
-              <p className="mt-2 text-sm text-ink-soft">C&apos;est gratuit, pour toujours.</p>
+              <p className="mt-2 text-sm text-ink-soft">{t("createSubtitle")}</p>
 
               <form onSubmit={handleRegister} className="mt-8 space-y-4">
                 {FIELDS.map(({ id, label, type, icon: Icon, placeholder, field, autoComplete }) => (
@@ -190,14 +191,14 @@ export default function RegisterPage() {
                   className="flex h-11 w-full items-center justify-center gap-2 rounded-full bg-ink text-sm font-medium text-paper transition-all hover:bg-ink-soft active:scale-[0.98] disabled:opacity-40"
                 >
                   {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : (
-                    <>Créer mon compte <ArrowRight className="h-4 w-4" /></>
+                    <>{t("submit")} <ArrowRight className="h-4 w-4" /></>
                   )}
                 </button>
 
                 <p className="pt-1 text-center text-xs text-ink-faint">
-                  Déjà un compte ?{" "}
+                  {t("alreadyAccount")}{" "}
                   <Link href="/login" className="link-underline font-medium text-ink">
-                    Se connecter
+                    {t("login")}
                   </Link>
                 </p>
               </form>
@@ -209,14 +210,14 @@ export default function RegisterPage() {
                   <ShieldCheck className="h-5 w-5 text-seal" strokeWidth={1.75} />
                 </span>
                 <div>
-                  <h1 className="font-serif text-xl font-semibold tracking-tight">Vérification</h1>
-                  <p className="text-xs text-ink-faint">Code envoyé à {verifyEmail}</p>
+                  <h1 className="font-serif text-xl font-semibold tracking-tight">{t("verifyTitle")}</h1>
+                  <p className="text-xs text-ink-faint">{t("codeSentTo")} {verifyEmail}</p>
                 </div>
               </div>
 
               <form onSubmit={handleVerify} className="space-y-6">
                 <div>
-                  <label className="mb-4 block meta-label">Entrez le code à 6 chiffres</label>
+                  <label className="mb-4 block meta-label">{t("enterCodeLabel")}</label>
                   <div className="flex gap-2">
                     {code.map((digit, index) => (
                       <input
@@ -245,7 +246,7 @@ export default function RegisterPage() {
                   className="flex h-11 w-full items-center justify-center gap-2 rounded-full bg-ink text-sm font-medium text-paper transition-all hover:bg-ink-soft active:scale-[0.98] disabled:opacity-40"
                 >
                   {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : (
-                    <><CheckCircle className="h-4 w-4" /> Vérifier</>
+                    <><CheckCircle className="h-4 w-4" /> {t("verify")}</>
                   )}
                 </button>
 
@@ -258,14 +259,14 @@ export default function RegisterPage() {
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({ email: verifyEmail }),
                       });
-                      toast({ title: "Code renvoyé", description: "Vérifiez votre boîte mail." });
+                      toast({ title: t("codeResentTitle"), description: t("codeResentBody") });
                     } catch {
-                      toast({ title: "Erreur", description: "Connexion impossible, réessayez.", variant: "destructive" });
+                      toast({ title: te("title"), description: t("errorConnection"), variant: "destructive" });
                     }
                   }}
                   className="link-underline mx-auto block text-xs text-ink-faint hover:text-ink"
                 >
-                  Renvoyer le code
+                  {t("resendCode")}
                 </button>
               </form>
             </>

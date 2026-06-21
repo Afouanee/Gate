@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowRight, TreePine } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -20,9 +21,15 @@ async function getStats() {
   }
 }
 
-export default async function HomePage() {
+export default async function HomePage({
+  params: { locale },
+}: {
+  params: { locale: string };
+}) {
   const session = await getServerSession(authOptions);
   const stats = await getStats();
+  const t = await getTranslations("home");
+  const numberLocale = locale === "fr" ? "fr-FR" : "en-US";
 
   return (
     <div className="bg-paper">
@@ -51,9 +58,9 @@ export default async function HomePage() {
             className="mb-6 flex items-center gap-4"
             style={{ animation: "fade-in 0.6s 0.05s both" }}
           >
-            <span className="section-no whitespace-nowrap">№ 001 · Registre familial</span>
+            <span className="section-no whitespace-nowrap">{t("hero.registerLabel")}</span>
             <span className="h-px flex-1 bg-ink-line/60" />
-            <span className="meta-label hidden sm:block">Pondichéry → France</span>
+            <span className="meta-label hidden sm:block">{t("hero.route")}</span>
           </div>
 
           {/* Titre géant qui déborde */}
@@ -63,7 +70,7 @@ export default async function HomePage() {
                 className="block text-[clamp(2.75rem,15vw,12rem)]"
                 style={{ animation: "slide-up 1s 0.2s cubic-bezier(0.16,1,0.3,1) both" }}
               >
-                La porte
+                {t("hero.titleLine1")}
               </span>
             </span>
             <span className="block overflow-hidden">
@@ -71,22 +78,22 @@ export default async function HomePage() {
                 className="block pl-[8vw] text-[clamp(2.75rem,15vw,12rem)] text-ink-faint"
                 style={{ animation: "slide-up 1s 0.32s cubic-bezier(0.16,1,0.3,1) both" }}
               >
-                vers vos
+                {t("hero.titleLine2")}
               </span>
             </span>
             <span className="block overflow-hidden">
               <span
-                className="relative block text-[clamp(2.75rem,15vw,12rem)] italic text-seal"
+                className="text-gradient-indo relative block text-[clamp(2.75rem,15vw,12rem)] italic"
                 style={{ animation: "slide-up 1s 0.44s cubic-bezier(0.16,1,0.3,1) both" }}
               >
-                origines.
+                {t("hero.titleLine3")}
                 {/* tampon d'archive */}
                 <span
                   aria-hidden
                   className="absolute -right-2 top-2 hidden rotate-[-8deg] rounded-sm border-2 border-seal/40 px-2 py-0.5 font-mono text-[11px] uppercase tracking-[0.2em] text-seal/60 md:inline-block"
                   style={{ animation: "seal-in 0.6s 1.1s both" }}
                 >
-                  Vérifié
+                  {t("hero.verified")}
                 </span>
               </span>
             </span>
@@ -98,9 +105,8 @@ export default async function HomePage() {
               className="max-w-md text-base leading-relaxed text-ink-soft"
               style={{ animation: "fade-in 0.7s 0.7s both" }}
             >
-              Un registre familial vivant. Reliez les générations, conservez la
-              mémoire des vôtres et remontez le fil.
-              <span className="italic text-ink"> Un nom, une date, un lien à la fois.</span>
+              {t("hero.lead")}
+              <span className="italic text-ink"> {t("hero.leadEmphasis")}</span>
             </p>
 
             <div
@@ -110,26 +116,26 @@ export default async function HomePage() {
               {session ? (
                 <Link
                   href="/arbre"
-                  className="group inline-flex items-center justify-center gap-2 rounded-full bg-ink px-7 py-3.5 text-sm font-medium text-paper transition-all hover:bg-ink-soft active:scale-[0.98]"
+                  className="btn-indo group inline-flex items-center justify-center gap-2 rounded-full px-7 py-3.5 text-sm font-medium transition-all active:scale-[0.98]"
                 >
                   <TreePine className="h-4 w-4" strokeWidth={1.75} />
-                  Ouvrir l&apos;arbre
+                  {t("hero.openTree")}
                   <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
                 </Link>
               ) : (
                 <>
                   <Link
                     href="/register"
-                    className="group inline-flex items-center justify-center gap-2 rounded-full bg-ink px-7 py-3.5 text-sm font-medium text-paper transition-all hover:bg-ink-soft active:scale-[0.98]"
+                    className="btn-indo group inline-flex items-center justify-center gap-2 rounded-full px-7 py-3.5 text-sm font-medium transition-all active:scale-[0.98]"
                   >
-                    Commencer, c&apos;est gratuit
+                    {t("hero.startFree")}
                     <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
                   </Link>
                   <Link
                     href="/login"
                     className="inline-flex items-center justify-center rounded-full border border-ink-line px-7 py-3.5 text-sm text-ink-soft transition-all hover:border-ink hover:text-ink"
                   >
-                    Se connecter
+                    {t("hero.login")}
                   </Link>
                 </>
               )}
@@ -142,7 +148,7 @@ export default async function HomePage() {
               className="font-serif text-lg italic text-ink-faint"
               style={{ animation: "fade-in 0.7s 1s both" }}
             >
-              « Dis-moi qui tu es, je te dirai d&apos;où tu viens. »
+              {t("hero.quote")}
             </p>
 
             {(stats.persons > 0 || stats.relations > 0) && (
@@ -150,18 +156,18 @@ export default async function HomePage() {
                 {stats.persons > 0 && (
                   <div>
                     <p className="font-serif text-4xl font-semibold tabular">
-                      {stats.persons.toLocaleString("fr-FR")}
+                      {stats.persons.toLocaleString(numberLocale)}
                     </p>
-                    <p className="meta-label mt-1">profils</p>
+                    <p className="meta-label mt-1">{t("hero.statProfiles")}</p>
                   </div>
                 )}
                 {stats.persons > 0 && stats.relations > 0 && <div className="h-12 w-px bg-ink-line" />}
                 {stats.relations > 0 && (
                   <div>
                     <p className="font-serif text-4xl font-semibold tabular">
-                      {stats.relations.toLocaleString("fr-FR")}
+                      {stats.relations.toLocaleString(numberLocale)}
                     </p>
-                    <p className="meta-label mt-1">liens</p>
+                    <p className="meta-label mt-1">{t("hero.statLinks")}</p>
                   </div>
                 )}
               </div>
@@ -174,7 +180,7 @@ export default async function HomePage() {
           className="absolute bottom-6 left-1/2 hidden -translate-x-1/2 flex-col items-center gap-2 md:flex"
           style={{ animation: "fade-in 1s 1.4s both" }}
         >
-          <span className="meta-label">défiler</span>
+          <span className="meta-label">{t("hero.scroll")}</span>
           <span className="h-10 w-px bg-gradient-to-b from-ink-line to-transparent" />
         </div>
       </section>
@@ -184,9 +190,9 @@ export default async function HomePage() {
         <div className="container mx-auto max-w-5xl">
           <Reveal className="mb-14 flex items-end justify-between">
             <div>
-              <span className="section-no">№ 02</span>
+              <span className="section-no">{t("howItWorks.sectionNo")}</span>
               <h2 className="mt-2 font-serif text-3xl font-semibold tracking-tight md:text-4xl">
-                Trois gestes, un arbre.
+                {t("howItWorks.title")}
               </h2>
             </div>
           </Reveal>
@@ -195,18 +201,18 @@ export default async function HomePage() {
             {[
               {
                 no: "01",
-                title: "Cherchez les vôtres",
-                body: "Retrouvez un parent, un aïeul, une branche. Chaque profil est une fiche d'archive.",
+                title: t("howItWorks.step1Title"),
+                body: t("howItWorks.step1Body"),
               },
               {
                 no: "02",
-                title: "Tissez les liens",
-                body: "Parent, enfant, conjoint : reliez les générations et voyez l'arbre se dessiner.",
+                title: t("howItWorks.step2Title"),
+                body: t("howItWorks.step2Body"),
               },
               {
                 no: "03",
-                title: "Transmettez",
-                body: "Exportez un arbre soigné en PDF et partagez la mémoire familiale.",
+                title: t("howItWorks.step3Title"),
+                body: t("howItWorks.step3Body"),
               },
             ].map((step, i) => (
               <Reveal
@@ -228,19 +234,18 @@ export default async function HomePage() {
         <div className="container mx-auto max-w-3xl text-center">
           <Reveal>
             <GateMark size={40} className="mx-auto mb-6 text-ink" />
-            <span className="section-no">№ 03 · Contribuer</span>
+            <span className="section-no">{t("contribute.sectionNo")}</span>
             <h2 className="mt-3 font-serif text-3xl font-semibold tracking-tight md:text-4xl">
-              Votre famille mérite d&apos;être dans l&apos;arbre.
+              {t("contribute.title")}
             </h2>
             <p className="mx-auto mt-4 max-w-md text-sm leading-relaxed text-ink-soft">
-              Vous ne vous retrouvez pas, ou vous souhaitez enrichir une branche ?
-              Écrivez-nous, chaque lien compte.
+              {t("contribute.body")}
             </p>
             <Link
               href="/contact"
               className="mt-8 inline-flex items-center gap-2 rounded-full border border-ink-line px-6 py-3 text-sm text-ink transition-all hover:border-ink hover:bg-paper-warm"
             >
-              Nous contacter
+              {t("contribute.cta")}
               <ArrowRight className="h-4 w-4" />
             </Link>
           </Reveal>
@@ -254,20 +259,20 @@ export default async function HomePage() {
       <section className="border-t border-ink-line bg-paper-warm py-24 px-4 sm:px-6">
         <div className="container mx-auto max-w-3xl">
           <Reveal className="mb-10 text-center">
-            <span className="section-no">№ 04 · Tarifs</span>
+            <span className="section-no">{t("pricingTeaser.sectionNo")}</span>
             <h2 className="mt-2 font-serif text-3xl font-semibold tracking-tight">
-              Commencez gratuitement.
+              {t("pricingTeaser.title")}
             </h2>
           </Reveal>
 
           <div className="grid gap-4 sm:grid-cols-2">
             {/* FREE */}
             <Reveal className="card-paper p-7">
-              <span className="meta-label">Gratuit</span>
-              <p className="mt-4 font-serif text-4xl font-semibold tabular">0 €</p>
-              <p className="mt-1 text-xs text-ink-faint">pour toujours</p>
+              <span className="meta-label">{t("pricingTeaser.freeLabel")}</span>
+              <p className="mt-4 font-serif text-4xl font-semibold tabular">{t("pricingTeaser.freePrice")}</p>
+              <p className="mt-1 text-xs text-ink-faint">{t("pricingTeaser.freePeriod")}</p>
               <ul className="my-6 space-y-2.5">
-                {["5 recherches / mois", "10 profils", "1 export / mois"].map((f) => (
+                {[t("pricingTeaser.freeFeature1"), t("pricingTeaser.freeFeature2"), t("pricingTeaser.freeFeature3")].map((f) => (
                   <li key={f} className="flex items-center gap-2.5 text-sm text-ink-soft">
                     <span className="h-1 w-1 rounded-full bg-ink-faint" />
                     {f}
@@ -278,22 +283,22 @@ export default async function HomePage() {
                 href="/register"
                 className="block rounded-full border border-ink px-5 py-2.5 text-center text-sm font-medium text-ink transition-all hover:bg-ink hover:text-paper"
               >
-                Commencer
+                {t("pricingTeaser.freeCta")}
               </Link>
             </Reveal>
 
             {/* PREMIUM */}
             <Reveal delay={90} className="relative overflow-hidden rounded-[var(--radius)] bg-ink p-7 text-paper">
               <span className="seal-badge absolute right-4 top-4 bg-seal text-paper">
-                ✦ Premium
+                {t("pricingTeaser.premiumBadge")}
               </span>
               <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-paper/50">
-                Premium
+                {t("pricingTeaser.premiumLabel")}
               </span>
-              <p className="mt-4 font-serif text-4xl font-semibold tabular">3,99 €</p>
-              <p className="mt-1 text-xs text-paper/40">tous les 3 mois</p>
+              <p className="mt-4 font-serif text-4xl font-semibold tabular">{t("pricingTeaser.premiumPrice")}</p>
+              <p className="mt-1 text-xs text-paper/40">{t("pricingTeaser.premiumPeriod")}</p>
               <ul className="my-6 space-y-2.5">
-                {["Illimité", "Arbre complet", "Exports PDF"].map((f) => (
+                {[t("pricingTeaser.premiumFeature1"), t("pricingTeaser.premiumFeature2"), t("pricingTeaser.premiumFeature3")].map((f) => (
                   <li key={f} className="flex items-center gap-2.5 text-sm text-paper/70">
                     <span className="h-1 w-1 rounded-full bg-seal-bright" />
                     {f}
@@ -304,7 +309,7 @@ export default async function HomePage() {
                 href="/pricing"
                 className="block rounded-full bg-paper px-5 py-2.5 text-center text-sm font-medium text-ink transition-all hover:bg-paper-warm"
               >
-                Voir les détails
+                {t("pricingTeaser.premiumCta")}
               </Link>
             </Reveal>
           </div>

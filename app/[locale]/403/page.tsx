@@ -8,7 +8,7 @@ export default function ForbiddenPage() {
   return (
     <div className="flex min-h-[calc(100svh-4rem)] items-center justify-center bg-paper px-6">
       <div className="max-w-sm text-center" style={{ animation: "fade-in-scale 0.5s both" }}>
-        <span className="section-no">№ · Accès refusé</span>
+        <span className="section-no">{t("sectionNo")}</span>
         <p className="my-2 select-none font-serif text-[6rem] font-semibold leading-none text-ink-line tabular sm:text-[8rem]">
           403
         </p>
