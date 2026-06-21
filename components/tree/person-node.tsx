@@ -58,8 +58,12 @@ function PersonNodeComponent({ data, selected }: NodeProps<PersonNodeData>) {
 
       <Handle type="target" position={Position.Top} className="!h-2 !w-2 !border-0 !opacity-0" />
       <Handle type="source" position={Position.Bottom} className="!h-2 !w-2 !border-0 !opacity-0" />
-      <Handle type="source" position={Position.Right} id="right" className="!h-2 !w-2 !border-0 !opacity-0" />
-      <Handle type="target" position={Position.Left} id="left" className="!h-2 !w-2 !border-0 !opacity-0" />
+      {/* Ports latéraux pour le lien conjoint (trait droit horizontal).
+          Chaque côté a un handle source ET target pour pouvoir relier dans les deux sens. */}
+      <Handle type="source" id="right" position={Position.Right} className="!h-2 !w-2 !border-0 !opacity-0" />
+      <Handle type="target" id="right" position={Position.Right} className="!h-2 !w-2 !border-0 !opacity-0" />
+      <Handle type="source" id="left" position={Position.Left} className="!h-2 !w-2 !border-0 !opacity-0" />
+      <Handle type="target" id="left" position={Position.Left} className="!h-2 !w-2 !border-0 !opacity-0" />
 
       <div className="flex flex-col items-center gap-2 px-4 pb-4 pt-5">
         {/* Avatar */}

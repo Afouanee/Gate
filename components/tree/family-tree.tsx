@@ -31,9 +31,11 @@ const nodeTypes = { person: PersonNode };
 function layoutNodes(rawNodes: any[], rawEdges: any[]): { nodes: Node[]; edges: Edge[] } {
   const NODE_W = 176;
   const NODE_H = 132;
-  const H_GAP  = 28;   // espace entre fiches d'une fratrie
-  const SPOUSE_GAP = 14; // espace serré entre conjoints
-  const V_GAP  = 120;  // espace vertical entre générations
+  // Sémantique des espaces : un COUPLE est serré (cartes proches, trait pointillé
+  // latéral) ; la FRATRIE est plus aérée (reliée par la filiation, traits continus).
+  const H_GAP  = 64;   // espace entre fiches d'une fratrie (large, anti-chevauchement)
+  const SPOUSE_GAP = 22; // espace entre conjoints (resserré : ils sont "ensemble")
+  const V_GAP  = 130;  // espace vertical entre générations
   const SLOT   = NODE_W + H_GAP;
 
   const ids = new Set(rawNodes.map((n) => n.id));
@@ -184,20 +186,36 @@ function layoutNodes(rawNodes: any[], rawEdges: any[]): { nodes: Node[]; edges: 
     data: n,
   }));
 
-  const edges: Edge[] = rawEdges.map((e) => ({
+  // pour orienter le trait conjoint : la source à gauche pointe son port droit
+  // vers le port gauche de la personne à droite (trait horizontal simple).
+  const xOf = (id: string) => positions.get(id)?.x ?? 0;
+
+  const edges: Edge[] = rawEdges.map((e) => {
+    const isSpouse = e.type === "SPOUSE";
+    // Pour un couple, déterminer qui est à gauche / à droite
+    const srcLeft = xOf(e.sourceId) <= xOf(e.targetId);
+    return {
     id: e.id,
     source: e.sourceId,
     target: e.targetId,
-    type: e.type === "PARENT_CHILD" ? "smoothstep" : "straight",
+    // Conjoint : trait DROIT horizontal entre les ports latéraux (gauche/droite).
+    // Filiation / custom : connecteurs orthogonaux qui suivent la grille.
+    type: isSpouse ? "straight" : "smoothstep",
+    sourceHandle: isSpouse ? (srcLeft ? "right" : "left") : undefined,
+    targetHandle: isSpouse ? (srcLeft ? "left" : "right") : undefined,
     animated: false,
-    // Couleurs DA « Archive » : filiation = encre estompée, conjoint = sceau, custom = patine
+    // Couleurs DA « Archive » : filiation = encre estompée, conjoint = sceau, custom = patine pointillée
     style: {
       stroke:
         e.type === "SPOUSE" ? "#7A2E2E" :
         e.type === "CUSTOM" ? "#A8842C" :
         "#B9AE96",
       strokeWidth: e.type === "PARENT_CHILD" ? 1.75 : 1.5,
-      strokeDasharray: e.type === "SPOUSE" ? "5 4" : undefined,
+      strokeDasharray:
+        e.type === "SPOUSE" ? "5 4" :
+        e.type === "CUSTOM" ? "2 4" :
+        undefined,
+      opacity: e.type === "CUSTOM" ? 0.6 : 1,
     },
     markerEnd: e.type === "PARENT_CHILD"
       ? { type: MarkerType.ArrowClosed, color: "#8A8378", width: 10, height: 10 }
@@ -207,7 +225,8 @@ function layoutNodes(rawNodes: any[], rawEdges: any[]): { nodes: Node[]; edges: 
     labelBgStyle:   { fill: "#F2E9CF", fillOpacity: 0.95 },
     labelBgPadding: [4, 2] as [number, number],
     labelBgBorderRadius: 4,
-  }));
+    };
+  });
 
   return { nodes, edges };
 }
@@ -336,7 +355,7 @@ function FamilyTreeInner({ focusPersonId }: { focusPersonId?: string | null }) {
   }
 
   return (
-    <div className="relative w-full h-full">
+    <div className="tree-canvas relative h-full w-full">
       <ReactFlow
         nodes={nodes}
         edges={edges}

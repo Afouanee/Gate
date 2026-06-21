@@ -15,8 +15,8 @@ export async function generateMetadata({ params }: { params: { locale: string } 
       en: "Pondicherry · Gate",
     },
     description: {
-      fr: "Pondichéry, des marchands de la côte de Coromandel au comptoir français, sa communauté musulmane, le rattachement à l'Inde et la diaspora indo-pondichérienne en France. Une histoire en sept chapitres.",
-      en: "Pondicherry, from the merchants of the Coromandel Coast to the French trading post, its Muslim community, the union with India and the Indo-Pondicherrian diaspora in France. A story in seven chapters.",
+      fr: "Pondichéry, des marchands de la côte de Coromandel au comptoir français, sa communauté musulmane, l'indépendance de l'Inde, le rattachement et la diaspora indo-pondichérienne en France. Une histoire en neuf chapitres.",
+      en: "Pondicherry, from the merchants of the Coromandel Coast to the French trading post, its Muslim community, India's independence, the union with India and the Indo-Pondicherrian diaspora in France. A story in nine chapters.",
     },
   };
   return {
@@ -31,9 +31,10 @@ const CHAPTERS: { id: string; num: string; title: Bi }[] = [
   { id: "age-or", num: "03", title: { fr: "Âge d'or et rivalités", en: "Golden age and rivalries" } },
   { id: "musulmans", num: "04", title: { fr: "La communauté musulmane", en: "The Muslim community" } },
   { id: "indochine", num: "05", title: { fr: "La route de l'Indochine", en: "The road to Indochina" } },
-  { id: "rattachement", num: "06", title: { fr: "Le rattachement à l'Inde", en: "The union with India" } },
-  { id: "emigration", num: "07", title: { fr: "L'émigration vers la France", en: "Emigration to France" } },
-  { id: "aujourdhui", num: "08", title: { fr: "Pondichéry aujourd'hui", en: "Pondicherry today" } },
+  { id: "independance", num: "06", title: { fr: "L'indépendance de l'Inde", en: "India's independence" } },
+  { id: "rattachement", num: "07", title: { fr: "Le rattachement à l'Inde", en: "The union with India" } },
+  { id: "emigration", num: "08", title: { fr: "L'émigration vers la France", en: "Emigration to France" } },
+  { id: "aujourdhui", num: "09", title: { fr: "Pondichéry aujourd'hui", en: "Pondicherry today" } },
 ];
 
 const TIMELINE: { year: Bi; text: Bi }[] = [
@@ -77,6 +78,13 @@ const TIMELINE: { year: Bi; text: Bi }[] = [
     text: {
       fr: "De nombreux Pondichériens partent travailler en Indochine française, notamment à Saïgon.",
       en: "Many people from Pondicherry leave to work in French Indochina, notably in Saigon.",
+    },
+  },
+  {
+    year: { fr: "1947", en: "1947" },
+    text: {
+      fr: "L'Inde devient indépendante du Royaume-Uni ; les comptoirs français, dont Pondichéry, ne sont pas concernés et restent français.",
+      en: "India becomes independent from the United Kingdom; the French trading posts, including Pondicherry, are not affected and remain French.",
     },
   },
   {
@@ -134,7 +142,7 @@ export default function PondicheryPage({ params }: { params: { locale: string } 
   const ui = {
     heroEyebrow: { fr: "№ · Mémoire", en: "№ · Memory" },
     heroTitle: { fr: "Pondichéry,", en: "Pondicherry," },
-    heroSubtitle: { fr: "une histoire en sept chapitres.", en: "a story in seven chapters." },
+    heroSubtitle: { fr: "une histoire en neuf chapitres.", en: "a story in nine chapters." },
     heroLead: {
       fr: "Des marchands de la côte de Coromandel au comptoir français, du rattachement à l'Inde jusqu'à la diaspora d'aujourd'hui : le récit de la ville d'où une famille est partie, et de ce qu'elle a laissé derrière elle.",
       en: "From the merchants of the Coromandel Coast to the French trading post, from the union with India to today's diaspora: the story of the city a family left behind, and of what it left behind it.",
@@ -349,6 +357,26 @@ export default function PondicheryPage({ params }: { params: { locale: string } 
               caption={lang === "fr" ? "Le front de mer, vers 1900." : "The waterfront, around 1900."}
             />
           </div>
+          <Aside label={lang === "fr" ? "L'Aayi Mandapam" : "The Aayi Mandapam"}>
+            {lang === "fr"
+              ? "Au cœur du parc Bharathi, ce pavillon de pierre blanche fut érigé sous Napoléon III en hommage à une femme nommée Aayi. Il reste l'un des monuments les plus emblématiques de la ville."
+              : "At the heart of Bharathi Park, this white stone pavilion was erected under Napoleon III in tribute to a woman named Aayi. It remains one of the city's most emblematic monuments."}
+          </Aside>
+          <ArchivePhoto
+            className="mt-6"
+            src="/pondichery/aayi-mandapam.jpg"
+            alt={
+              lang === "fr"
+                ? "L'Aayi Mandapam, dans le parc Bharathi"
+                : "The Aayi Mandapam, in Bharathi Park"
+            }
+            caption={
+              lang === "fr"
+                ? "L'Aayi Mandapam, parc Bharathi (érigé vers 1860)."
+                : "The Aayi Mandapam, Bharathi Park (built around 1860)."
+            }
+            credit="Wikimedia · CC BY-SA"
+          />
         </Reveal>
 
         <div className="rule-line my-12" />
@@ -397,6 +425,11 @@ export default function PondicheryPage({ params }: { params: { locale: string } 
             {lang === "fr"
               ? "Le terme évoquerait la mer et la navigation : un nom de famille qui dit, à lui seul, des siècles de commerce le long de la côte."
               : "The term is said to evoke the sea and navigation: a family name that alone speaks of centuries of trade along the coast."}
+          </Aside>
+          <Aside label={lang === "fr" ? "Les mosquées de la vieille ville" : "The mosques of the old town"}>
+            {lang === "fr"
+              ? "Plusieurs mosquées anciennes ponctuent encore les ruelles de la vieille ville, témoins discrets d'une présence enracinée bien avant l'arrivée des Français."
+              : "Several old mosques still punctuate the lanes of the old town, quiet witnesses to a presence rooted long before the arrival of the French."}
           </Aside>
           <ArchivePhoto
             className="mt-6"
@@ -475,16 +508,68 @@ export default function PondicheryPage({ params }: { params: { locale: string } 
 
         <div className="rule-line my-12" />
 
-        {/* 06 · Le rattachement à l'Inde */}
-        <Reveal as="section" id="rattachement" className="scroll-mt-24">
+        {/* 06 · L'indépendance de l'Inde */}
+        <Reveal as="section" id="independance" className="scroll-mt-24">
           <ChapterHead num="06" title={t(CHAPTERS[5].title)} />
           <div className="mt-4 space-y-4 text-[15px] leading-relaxed text-ink-soft">
             {lang === "fr" ? (
               <>
                 <p>
-                  Après l&apos;indépendance de l&apos;Inde en 1947, le sort des comptoirs
-                  français se joue. En 1954, un transfert de facto place Pondichéry sous
-                  administration indienne ; le rattachement devient officiel en 1962.
+                  En 1947, l&apos;Inde accède à l&apos;indépendance et met fin à près de
+                  deux siècles de domination britannique. Mais cette indépendance ne
+                  concerne pas, dans l&apos;immédiat, les comptoirs français : Pondichéry,
+                  Karaikal, Yanaon, Mahé et Chandernagor demeurent sous administration
+                  française.
+                </p>
+                <p>
+                  Il en naît une situation singulière. Pondichéry devient une petite
+                  enclave française au cœur d&apos;une Inde désormais souveraine, séparée
+                  d&apos;elle par le statut plus que par la géographie. Les drapeaux, les
+                  écoles, les tribunaux restent français, tandis que tout autour la
+                  nouvelle nation s&apos;organise.
+                </p>
+                <p>
+                  Cet entre-deux ne pouvait durer. La pression monte pour l&apos;intégration
+                  des comptoirs à l&apos;Union indienne, et c&apos;est elle qui pèsera, dans
+                  les années suivantes, sur la décision du rattachement.
+                </p>
+              </>
+            ) : (
+              <>
+                <p>
+                  In 1947, India gained its independence, ending nearly two centuries of
+                  British rule. But this independence did not, at first, concern the French
+                  trading posts: Pondicherry, Karaikal, Yanam, Mahé and Chandernagore
+                  remained under French administration.
+                </p>
+                <p>
+                  A singular situation arose from it. Pondicherry became a small French
+                  enclave in the heart of a now sovereign India, set apart from it by status
+                  more than by geography. The flags, the schools, the courts remained
+                  French, while all around the new nation took shape.
+                </p>
+                <p>
+                  This in-between could not last. Pressure grew for the trading posts to be
+                  integrated into the Indian Union, and it was this pressure that would
+                  weigh, in the following years, on the decision to unite.
+                </p>
+              </>
+            )}
+          </div>
+        </Reveal>
+
+        <div className="rule-line my-12" />
+
+        {/* 07 · Le rattachement à l'Inde */}
+        <Reveal as="section" id="rattachement" className="scroll-mt-24">
+          <ChapterHead num="07" title={t(CHAPTERS[6].title)} />
+          <div className="mt-4 space-y-4 text-[15px] leading-relaxed text-ink-soft">
+            {lang === "fr" ? (
+              <>
+                <p>
+                  Le sort des comptoirs français finit par se jouer. En 1954, un transfert
+                  de facto place Pondichéry sous administration indienne ; le rattachement
+                  devient officiel en 1962.
                 </p>
                 <p>
                   Particularité décisive pour de nombreuses familles : un droit d&apos;option
@@ -496,9 +581,9 @@ export default function PondicheryPage({ params }: { params: { locale: string } 
             ) : (
               <>
                 <p>
-                  After India&apos;s independence in 1947, the fate of the French trading
-                  posts was decided. In 1954, a de facto transfer placed Pondicherry under
-                  Indian administration; the union became official in 1962.
+                  The fate of the French trading posts was eventually settled. In 1954, a de
+                  facto transfer placed Pondicherry under Indian administration; the union
+                  became official in 1962.
                 </p>
                 <p>
                   A decisive feature for many families: a right of option allowed some of
@@ -513,9 +598,9 @@ export default function PondicheryPage({ params }: { params: { locale: string } 
 
         <div className="rule-line my-12" />
 
-        {/* 07 · L'émigration vers la France */}
+        {/* 08 · L'émigration vers la France */}
         <Reveal as="section" id="emigration" className="scroll-mt-24">
-          <ChapterHead num="07" title={t(CHAPTERS[6].title)} />
+          <ChapterHead num="08" title={t(CHAPTERS[7].title)} />
           <div className="mt-5 overflow-hidden rounded-[var(--radius)] border border-ink-line bg-paper-warm p-5">
             <CoromandelMap className="mx-auto h-auto w-full max-w-md text-ink-soft" />
           </div>
@@ -557,9 +642,9 @@ export default function PondicheryPage({ params }: { params: { locale: string } 
 
         <div className="rule-line my-12" />
 
-        {/* 08 · Pondichéry aujourd'hui */}
+        {/* 09 · Pondichéry aujourd'hui */}
         <Reveal as="section" id="aujourdhui" className="scroll-mt-24">
-          <ChapterHead num="08" title={t(CHAPTERS[7].title)} />
+          <ChapterHead num="09" title={t(CHAPTERS[8].title)} />
           <ArchivePhoto
             className="mt-5"
             src="/pondichery/french-quarter-today.jpg"
@@ -620,6 +705,31 @@ export default function PondicheryPage({ params }: { params: { locale: string } 
               </>
             )}
           </div>
+          <Aside label={lang === "fr" ? "Le lycée français" : "The French school"}>
+            {lang === "fr"
+              ? "Héritier direct de l'enseignement français, le Lycée Français International de Pondichéry continue d'instruire en français : la langue, ici, n'est pas un souvenir mais une pratique vivante."
+              : "A direct heir of French education, the Lycée Français International in Pondicherry still teaches in French: here, the language is not a memory but a living practice."}
+          </Aside>
+          <ArchivePhoto
+            className="mt-6"
+            src="/pondichery/lycee-francais.jpg"
+            alt={
+              lang === "fr"
+                ? "Le lycée français de Pondichéry"
+                : "The French school in Pondicherry"
+            }
+            caption={
+              lang === "fr"
+                ? "Le lycée français de Pondichéry (aujourd'hui)."
+                : "The French school in Pondicherry (today)."
+            }
+            credit="Wikimedia · CC BY-SA"
+          />
+          <Aside label={lang === "fr" ? "Le quartier français" : "The French quarter"}>
+            {lang === "fr"
+              ? "Dans la Ville Blanche, les rues portent encore des noms français et les maisons à vérandas et persiennes ont été préservées, donnant au quartier un air que l'on a parfois surnommé « la côte d'Azur de l'Est »."
+              : "In the White Town, the streets still bear French names and the houses with verandas and shutters have been preserved, giving the quarter an air that has sometimes earned it the nickname \"the French Riviera of the East\"."}
+          </Aside>
         </Reveal>
 
         <div className="rule-line my-12" />
