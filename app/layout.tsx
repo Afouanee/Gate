@@ -41,10 +41,8 @@ export const metadata: Metadata = {
   description:
     "Registre familial vivant. Tracez vos racines, reliez les générations et conservez la mémoire des vôtres.",
   manifest: "/manifest.json",
-  icons: {
-    icon: "/favicon.ico",
-    shortcut: "/favicon.ico",
-  },
+  // La favicon est générée automatiquement par Next depuis `app/icon.svg`
+  // (monogramme « G » dans la DA « Daylight »). Ne pas re-pointer vers un .ico.
 };
 
 export const viewport: Viewport = {

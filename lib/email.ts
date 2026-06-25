@@ -15,7 +15,20 @@
 
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+/**
+ * Client Resend instancié paresseusement : `new Resend()` lève si la clé est
+ * absente, ce qui casserait le build (Next exécute ce module au « collect page
+ * data »). On ne crée le client qu'au premier envoi réel, quand la clé existe.
+ */
+let _resend: Resend | null = null;
+function getResend(): Resend {
+  if (!_resend) {
+    const key = process.env.RESEND_API_KEY;
+    if (!key) throw new Error("RESEND_API_KEY manquante : envoi d'email indisponible.");
+    _resend = new Resend(key);
+  }
+  return _resend;
+}
 const FROM = process.env.RESEND_FROM_EMAIL || "noreply@gate.afouanee.dev";
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
@@ -31,7 +44,7 @@ export async function sendVerificationEmail({
   to: string;
   magicLink: string;
 }) {
-  await resend.emails.send({
+  await getResend().emails.send({
     from: FROM,
     to,
     subject: "Gate — Connexion par lien magique",
@@ -64,7 +77,7 @@ export async function sendVerificationCode({
   to: string;
   code: string;
 }) {
-  await resend.emails.send({
+  await getResend().emails.send({
     from: FROM,
     to,
     subject: "Gate — Code de vérification",
@@ -91,7 +104,7 @@ export async function sendVerificationCode({
  * Downgrade automatique vers FREE
  */
 export async function sendPaymentFailedEmail({ to }: { to: string }) {
-  await resend.emails.send({
+  await getResend().emails.send({
     from: FROM,
     to,
     subject: "Gate — Échec du paiement de votre abonnement",
@@ -128,7 +141,7 @@ export async function sendContactEmail({
   subject: string;
   message: string;
 }) {
-  await resend.emails.send({
+  await getResend().emails.send({
     from: FROM,
     to: FROM,
     reply_to: email,
@@ -146,7 +159,7 @@ export async function sendContactEmail({
   });
 
   // Auto-reply à l'utilisateur
-  await resend.emails.send({
+  await getResend().emails.send({
     from: FROM,
     to: email,
     subject: "Gate — Nous avons bien reçu votre message",
@@ -183,7 +196,7 @@ export async function sendReportNotification({
   reporterEmail: string;
   message: string;
 }) {
-  await resend.emails.send({
+  await getResend().emails.send({
     from: FROM,
     to: FROM,
     subject: `[${type === "ERROR" ? "Signalement" : "Contribution"} Gate] Profil ${personName}`,
@@ -238,7 +251,7 @@ export async function sendLinkRequestDecisionEmail({
     .replace(/\{firstName\}/g, firstName)
     .replace(/\{personName\}/g, personName);
 
-  await resend.emails.send({
+  await getResend().emails.send({
     from: FROM,
     to,
     subject,

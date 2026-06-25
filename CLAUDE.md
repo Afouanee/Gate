@@ -12,15 +12,16 @@ Pas de séparation physique (un seul repo, un seul serveur). La frontière est *
 - **Backend** : `app/api/**/route.ts` (API routes), `lib/**` (`auth.ts`, `prisma.ts`, `stripe.ts`, `session.ts`, `audit.ts`), `prisma/schema.prisma`.
 - Le front appelle le back via `fetch("/api/...")`. Certaines pages serveur lisent Prisma directement (ex. `app/[locale]/page.tsx`). Tout est déployé ensemble.
 
-## Design System — « Éditorial Archive »
+## Design System — « Éditorial Archive » / palette « Daylight »
 
-Registre d'état civil ancien revisité. Source de vérité : `tailwind.config.ts` (tokens) + `app/globals.css` (primitives) + `components/brand/logo.tsx`.
+Registre d'état civil ancien revisité, rendu en **light premium** (blanc dominant, accents indo à ~10 %). Source de vérité : `tailwind.config.ts` (tokens) + `app/globals.css` (primitives) + `components/brand/logo.tsx`.
 
-**Palette** (jamais de `zinc-*`, ni bleu/rose/violet/ambre bruts) :
-- Fonds : `paper` (#FAF7F0 crème), `paper-warm` (sections alternées), `paper-deep` (zones), `card`.
-- Texte/structure : `ink` (principal), `ink-soft` (secondaire), `ink-faint` (méta), `ink-line` (filets/bordures).
-- **Accent unique** = sceau bordeaux : `seal` / `seal-bright` (hover) / `seal-tint` (fond doux). Sert au focus, au Premium, aux actions d'engagement.
-- `patina` (or patiné) : accent secondaire rare.
+**Palette** (jamais de `zinc-*` ni de couleurs Tailwind brutes type `blue-500`/`rose-500` ; on passe TOUJOURS par les tokens ci-dessous) :
+- Fonds : `paper` (#FFFFFF blanc pur), `paper-warm` (#F7F8FA, sections alternées), `paper-deep` (#EEF1F5, zones), `card`.
+- Texte/structure : `ink` (#0E1320 principal), `ink-soft` (secondaire), `ink-faint` (méta), `ink-line` (filets/bordures).
+- **Accent signature** = ocre safran de Pondichéry (les murs coloniaux), nommé historiquement `seal` : `seal` (#E8A33D) / `seal-bright` (hover) / `seal-tint` (fond doux). Sert au focus, au Premium/Soutien, aux actions d'engagement. (Le nom « seal » est un héritage : ce n'est PAS un bordeaux, c'est un ocre.)
+- Accents secondaires, vraies couleurs de la ville : `indigo` (#2B6CB0, portes/mer/héritage français), `saffron` (chaleur/dégradés), `patina` (#C2563B terracotta, toits ; sert aussi d'**alerte/destructive** au lieu d'un rouge brut).
+- Dégradé signature `bg-gradient-indo` (safran → bordeaux → indigo) pour le hero et les accents rares.
 
 **Typographie** (via `next/font`, variables CSS) :
 - Titres : `font-serif` = Fraunces, en `font-semibold` (jamais `font-black`/`font-heading`).
@@ -60,7 +61,7 @@ Registre d'état civil ancien revisité. Source de vérité : `tailwind.config.t
 
 ## Pages éditoriales & features récentes
 
-- **Pages mémoire** : `app/[locale]/pondichery/page.tsx` et `app/[locale]/karaikal/page.tsx` (histoire, frise, photos d'archive). Photos dans `public/{pondichery,karaikal}/` (domaine public pour Pondichéry, CC BY/BY-SA avec attribution pour Karaikal via le champ `credit` de `ArchivePhoto`). Illustrations SVG maison dans `components/pondichery/illustrations.tsx` (kolam, carte Coromandel, ville blanche, boussole). Liens réciproques + navbar/footer.
+- **Pages mémoire** : `app/[locale]/pondichery/page.tsx` et `app/[locale]/karaikal/page.tsx` (histoire de la VILLE, frise, photos d'archive). Bilingues via `params.locale` + objets `{fr,en}` (pas next-intl). **Périmètre éditorial : on raconte la ville, son commerce, son architecture, sa culture, la migration des familles, PAS de portraits de figures politiques personnelles** (maires, députés, ministres) : ils relèvent de l'arbre, pas de la page d'histoire. Photos dans `public/{pondichery,karaikal}/` : domaine public (cartes/gravures anciennes) ou CC BY/BY-SA avec attribution via le champ `credit` de `ArchivePhoto` (défaut « Domaine public »). Illustrations SVG maison dans `components/pondichery/illustrations.tsx` (kolam, carte Coromandel, ville blanche, boussole). Frise via `components/ui/scroll-timeline.tsx`. Liens réciproques + navbar/footer.
 - **Bandeau « À l'honneur »** (`Spotlight`) : met en avant les projets des proches. Modèle `Spotlight` (Prisma), API `app/api/spotlights/**` (GET public actifs, POST/PATCH/DELETE admin), affichage home `components/home/spotlight-banner.tsx`, gestion admin `app/[locale]/admin/spotlights` + `components/admin/spotlight-admin.tsx`. PAS de pub externe : contenu familial curé.
 - **3D sobre** : `components/ui/tilt-3d.tsx` (`Tilt3D`) = inclinaison perspective au survol + reflet, désactivé tactile/reduced-motion. Appliqué aux cartes spotlight et pricing. Hero home = arbre animé `components/brand/living-tree.tsx`.
 

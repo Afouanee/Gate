@@ -19,6 +19,7 @@ Construit avec Next.js (App Router) et Prisma, Gate est le **projet phare** de c
 - **PWA** : application installable et utilisable hors-ligne via **next-pwa**.
 - **Import / export** : CSV et Excel (`papaparse`, `xlsx`), génération de PDF (`@react-pdf/renderer`, `puppeteer`), route `/export`.
 - **Emails transactionnels** : envoi via **Resend**.
+- **Pages mémoire** : récits historiques bilingues sur les villes d'origine de la famille, `/pondichery` et `/karaikal` (frise chronologique animée, photos d'archive, illustrations SVG).
 - **Espace d'administration** : route `/admin`, rattachement de profils (`/rattachement`), charte et contact (`/charte`, `/contact`).
 - **UI moderne** : composants **Radix UI** + **Tailwind CSS** (approche shadcn), validation des données avec **Zod**.
 
@@ -66,6 +67,7 @@ app/
 │   ├── paiement/     # succes / annulation (Stripe)
 │   ├── profil/[id]/  # profils utilisateurs
 │   ├── login/ register/ mon-compte/ rattachement/
+│   ├── pondichery/ karaikal/   # pages mémoire (histoire des villes d'origine)
 │   ├── charte/ contact/ export/
 │   └── ...
 prisma/               # schéma + migrations + seed

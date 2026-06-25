@@ -63,3 +63,5 @@ public/uploads/
 # ─── Tests ────────────────────────────────────────────
 coverage/
 .nyc_output/
+
+.vercel

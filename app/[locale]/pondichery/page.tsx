@@ -54,6 +54,13 @@ const TIMELINE: { year: Bi; text: Bi }[] = [
     },
   },
   {
+    year: { fr: "1693", en: "1693" },
+    text: {
+      fr: "Les Hollandais prennent la ville et lui donnent son plan en damier ; elle est rendue à la France en 1699.",
+      en: "The Dutch seize the town and give it its grid plan; it is returned to France in 1699.",
+    },
+  },
+  {
     year: { fr: "1742", en: "1742" },
     text: {
       fr: "Sous Dupleix, Pondichéry devient la capitale florissante des établissements français en Inde.",
@@ -72,6 +79,20 @@ const TIMELINE: { year: Bi; text: Bi }[] = [
     text: {
       fr: "Après les guerres napoléoniennes, Pondichéry redevient durablement française.",
       en: "After the Napoleonic Wars, Pondicherry returns to lasting French rule.",
+    },
+  },
+  {
+    year: { fr: "1826", en: "1826" },
+    text: {
+      fr: "Fondation du Collège Royal, ancêtre du lycée français qui instruit encore en français aujourd'hui.",
+      en: "Founding of the Collège Royal, ancestor of the French school that still teaches in French today.",
+    },
+  },
+  {
+    year: { fr: "1836", en: "1836" },
+    text: {
+      fr: "Le phare français s'allume pour la première fois sur le front de mer.",
+      en: "The French lighthouse is lit for the first time on the waterfront.",
     },
   },
   {
@@ -96,10 +117,24 @@ const TIMELINE: { year: Bi; text: Bi }[] = [
     },
   },
   {
+    year: { fr: "1955", en: "1955" },
+    text: {
+      fr: "L'Institut français de Pondichéry est créé en application du traité de cession, pour l'étude de la civilisation indienne.",
+      en: "The French Institute of Pondicherry is created under the treaty of cession, to study Indian civilisation.",
+    },
+  },
+  {
     year: { fr: "1962", en: "1962" },
     text: {
       fr: "Rattachement officiel. Les départs vers la France métropolitaine s'accélèrent.",
       en: "Official union. Departures to mainland France accelerate.",
+    },
+  },
+  {
+    year: { fr: "2004", en: "2004" },
+    text: {
+      fr: "Le tsunami de l'océan Indien frappe la côte de Coromandel ; protégée par ses digues, la ville est moins touchée que Karaikal.",
+      en: "The Indian Ocean tsunami strikes the Coromandel Coast; shielded by its sea walls, the city is less affected than Karaikal.",
     },
   },
   {
@@ -145,8 +180,8 @@ export default function PondicheryPage({ params }: { params: { locale: string } 
     heroTitle: { fr: "Pondichéry,", en: "Pondicherry," },
     heroSubtitle: { fr: "une histoire en neuf chapitres.", en: "a story in nine chapters." },
     heroLead: {
-      fr: "Des marchands de la côte de Coromandel au comptoir français, du rattachement à l'Inde jusqu'à la diaspora d'aujourd'hui : le récit de la ville d'où une famille est partie, et de ce qu'elle a laissé derrière elle.",
-      en: "From the merchants of the Coromandel Coast to the French trading post, from the union with India to today's diaspora: the story of the city a family left behind, and of what it left behind it.",
+      fr: "Des marchands de la côte de Coromandel au comptoir français, du rattachement à l'Inde jusqu'à la diaspora d'aujourd'hui : le récit de la ville d'où une famille est partie, et de tout ce qu'elle en a emporté.",
+      en: "From the merchants of the Coromandel Coast to the French trading post, from the union with India to today's diaspora: the story of the city a family came from, and of all it carried away.",
     },
     waterfrontAlt: {
       fr: "Le front de mer de Pondichéry dans les années 1880",
@@ -258,6 +293,20 @@ export default function PondicheryPage({ params }: { params: { locale: string } 
               </>
             )}
           </div>
+          <ArchivePhoto
+            className="mt-6"
+            src="/pondichery/dance-1887.jpg"
+            alt={
+              lang === "fr"
+                ? "Danse des Indiens de Pondichéry, 1887"
+                : "Dance of the Indians of Pondicherry, 1887"
+            }
+            caption={
+              lang === "fr"
+                ? "Danse des Indiens de Pondichéry, 1887-1888."
+                : "Dance of the Indians of Pondicherry, 1887-1888."
+            }
+          />
           <WhiteTown className="mt-6 hidden h-auto w-full max-w-sm text-ink md:block" />
         </Reveal>
 
@@ -276,6 +325,12 @@ export default function PondicheryPage({ params }: { params: { locale: string } 
                   fortifications, premières rues tracées au cordeau.
                 </p>
                 <p>
+                  Entre 1693 et 1699, ce sont les Hollandais qui tiennent la ville. On leur
+                  doit son tracé le plus durable : un plan en damier, aux rues rectilignes,
+                  que les Français reprendront et systématiseront. Pondichéry n&apos;a depuis
+                  jamais perdu cette géométrie.
+                </p>
+                <p>
                   La ville se dessine en deux parties qui marqueront durablement son
                   visage : la « ville blanche », côté mer, où vivent les Européens, et la
                   « ville noire », où se concentrent les communautés indiennes, marchands
@@ -292,6 +347,12 @@ export default function PondicheryPage({ params }: { params: { locale: string } 
                   first streets laid out in straight lines.
                 </p>
                 <p>
+                  Between 1693 and 1699, it was the Dutch who held the town. To them it owes
+                  its most lasting layout: a grid plan, with straight streets, which the
+                  French would take up and systematise. Pondicherry has never since lost
+                  that geometry.
+                </p>
+                <p>
                   The city took shape in two parts that would lastingly mark its face: the
                   White Town, on the sea side, where the Europeans lived, and the Black
                   Town, where the Indian communities, merchants and artisans were
@@ -301,6 +362,20 @@ export default function PondicheryPage({ params }: { params: { locale: string } 
               </>
             )}
           </div>
+          <ArchivePhoto
+            className="mt-6"
+            src="/pondichery/map-defer-1705.jpg"
+            alt={
+              lang === "fr"
+                ? "Plan de Pondichéry par Nicolas de Fer, 1705"
+                : "Plan of Pondicherry by Nicolas de Fer, 1705"
+            }
+            caption={
+              lang === "fr"
+                ? "« Plan de Pondichéry », Nicolas de Fer, Paris, 1705 : déjà la grille."
+                : "\"Plan of Pondicherry\", Nicolas de Fer, Paris, 1705: the grid is already there."
+            }
+          />
           <Aside label={lang === "fr" ? "La ville blanche" : "The White Town"}>
             {lang === "fr"
               ? "Maisons à vérandas, persiennes, rues aux noms français : trois siècles plus tard, ce décor existe encore et fait la signature de Pondichéry."
@@ -360,9 +435,24 @@ export default function PondicheryPage({ params }: { params: { locale: string } 
           </div>
           <Aside label={lang === "fr" ? "L'Aayi Mandapam" : "The Aayi Mandapam"}>
             {lang === "fr"
-              ? "Au cœur du parc Bharathi, ce pavillon de pierre blanche fut érigé sous Napoléon III en hommage à une femme nommée Aayi. Il reste l'un des monuments les plus emblématiques de la ville."
-              : "At the heart of Bharathi Park, this white stone pavilion was erected under Napoleon III in tribute to a woman named Aayi. It remains one of the city's most emblematic monuments."}
+              ? "Au cœur du parc Bharathi, ce pavillon de pierre blanche fut érigé sous Napoléon III pour commémorer l'adduction d'eau de la ville. La tradition lui donne le nom d'Aayi, qui aurait fait démolir sa maison pour y établir un réservoir. Il reste l'un des monuments les plus emblématiques de la ville."
+              : "At the heart of Bharathi Park, this white stone pavilion was erected under Napoleon III to commemorate the city's water supply. Tradition gives it the name of Aayi, who is said to have had her house demolished to build a reservoir there. It remains one of the city's most emblematic monuments."}
           </Aside>
+          <ArchivePhoto
+            className="mt-6"
+            src="/pondichery/raj-niwas.jpg"
+            alt={
+              lang === "fr"
+                ? "Le Raj Niwas, ancien palais du gouverneur français"
+                : "Raj Niwas, the former French governor's palace"
+            }
+            caption={
+              lang === "fr"
+                ? "Le Raj Niwas, ancien palais du gouverneur français."
+                : "Raj Niwas, the former French governor's palace."
+            }
+            credit="Wikimedia · CC BY-SA"
+          />
           <ArchivePhoto
             className="mt-6"
             src="/pondichery/aayi-mandapam.jpg"
@@ -432,16 +522,27 @@ export default function PondicheryPage({ params }: { params: { locale: string } 
               ? "Plusieurs mosquées anciennes ponctuent encore les ruelles de la vieille ville, témoins discrets d'une présence enracinée bien avant l'arrivée des Français."
               : "Several old mosques still punctuate the lanes of the old town, quiet witnesses to a presence rooted long before the arrival of the French."}
           </Aside>
-          <ArchivePhoto
-            className="mt-6"
-            src="/pondichery/market.jpg"
-            alt={lang === "fr" ? "Scène de marché à Pondichéry" : "A market scene in Pondicherry"}
-            caption={
-              lang === "fr"
-                ? "Le marché de Pondichéry, cœur du négoce de la côte de Coromandel."
-                : "The Pondicherry market, the heart of trade on the Coromandel Coast."
-            }
-          />
+          <div className="mt-6 grid gap-4 sm:grid-cols-2">
+            <ArchivePhoto
+              src="/pondichery/pondichery-mosque.jpg"
+              alt={lang === "fr" ? "Une mosquée de Pondichéry" : "A mosque in Pondicherry"}
+              caption={
+                lang === "fr"
+                  ? "Une mosquée de Pondichéry, héritière d'une longue présence marchande."
+                  : "A mosque in Pondicherry, heir to a long merchant presence."
+              }
+              credit="Wikimedia · CC BY-SA"
+            />
+            <ArchivePhoto
+              src="/pondichery/market.jpg"
+              alt={lang === "fr" ? "Scène de marché à Pondichéry" : "A market scene in Pondicherry"}
+              caption={
+                lang === "fr"
+                  ? "Le marché de Pondichéry, cœur du négoce de la côte de Coromandel."
+                  : "The Pondicherry market, the heart of trade on the Coromandel Coast."
+              }
+            />
+          </div>
         </Reveal>
 
         <div className="rule-line my-12" />
@@ -595,77 +696,6 @@ export default function PondicheryPage({ params }: { params: { locale: string } 
               </>
             )}
           </div>
-
-          {/* Figures du rattachement : la dynastie *** (père & fils) */}
-          <div className="mt-8 flex flex-wrap gap-4">
-            {/* Le maire : photo */}
-            <figure className="w-[132px] overflow-hidden rounded-[var(--radius)] border border-ink-line bg-card">
-              <img
-                src="/pondichery/view-1857.jpg"
-                alt={lang === "fr" ? "une figure de la communauté, maire de Pondichéry" : "une figure de la communauté, Mayor of Pondicherry"}
-                loading="lazy"
-                className="aspect-[3/4] w-full object-cover"
-                style={{ filter: "sepia(0.25) contrast(1.02)" }}
-              />
-              <figcaption className="border-t border-ink-line px-2.5 py-1.5">
-                <p className="font-serif text-xs font-semibold text-ink">une figure locale</p>
-                <p className="font-mono text-[10px] text-ink-faint">{lang === "fr" ? "Maire · 1956-1961" : "Mayor · 1956-1961"}</p>
-              </figcaption>
-            </figure>
-
-            {/* Le fils : carte à initiales (pas de photo disponible) */}
-            <figure className="flex w-[132px] flex-col overflow-hidden rounded-[var(--radius)] border border-ink-line bg-card">
-              <div
-                className="flex aspect-[3/4] w-full items-center justify-center"
-                style={{ background: "linear-gradient(150deg, rgba(43,108,176,0.12), rgba(232,163,61,0.12))" }}
-              >
-                <span className="font-serif text-3xl font-semibold text-indigo">CA</span>
-              </div>
-              <figcaption className="border-t border-ink-line px-2.5 py-1.5">
-                <p className="font-serif text-xs font-semibold text-ink">une figure locale</p>
-                <p className="font-mono text-[10px] text-ink-faint">{lang === "fr" ? "Député · 1964-1999" : "MLA · 1964-1999"}</p>
-              </figcaption>
-            </figure>
-          </div>
-
-          <div className="mt-6 space-y-4 text-[15px] leading-relaxed text-ink-soft">
-              {lang === "fr" ? (
-                <>
-                  <p>
-                    <span className="text-ink">une figure de la communauté</span> (1900-1986),
-                    commerçant et figure de la communauté musulmane, fut maire de
-                    Pondichéry de 1956 à 1961, au cœur même du rattachement. Il fut
-                    l&apos;un des responsables qui plaidèrent pour la cession des
-                    comptoirs à l&apos;Inde. Une rue de la ville porte aujourd&apos;hui
-                    son nom (une rue de la ville).
-                  </p>
-                  <p>
-                    Son fils, <span className="text-ink">une figure locale</span>, poursuivit
-                    l&apos;engagement familial : élu sept fois à l&apos;Assemblée de
-                    Pondichéry de 1964 à 1999, adjoint au maire puis ministre. À Karaikal,
-                    la même époque vit s&apos;élever <span className="text-ink">une figure locale</span>,
-                    de la famille Maricar, premier Chief Minister musulman d&apos;Inde.
-                  </p>
-                </>
-              ) : (
-                <>
-                  <p>
-                    <span className="text-ink">une figure de la communauté</span> (1900-1986), a
-                    merchant and a figure of the Muslim community, was mayor of Pondicherry
-                    from 1956 to 1961, at the very heart of the union with India. He was one
-                    of the leaders who argued for ceding the trading posts to India. A street
-                    in the city now bears his name (une rue de la ville).
-                  </p>
-                  <p>
-                    His son, <span className="text-ink">une figure locale</span>, continued the
-                    family commitment: elected seven times to the Pondicherry Assembly from
-                    1964 to 1999, deputy mayor and then minister. In Karaikal, the same era
-                    saw the rise of <span className="text-ink">une figure locale</span>, of the
-                    Maricar family, the first Muslim Chief Minister in India.
-                  </p>
-                </>
-              )}
-            </div>
         </Reveal>
 
         <div className="rule-line my-12" />
@@ -801,6 +831,45 @@ export default function PondicheryPage({ params }: { params: { locale: string } 
             {lang === "fr"
               ? "Dans la Ville Blanche, les rues portent encore des noms français et les maisons à vérandas et persiennes ont été préservées, donnant au quartier un air que l'on a parfois surnommé « la côte d'Azur de l'Est »."
               : "In the White Town, the streets still bear French names and the houses with verandas and shutters have been preserved, giving the quarter an air that has sometimes earned it the nickname \"the French Riviera of the East\"."}
+          </Aside>
+
+          {/* Les monuments du front de mer */}
+          <p className="mt-8 text-[15px] leading-relaxed text-ink-soft">
+            {lang === "fr"
+              ? "Le long de la promenade, quelques repères disent à eux seuls cette histoire mêlée : le phare français de 1836, la statue de Gandhi entourée de piliers de granit, la basilique du Sacré-Cœur et, à deux rues, le temple Manakula Vinayagar. Catholique, hindoue, musulmane : la ville se lit dans la cohabitation de ses lieux."
+              : "Along the promenade, a few landmarks tell this mixed history on their own: the French lighthouse of 1836, the Gandhi statue ringed by granite pillars, the Sacred Heart Basilica and, two streets away, the Manakula Vinayagar temple. Catholic, Hindu, Muslim: the city can be read in the coexistence of its places."}
+          </p>
+          <div className="mt-6 grid gap-4 sm:grid-cols-2">
+            <ArchivePhoto
+              src="/pondichery/gandhi-promenade.jpg"
+              alt={lang === "fr" ? "La statue de Gandhi sur la promenade" : "The Gandhi statue on the promenade"}
+              caption={lang === "fr" ? "La statue de Gandhi, promenade du front de mer." : "The Gandhi statue, seafront promenade."}
+              credit="Wikimedia · CC BY-SA"
+            />
+            <ArchivePhoto
+              src="/pondichery/lighthouse.jpg"
+              alt={lang === "fr" ? "L'ancien phare de Pondichéry" : "The old lighthouse of Pondicherry"}
+              caption={lang === "fr" ? "L'ancien phare français (1836), Rock Beach." : "The old French lighthouse (1836), Rock Beach."}
+              credit="Wikimedia · CC BY-SA"
+            />
+            <ArchivePhoto
+              src="/pondichery/sacred-heart.jpg"
+              alt={lang === "fr" ? "La basilique du Sacré-Cœur de Pondichéry" : "The Sacred Heart Basilica of Pondicherry"}
+              caption={lang === "fr" ? "La basilique du Sacré-Cœur (1907)." : "The Sacred Heart Basilica (1907)."}
+              credit="Wikimedia · CC BY-SA"
+            />
+            <ArchivePhoto
+              src="/pondichery/manakula-temple.jpg"
+              alt={lang === "fr" ? "Le temple Manakula Vinayagar" : "The Manakula Vinayagar temple"}
+              caption={lang === "fr" ? "Le temple Manakula Vinayagar, vieille ville." : "The Manakula Vinayagar temple, old town."}
+              credit="Wikimedia · CC BY-SA"
+            />
+          </div>
+
+          <Aside label={lang === "fr" ? "Une cuisine créole" : "A creole cuisine"}>
+            {lang === "fr"
+              ? "De la rencontre des cuisines tamoule et française est née une table créole bien à elle : currys adoucis au lait de coco, bouillabaisse passée au curcuma. Pour beaucoup de familles de la diaspora, c'est par les plats que Pondichéry s'est transmise le plus longtemps."
+              : "From the meeting of Tamil and French cooking was born a creole table all its own: curries softened with coconut milk, a bouillabaisse turned with turmeric. For many diaspora families, it is through dishes that Pondicherry was passed on the longest."}
           </Aside>
         </Reveal>
 
