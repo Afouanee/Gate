@@ -30,7 +30,7 @@ Registre d'état civil ancien revisité, rendu en **light premium** (blanc domin
 
 **Primitives CSS réutilisables** (dans `globals.css`) : `.meta-label`, `.section-no` (« № 01 »), `.rule-line`, `.card-paper`, `.seal-badge`, `.reveal`/`.reveal-in` (scroll-reveal via `hooks/use-reveal.ts` + `components/layout/reveal.tsx`), `.stagger`.
 
-**Formes & motion** : rayon ≈4px (`rounded-[var(--radius)]`) pour cartes/inputs, `rounded-full` pour boutons/pastilles. Boutons primaires `bg-ink text-paper`, engagement `bg-seal`. Animations 150–400ms en transform/opacity. `prefers-reduced-motion` est respecté globalement (globals.css). Le curseur custom (`components/layout/custom-cursor.tsx`) ne s'active que sur souris fine.
+**Formes & motion** : rayon 12px (`--radius = 0.75rem`, via `rounded-[var(--radius)]`) pour cartes/inputs, `rounded-full` pour boutons/pastilles. Boutons primaires `bg-ink text-paper`, engagement `bg-seal`. Animations 150–400ms en transform/opacity. `prefers-reduced-motion` est respecté globalement (globals.css). Le curseur custom (`components/layout/custom-cursor.tsx`) ne s'active que sur souris fine.
 
 **Accessibilité** : focus ring sceau jamais retiré, labels visibles liés (`htmlFor`/`id`), `aria-label` sur les boutons icon-only, contraste AA (ne pas utiliser `ink-faint` pour du texte important). Statuts : jamais la couleur seule, toujours icône + texte.
 
@@ -51,7 +51,7 @@ Registre d'état civil ancien revisité, rendu en **light premium** (blanc domin
 
 - `npm run db:admin` → crée/maj un compte ADMIN (`prisma/create-admin.ts`, défaut `admin@gate.local` / `Admin1234!`, `emailVerified` requis pour login credentials). Custom : `ADMIN_EMAIL=… ADMIN_PASSWORD=… npm run db:admin`.
 - `npm run db:seed-famille` → **DESTRUCTIF** : purge toute la base puis recrée admin + une famille de démo (Maricar, Pondichéry→France, 4 générations, conjoints, fratries) via `prisma/seed-famille.ts`.
-- Quotas FREE : `lib/quota.ts` (5 recherches/mois, 1 export/mois) avec reset mensuel **lazy** (`quotaPeriodStart` sur User, `ensureQuotaPeriod()` appelé avant lecture). Reset aussi à chaque changement de rôle (webhook Stripe).
+- Quotas FREE : **supprimés** (`lib/quota.ts` n'existe plus). Les colonnes `searchCount/exportCount/quotaPeriodStart` subsistent en base (legacy) ; le webhook Stripe les remet à 0 par habitude, sans effet fonctionnel. Aucune feature ne lit ces compteurs pour bloquer.
 
 ## Layout de l'arbre (Reactflow)
 
@@ -105,12 +105,14 @@ Sessions use JWT strategy. The `jwt()` callback **re-fetches `User.role` from th
 
 Registration uses a custom 6-digit code flow (`EmailVerificationCode` model), separate from NextAuth's built-in `VerificationToken`.
 
-### Modèle communautaire (IMPORTANT)
+### Modèle : communautaire ET monétisé (« Bienfaiteur ») (IMPORTANT, à jour juin 2026)
 
-Gate est un **projet familial**, pas un commerce. Priorité = partager et rassembler la communauté, PAS gagner de l'argent. Conséquences dans le code :
-- **Aucun mur premium** : l'arbre (`/api/tree`), la recherche (`/api/search`) et l'export (`/api/export/pdf`) sont **illimités et complets pour tous les membres connectés**. Plus de quotas FREE (l'ancien `lib/quota.ts` a été supprimé ; les colonnes `searchCount/exportCount/quotaPeriodStart` subsistent en base mais ne sont plus utilisées).
-- La **confidentialité par champ** reste pilotée par les flags admin `showXxx` sur `Person` (et non plus par le rôle). Un champ est renvoyé si son flag est vrai.
-- Le plan « Premium » est reframé en **« Soutien »** optionnel (page `/pricing`) : il ne débloque rien, il aide à couvrir l'hébergement. Le checkout Stripe reste en place pour ce soutien.
+Gate reste un **projet familial** (communauté de Pondichéry/Karaikal), mais il **cherche aussi à générer du revenu**. Le cadrage retenu (après analyse multi-agents) concilie les deux : **on ne fait JAMAIS payer pour voir ou retrouver un proche** (sinon on braque la famille et on casse le crowdsourcing), mais un forfait payant « **Bienfaiteur** » ajoute du **confort** et aide à faire vivre le projet.
+
+- **Gratuit, à vie, pour tous les membres** : consultation de l'arbre complet (`/api/tree`), recherche illimitée (`/api/search`), consultation des fiches (selon les flags de confidentialité familiaux), contribution (création/édition, rattachement, signalement), pages mémoire, et **export PDF « souvenir »**. Aucun quota n'est appliqué (l'ancien `lib/quota.ts` a été supprimé ; les colonnes `searchCount/exportCount/quotaPeriodStart` subsistent en base mais ne sont plus utilisées pour bloquer — le webhook Stripe les remet à 0 sans effet fonctionnel).
+- **Forfait « Bienfaiteur »** (rôle `PREMIUM` en base, 3,99 €/mois ; page `/pricing`) : attentions de **confort** seulement → export PDF **haute définition sans filigrane**, **galerie photo étendue** sur les fiches, **livret de famille** (1-2×/an). Il ne donne **AUCUN accès privilégié aux données** : voir §Visibilité. Checkout Stripe `subscription` en place.
+- **Confidentialité par champ** : pilotée par les flags `showXxx` sur `Person` et par le rôle **ADMIN** uniquement (`lib/visibility.ts` → `canSeeAll(role) = role === "ADMIN"`). Le rôle PREMIUM/Bienfaiteur **ne débloque rien** (corrigé : avant, `isUserPremium` rouvrait un mur premium sur les données). Ne JAMAIS réintroduire `isUserPremium` dans le chemin de visibilité.
+- ⚠️ **GATING PAYANT À CODER (pas encore branché)** : aujourd'hui les attentions Bienfaiteur ne sont pas verrouillées techniquement. À faire avant de facturer pour de vrai : (1) filigrane familial sur l'export gratuit + rendu HD sans filigrane réservé au rôle PREMIUM dans `app/api/export/render-pdf/route.ts` ; (2) quota anti-abus du rendu Puppeteer pour TOUS (protection infra, poste de coût n°1) ; (3) plafond de galerie photo selon le rôle ; (4) câbler les Price Stripe (mensuel/annuel). NE PAS re-verrouiller la consultation/recherche (ce serait le mur interdit). Règle d'or, comme Nooza : un changement de forfait ne supprime jamais de données, il ne fait que verrouiller l'accès au confort.
 
 ### Internationalisation (branchée)
 
@@ -118,13 +120,13 @@ Les pages passent par `next-intl` : clés dans `messages/{fr,en}.json` (mêmes c
 
 ### Role-Based Access
 
-Three roles: `FREE`, `PREMIUM`, `ADMIN`. Role is the source of truth on `User.role` and is updated exclusively by the Stripe webhook (`app/api/webhooks/stripe/route.ts`).
+Three roles: `FREE` (membre standard, accès complet à l'arbre), `PREMIUM` (= « Bienfaiteur », confort uniquement), `ADMIN` (gestion + voit tout). Le rôle vit sur `User.role` et est modifié par le webhook Stripe (abonnement Bienfaiteur) **ET** par les admins via `PATCH /api/admin/users/[id]` (override manuel). En dehors de ces deux chemins, rien ne change le rôle.
 
 Enforced at two layers:
 1. **Middleware** (`middleware.ts`): blocks unauthenticated users from protected routes
 2. **Server helpers** (`lib/session.ts`): `requireSession()`, `requireAdmin()`, `requirePremiumOrAdmin()` — used inside Server Components and API routes
 
-FREE limits: 10 persons in tree, 5 searches, 1 export. The `/api/tree` endpoint enforces the 10-person cap and sanitizes dates/photos behind visibility flags.
+Aucun quota n'est appliqué (modèle communautaire) : `/api/tree` renvoie l'arbre complet, la recherche et l'export sont illimités. La confidentialité reste par champ via les flags `showXxx` (et ADMIN voit tout). Le rôle PREMIUM = « Bienfaiteur » et ne débloque que du confort (export HD, galerie, livret), jamais des données. Voir §« Modèle : communautaire ET monétisé ».
 
 ### Data Model: Persons & Relations
 
@@ -140,7 +142,7 @@ FREE limits: 10 persons in tree, 5 searches, 1 export. The `/api/tree` endpoint 
 
 Checkout flow: `POST /api/stripe/checkout` creates a session with `metadata.userId`, user pays, Stripe fires `checkout.session.completed` to `/api/webhooks/stripe` which upgrades `User.role` to `PREMIUM` atomically with updating the `Subscription` record.
 
-Subscription lifecycle events (`customer.subscription.deleted`, `customer.subscription.updated`, `invoice.payment_failed`) all downgrade `User.role` back to `FREE`. This is the only place roles change.
+Subscription lifecycle events (`customer.subscription.deleted`, `customer.subscription.updated`, `invoice.payment_failed`) all downgrade `User.role` back to `FREE`. Le rôle change via ce webhook (abonnement Bienfaiteur) **et** via `PATCH /api/admin/users/[id]` (override admin) ; nulle part ailleurs.
 
 ### API Conventions
 
@@ -148,7 +150,7 @@ All API routes are in `app/api/`. Authentication is checked manually with `getSe
 
 Audit logs are written via `lib/audit.ts → createAuditLog()` for all significant mutations. Errors in audit logging are silenced so they never block the primary operation.
 
-**FREE quotas (`searchCount`, `exportCount`) are reserved atomically** via a conditional `updateMany({ where: { id, count: { lt: LIMIT } } })`: if `count === 0` the limit is reached → return 403. Never split this into a separate read-then-increment (race condition). Date inputs are validated for ISO format and `birthDate <= deathDate` before persisting (`/api/persons` POST & PATCH).
+Les quotas FREE (`searchCount`, `exportCount`) **ne sont plus appliqués** (modèle communautaire) ; ces colonnes sont legacy. Si un quota anti-abus du rendu PDF (Puppeteer) est ajouté un jour, le réserver atomiquement via `updateMany({ where: { id, count: { lt: LIMIT } } })` (jamais un read-then-increment, race condition). Les dates sont validées (format ISO + `birthDate <= deathDate`) avant persistance dans `/api/persons` POST & PATCH (et à aligner sur l'import CSV).
 
 ### Known Bug
 

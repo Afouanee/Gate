@@ -59,7 +59,7 @@ export async function POST(req: NextRequest) {
 
   await createAuditLog({
     userId: session.user.id,
-    action: "PERSON_CREATED", // pas d'enum dédié ; on réutilise une action générique
+    action: "ADMIN_ACTION", // action générique d'admin (ne pas fausser l'audit avec PERSON_CREATED)
     entity: "spotlights",
     entityId: spotlight.id,
   });

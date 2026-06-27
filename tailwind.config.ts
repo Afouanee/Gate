@@ -6,7 +6,7 @@ import type { Config } from "tailwindcss";
  * Registre d'état civil ancien revisité :
  *  - Fond crème (papier) / encre profonde
  *  - Serif déclaré pour les titres (Fraunces), grotesque pour le corps (Inter)
- *  - Accent unique : bordeaux d'encre (sceau)
+ *  - Accent signature : ocre safran de Pondichéry #E8A33D (token `seal`, héritage de nom ; ce n'est PAS un bordeaux)
  *  - Filets fins, numéros de section, grain papier
  */
 const config: Config = {
@@ -130,7 +130,7 @@ const config: Config = {
         paper:       "0 1px 2px rgba(26,23,20,0.04), 0 1px 1px rgba(26,23,20,0.03)",
         "paper-md":  "0 6px 24px -8px rgba(26,23,20,0.12), 0 2px 6px rgba(26,23,20,0.05)",
         "paper-lg":  "0 18px 50px -16px rgba(26,23,20,0.18), 0 6px 16px rgba(26,23,20,0.06)",
-        seal:        "0 4px 18px -4px rgba(122,46,46,0.35)",
+        seal:        "0 4px 18px -4px rgba(232,163,61,0.35)",
       },
       keyframes: {
         "accordion-down": {

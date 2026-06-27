@@ -3,7 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { createAuditLog } from "@/lib/audit";
-import { isUserPremium, canSeeField, canSeePersonalData } from "@/lib/visibility";
+import { canSeeAll, canSeeField, canSeePersonalData } from "@/lib/visibility";
 import { z } from "zod";
 
 const updateSchema = z.object({
@@ -58,15 +58,16 @@ export async function GET(
     return NextResponse.json({ error: "NOT_FOUND" }, { status: 404 });
   }
 
-  const isPremium = isUserPremium(session.user.role);
-  const seePersonal = canSeePersonalData(isPremium, person);
+  // Visibilité (règle unifiée : ADMIN voit tout, sinon le flag public décide).
+  // Le rôle PREMIUM/« Bienfaiteur » ne donne AUCUN accès privilégié aux données.
+  const seeAll = canSeeAll(session.user.role);
+  const seePersonal = canSeePersonalData(seeAll, person);
 
-  // Appliquer la visibilité (règle unifiée : Premium OU flag public)
   const sanitized = {
     ...person,
-    birthDate: canSeeField(isPremium, person.showBirthDate) ? person.birthDate : null,
-    deathDate: canSeeField(isPremium, person.showDeathDate) ? person.deathDate : null,
-    photoUrl: canSeeField(isPremium, person.showPhoto) ? person.photoUrl : null,
+    birthDate: canSeeField(seeAll, person.showBirthDate) ? person.birthDate : null,
+    deathDate: canSeeField(seeAll, person.showDeathDate) ? person.deathDate : null,
+    photoUrl: canSeeField(seeAll, person.showPhoto) ? person.photoUrl : null,
     birthPlace: seePersonal ? person.birthPlace : null,
     deathPlace: seePersonal ? person.deathPlace : null,
     description: seePersonal ? person.description : null,

@@ -28,12 +28,14 @@ export function TreeExplorer() {
     const timeout = setTimeout(async () => {
       try {
         setLoading(true);
-        const res = await fetch(`/api/persons?q=${encodeURIComponent(query)}&limit=8`, {
+        // On passe par /api/search (sanitisé via les flags showXxx) et non plus
+        // /api/persons qui est réservé aux admins et renvoyait des données brutes.
+        const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`, {
           signal: controller.signal,
         });
         if (!res.ok) return;
         const data = await res.json();
-        setResults(data.persons || []);
+        setResults((data.results || []).slice(0, 8));
       } catch {
         setResults([]);
       } finally {

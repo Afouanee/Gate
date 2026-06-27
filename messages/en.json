@@ -81,21 +81,21 @@
     },
     "pricingTeaser": {
       "sectionNo": "№ 04 · Pricing",
-      "title": "Start for free.",
+      "title": "Free for the whole family.",
       "freeLabel": "Free",
       "freePrice": "€0",
       "freePeriod": "forever",
-      "freeFeature1": "5 searches / month",
-      "freeFeature2": "10 profiles",
-      "freeFeature3": "1 export / month",
+      "freeFeature1": "Complete tree",
+      "freeFeature2": "Free search",
+      "freeFeature3": "Keepsake export",
       "freeCta": "Get started",
-      "premiumBadge": "✦ Premium",
-      "premiumLabel": "Premium",
+      "premiumBadge": "✦ Benefactor",
+      "premiumLabel": "Benefactor",
       "premiumPrice": "€3.99",
-      "premiumPeriod": "every 3 months",
-      "premiumFeature1": "Unlimited",
-      "premiumFeature2": "Full tree",
-      "premiumFeature3": "PDF exports",
+      "premiumPeriod": "per month",
+      "premiumFeature1": "HD export, no watermark",
+      "premiumFeature2": "Extended photo gallery",
+      "premiumFeature3": "Family booklet",
       "premiumCta": "See the details"
     },
     "features": {
@@ -276,9 +276,9 @@
     "yearFrom": "Born after",
     "yearTo": "Born before",
     "results": "results found",
-    "limitReached": "You have reached the 5 free searches limit.",
-    "upgradeToPremium": "Upgrade to Premium for unlimited searches",
-    "blurredResults": "Upgrade to Premium to see full results",
+    "limitReached": "",
+    "upgradeToPremium": "",
+    "blurredResults": "Some information is private, per the family's settings.",
     "noResults": "No profiles found"
   },
   "export": {
@@ -301,8 +301,8 @@
     "generate": "Generate PDF",
     "generating": "Generating...",
     "download": "Download",
-    "limitReached": "You have reached the 1 free export limit.",
-    "upgradeToPremium": "Upgrade to Premium for unlimited exports",
+    "limitReached": "",
+    "upgradeToPremium": "High-definition export without watermark for Benefactors.",
     "success": "PDF generated successfully!",
     "error": "Error generating PDF",
     "sectionNo": "№ · Export",
@@ -357,78 +357,79 @@
       "price": "€0",
       "period": "forever",
       "features": [
-        "5 searches maximum",
-        "10 viewable profiles",
-        "1 PDF export maximum",
-        "Partially blurred results"
+        "Complete family tree, no limits",
+        "Search across all profiles",
+        "PDF export (keepsake version)",
+        "Pondicherry and Karaikal memorial pages"
       ],
       "cta": "Start for free"
     },
     "premium": {
-      "name": "Premium",
+      "name": "Benefactor",
       "price": "€3.99",
-      "period": "every 3 months",
+      "period": "per month",
       "features": [
-        "Unlimited searches",
-        "Access to all profiles",
-        "Unlimited PDF exports",
-        "All data visible",
-        "Priority support"
+        "Everything free, without limits",
+        "High-definition PDF export, no watermark",
+        "Extended photo gallery on profiles",
+        "Family booklet (1 to 2 times a year)",
+        "You help keep the project alive"
       ],
-      "cta": "Go Premium",
-      "badge": "Recommended"
+      "cta": "Become a Benefactor",
+      "badge": "Benefactor"
     },
     "page": {
       "sectionNo": "№ · The project",
       "headingBefore": "Free, to ",
       "headingHighlight": "bring us together",
       "headingAfter": ".",
-      "intro": "Gate is a family project, not a business. The tree and all its features are free. If you wish, you can help cover hosting costs, but nothing is ever locked away.",
-      "reassureStrong": "The priority is to share and reunite the family.",
-      "reassureRest": "Support is a kind gesture, never a condition.",
+      "intro": "Viewing the tree, finding your relatives and contributing stay free for the whole family, for life. The Benefactor plan adds extras (high-definition export, extended photo gallery, family booklet) and helps keep the project alive.",
+      "reassureStrong": "You never pay to see or find a relative.",
+      "reassureRest": "The Benefactor plan is comfort and a helping hand, never a condition to access the tree.",
       "activeAdmin": "Administrator: full access enabled.",
-      "activeSupporter": "Thank you, your support for the project is active.",
+      "activeSupporter": "Thank you, your Benefactor plan is active.",
       "freeLabel": "For the whole family",
       "freePrice": "€0",
       "freePeriod": "forever",
-      "currentPlan": "Current plan",
+      "currentPlan": "Your plan",
       "joinFamily": "Join the family",
-      "supportOptional": "✦ Optional",
-      "supportLabel": "Support",
+      "supportOptional": "✦ Benefactor",
+      "supportLabel": "Benefactor",
       "supportPrice": "€3.99",
-      "supportPeriod": "/ 3 months",
-      "supportActive": "Thank you for your support",
+      "supportPeriod": "/ month",
+      "supportActive": "Thank you, you are a Benefactor",
       "supportAdmin": "Administrator",
-      "supportCta": "Support the project",
-      "supportNote": "Payment via Stripe · Cancel anytime",
+      "supportCta": "Become a Benefactor",
+      "supportNote": "Payment via Stripe · no commitment, cancel anytime",
       "faqLabel": "№ · FAQ",
       "errorTitle": "Error",
       "errorCheckout": "Unable to start the payment.",
       "errorGeneric": "An error occurred.",
       "freeFeatures": [
-        "Complete family tree",
+        "Complete family tree, no limits",
         "Search across all profiles",
-        "PDF export of the tree",
+        "PDF export of the tree (keepsake version)",
         "Memorial pages (Pondicherry, Karaikal)"
       ],
       "premiumFeatures": [
         "Everything free, without limits",
-        "You help cover hosting",
-        "Supporter badge on your profile",
-        "Our eternal gratitude"
+        "High-definition PDF export, no watermark",
+        "Extended photo gallery on profiles",
+        "Family booklet (1 to 2 times a year)",
+        "You help keep the project alive"
       ],
       "faq": [
         {
-          "q": "Do I have to pay to use the tree?",
-          "a": "No. The tree, search, profiles, and export are entirely free. The aim of this project is to bring the family together, not to make money."
+          "q": "Do I have to pay to see the tree?",
+          "a": "No. Viewing the tree, searching, consulting profiles (per the family's privacy settings) and contributing are free for all members, for life. We never charge to find a relative."
         },
         {
-          "q": "What is support for, then?",
-          "a": "Solely to help cover hosting costs. It's an optional gesture; nothing is ever locked away if you choose not to support."
+          "q": "What does the Benefactor plan add, then?",
+          "a": "Comfort extras: high-definition PDF export with no watermark (to frame or print), an extended photo gallery on profiles, and a family booklet sent once or twice a year. And you help cover hosting."
         },
         {
-          "q": "Can I stop my support at any time?",
-          "a": "Yes. Cancellation takes effect at the end of the current period, and you keep exactly the same access as before: everything stays free."
+          "q": "Can I stop at any time?",
+          "a": "Yes. Cancellation takes effect at the end of the current period. You keep the same full access to the tree: only the plan's comfort extras stop."
         },
         {
           "q": "Is the payment secure?",
@@ -627,16 +628,16 @@
   },
   "payment": {
     "success": {
-      "title": "Payment successful!",
-      "subtitle": "Welcome to Gate Premium",
-      "message": "Your subscription is now active. Enjoy all Premium features.",
+      "title": "Thank you for your support!",
+      "subtitle": "You are now a Benefactor",
+      "message": "Your support helps keep the family tree alive. Here are the extras that come with it.",
       "cta": "Access the tree",
-      "sectionNo": "№ · Payment confirmed",
-      "unlockedLabel": "Unlocked",
-      "unlocked1": "Unlimited searches",
-      "unlocked2": "Unlimited profiles",
-      "unlocked3": "Unlimited PDF exports",
-      "unlocked4": "Full tree"
+      "sectionNo": "№ · Support confirmed",
+      "unlockedLabel": "Your extras",
+      "unlocked1": "High-definition PDF export, no watermark",
+      "unlocked2": "Extended photo gallery",
+      "unlocked3": "Family booklet 1 to 2 times a year",
+      "unlocked4": "You keep the project alive"
     },
     "cancel": {
       "title": "Payment cancelled",
