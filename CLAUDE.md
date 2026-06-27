@@ -114,6 +114,14 @@ Gate reste un **projet familial** (communauté de Pondichéry/Karaikal), mais il
 - **Confidentialité par champ** : pilotée par les flags `showXxx` sur `Person` et par le rôle **ADMIN** uniquement (`lib/visibility.ts` → `canSeeAll(role) = role === "ADMIN"`). Le rôle PREMIUM/Bienfaiteur **ne débloque rien** (corrigé : avant, `isUserPremium` rouvrait un mur premium sur les données). Ne JAMAIS réintroduire `isUserPremium` dans le chemin de visibilité.
 - ⚠️ **GATING PAYANT À CODER (pas encore branché)** : aujourd'hui les attentions Bienfaiteur ne sont pas verrouillées techniquement. À faire avant de facturer pour de vrai : (1) filigrane familial sur l'export gratuit + rendu HD sans filigrane réservé au rôle PREMIUM dans `app/api/export/render-pdf/route.ts` ; (2) quota anti-abus du rendu Puppeteer pour TOUS (protection infra, poste de coût n°1) ; (3) plafond de galerie photo selon le rôle ; (4) câbler les Price Stripe (mensuel/annuel). NE PAS re-verrouiller la consultation/recherche (ce serait le mur interdit). Règle d'or, comme Nooza : un changement de forfait ne supprime jamais de données, il ne fait que verrouiller l'accès au confort.
 
+### Visite guidée d'accueil
+
+`components/layout/welcome-tour.tsx` (monté dans `app/[locale]/layout.tsx`) : panneau centré « archive », sans dépendance externe (pas de Driver.js), affiché **une seule fois** au 1er passage d'un membre connecté (localStorage `gate_tour_seen_v1`). 4 étapes : l'arbre, retrouver/se rattacher, l'export (souvenir gratuit / HD Bienfaiteur), les pages mémoire. DA Daylight (papier, filets, № de section, accent `seal`, Fraunces), fermable, touch ≥44px. Textes en dur FR (à passer en i18n `tour.*` si version EN soignée voulue).
+
+### Export PDF & gating « Bienfaiteur »
+
+`app/api/export/render-pdf/route.ts` : tout membre exporte un vrai PDF, mais le rendu **HD sans filigrane** est réservé aux rôles `PREMIUM`/`ADMIN` ; les autres reçoivent le même PDF avec un **filigrane familial discret** injecté dans le HTML avant `setContent`. Non bloquant (l'export souvenir reste gratuit). À compléter au lancement payant : quota anti-abus Puppeteer pour tous + plafond galerie photo selon le rôle.
+
 ### Internationalisation (branchée)
 
 Les pages passent par `next-intl` : clés dans `messages/{fr,en}.json` (mêmes chemins des deux côtés). Client : `useTranslations("namespace")` + `t("key")` / `t.raw("key")` pour listes. Server Components : `getTranslations("namespace")` depuis `next-intl/server`. Exceptions : `pondichery` et `karaikal` sont bilingues via leur propre mécanisme (`params.locale` + objets `{fr,en}`). FR par défaut, pas de détection navigateur (`localeDetection: false`).
