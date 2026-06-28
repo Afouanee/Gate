@@ -79,8 +79,13 @@
       "body": "Vous ne vous retrouvez pas, ou vous souhaitez enrichir une branche ? Écrivez-nous, chaque lien compte.",
       "cta": "Nous contacter"
     },
+    "spotlight": {
+      "sectionNo": "№ 04 · À l'honneur",
+      "title": "Les projets des nôtres.",
+      "lead": "Un commerce, un compte, une initiative : la famille met en lumière ce que font les siens."
+    },
     "pricingTeaser": {
-      "sectionNo": "№ 04 · Tarifs",
+      "sectionNo": "№ 05 · Tarifs",
       "title": "Gratuit pour toute la famille.",
       "freeLabel": "Gratuit",
       "freePrice": "0 €",

@@ -79,8 +79,13 @@
       "body": "Can't find yourself, or would you like to enrich a branch? Write to us, every link matters.",
       "cta": "Contact us"
     },
+    "spotlight": {
+      "sectionNo": "№ 04 · Spotlight",
+      "title": "Projects by our own.",
+      "lead": "A shop, an account, an initiative: the family shines a light on what its members do."
+    },
     "pricingTeaser": {
-      "sectionNo": "№ 04 · Pricing",
+      "sectionNo": "№ 05 · Pricing",
       "title": "Free for the whole family.",
       "freeLabel": "Free",
       "freePrice": "€0",

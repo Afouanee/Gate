@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import { prisma } from "@/lib/prisma";
 import { ArrowUpRight } from "lucide-react";
 import { Reveal } from "@/components/layout/reveal";
@@ -22,18 +23,19 @@ export async function SpotlightBanner() {
 
   if (!spotlights.length) return null;
 
+  const t = await getTranslations("home.spotlight");
+
   return (
     <section className="border-t border-ink-line bg-paper py-24 px-4 sm:px-6">
       <div className="container mx-auto max-w-5xl">
         <Reveal className="mb-10 flex items-end justify-between">
           <div>
-            <span className="section-no">№ 05 · À l&apos;honneur</span>
+            <span className="section-no">{t("sectionNo")}</span>
             <h2 className="mt-2 font-serif text-3xl font-semibold tracking-tight md:text-4xl">
-              Les projets des nôtres.
+              {t("title")}
             </h2>
             <p className="mt-2 max-w-md text-sm text-ink-soft">
-              Un commerce, un compte, une initiative : la famille met en lumière
-              ce que font les siens.
+              {t("lead")}
             </p>
           </div>
         </Reveal>
