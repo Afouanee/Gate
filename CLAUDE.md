@@ -30,7 +30,7 @@ Registre d'état civil ancien revisité, rendu en **light premium** (blanc domin
 
 **Primitives CSS réutilisables** (dans `globals.css`) : `.meta-label`, `.section-no` (« № 01 »), `.rule-line`, `.card-paper`, `.seal-badge`, `.reveal`/`.reveal-in` (scroll-reveal via `hooks/use-reveal.ts` + `components/layout/reveal.tsx`), `.stagger`.
 
-**Formes & motion** : rayon 12px (`--radius = 0.75rem`, via `rounded-[var(--radius)]`) pour cartes/inputs, `rounded-full` pour boutons/pastilles. Boutons primaires `bg-ink text-paper`, engagement `bg-seal`. Animations 150–400ms en transform/opacity. `prefers-reduced-motion` est respecté globalement (globals.css). Le curseur custom (`components/layout/custom-cursor.tsx`) ne s'active que sur souris fine.
+**Formes & motion** : rayon 12px (`--radius = 0.75rem`, via `rounded-[var(--radius)]`) pour cartes/inputs, `rounded-full` pour boutons/pastilles. Boutons primaires `bg-ink text-paper`, engagement `bg-seal`. Animations 150–400ms en transform/opacity. `prefers-reduced-motion` est respecté globalement (globals.css). **Curseur : système (natif).** Le curseur custom a été retiré (composant + `cursor:none` du body supprimés) : cible familiale souvent non technique / âgée, la flèche habituelle rassure (même choix que sur Nooza). Ne pas le réintroduire.
 
 **Accessibilité** : focus ring sceau jamais retiré, labels visibles liés (`htmlFor`/`id`), `aria-label` sur les boutons icon-only, contraste AA (ne pas utiliser `ink-faint` pour du texte important). Statuts : jamais la couleur seule, toujours icône + texte.
 
@@ -57,7 +57,7 @@ Registre d'état civil ancien revisité, rendu en **light premium** (blanc domin
 
 `components/tree/family-tree.tsx` → `layoutNodes()` : générations par BFS de filiation **propagées aux conjoints**, couples placés **côte à côte** (`SPOUSE_GAP` resserré), largeur de sous-arbre réservant le conjoint, parent centré sur ses enfants. Gère plusieurs racines et conjoints sans parents. Marqueurs de genre = teintes désaturées (MALE `#3F5B72`, FEMALE `#8A4A52`, OTHER `#5E5070`, UNKNOWN `#8A8378`), jamais de fond saturé.
 
-**Sémantique des liens (à respecter)** : filiation = trait plein orthogonal (`smoothstep`) avec flèche ; conjoint = trait **droit horizontal pointillé** entre les ports latéraux (`sourceHandle`/`targetHandle` left/right, le node a un handle source+target de chaque côté) et cartes **resserrées** ; relation custom = pointillé patine discret. Espaces : couple serré (`SPOUSE_GAP`), fratrie aérée (`H_GAP` plus grand) → jamais de chevauchement. Le curseur custom est désactivé sur `.tree-canvas` (curseur natif grab/pointer).
+**Sémantique des liens (à respecter)** : filiation = trait plein orthogonal (`smoothstep`) avec flèche ; conjoint = trait **droit horizontal pointillé** entre les ports latéraux (`sourceHandle`/`targetHandle` left/right, le node a un handle source+target de chaque côté) et cartes **resserrées** ; relation custom = pointillé patine discret. Espaces : couple serré (`SPOUSE_GAP`), fratrie aérée (`H_GAP` plus grand) → jamais de chevauchement. Sur `.tree-canvas`, curseurs naturels grab/grabbing pour déplacer et pointer sur les nœuds/contrôles.
 
 ## Pages éditoriales & features récentes
 

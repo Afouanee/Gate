@@ -55,17 +55,6 @@
   body {
     @apply bg-paper text-ink font-sans;
     font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
-    cursor: none;
-  }
-
-  /* Curseur natif masqué (remplacé par CustomCursor) uniquement sur souris fine.
-     Sur tactile / pointeur grossier : on garde le curseur natif. */
-  @media (hover: hover) and (pointer: fine) {
-    *, *::before, *::after { cursor: none; }
-    input, textarea { cursor: text; }
-  }
-  @media not all and (hover: hover) {
-    body { cursor: auto; }
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -262,9 +251,8 @@
 
 .react-flow__renderer { background: transparent; }
 
-/* Sur l'arbre, on rend le curseur natif (le curseur custom gêne la manipulation
-   du canvas et laisse des artefacts). Le CustomCursor se masque déjà au survol
-   des éléments interactifs ; ici on force le natif sur toute la zone. */
+/* Curseurs naturels du canvas de l'arbre : grab pour déplacer, pointer sur les
+   nœuds et les contrôles. */
 .tree-canvas, .tree-canvas * { cursor: default; }
 .tree-canvas .react-flow__pane { cursor: grab; }
 .tree-canvas .react-flow__pane.dragging { cursor: grabbing; }
