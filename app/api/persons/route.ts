@@ -23,6 +23,15 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "UNAUTHORIZED" }, { status: 401 });
   }
 
+  // Cette liste renvoie des données brutes (lieux, profession, description) ET les
+  // e-mails des comptes liés, sans passer par lib/visibility. Elle est donc
+  // RÉSERVÉE AUX ADMINS : un membre lambda utilise /api/tree, /api/search et
+  // /api/persons/[id] (qui, eux, sanitisent via les flags showXxx). Sans cette
+  // garde, n'importe quel membre connecté pouvait paginer toute la base + emails.
+  if (session.user.role !== "ADMIN") {
+    return NextResponse.json({ error: "FORBIDDEN" }, { status: 403 });
+  }
+
   const { searchParams } = new URL(req.url);
   const page = parseInt(searchParams.get("page") || "1");
   const limit = parseInt(searchParams.get("limit") || "50");

@@ -155,7 +155,7 @@ export default function ExportPage() {
     const INK_SOFT = "#3F4654";
     const INK_FAINT = "#7A828F";
     const INK_LINE = "#E6E9EF";
-    const SEAL = "#2B6CB0";
+    const SEAL = "#E8A33D"; // ocre safran de Pondichéry, l'accent signature (était à tort #2B6CB0 bleu)
     const CARD = "#FFFFFF";
     // Teintes de genre désaturées (filet en tête de fiche)
     const genderColor = (g: string) =>

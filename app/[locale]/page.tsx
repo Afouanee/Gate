@@ -39,7 +39,7 @@ export default async function HomePage({
       <section className="relative flex min-h-[calc(100svh-4rem)] flex-col justify-center overflow-hidden px-4 sm:px-6">
 
         {/* Arbre qui se trace en fond (filigrane encre) */}
-        <LivingTree className="pointer-events-none absolute right-[-8%] top-1/2 hidden h-[120%] w-[60%] -translate-y-1/2 text-ink/[0.13] md:block" />
+        <LivingTree aria-hidden className="pointer-events-none absolute right-[-8%] top-1/2 hidden h-[120%] w-[60%] -translate-y-1/2 text-ink/[0.13] md:block" />
 
         {/* Énorme numéro de cote en filigrane (décoratif, masqué sur mobile) */}
         <span

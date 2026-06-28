@@ -8,7 +8,7 @@ import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { Toaster } from "@/components/ui/toaster";
 import { ConsentBanner } from "@/components/layout/consent-banner";
-import { CustomCursor } from "@/components/layout/custom-cursor";
+import { WelcomeTour } from "@/components/layout/welcome-tour";
 
 const locales = ["fr", "en"];
 
@@ -41,7 +41,7 @@ export default async function LocaleLayout({
         <Footer />
         <Toaster />
         <ConsentBanner />
-        <CustomCursor />
+        <WelcomeTour />
       </SessionProvider>
     </NextIntlClientProvider>
   );

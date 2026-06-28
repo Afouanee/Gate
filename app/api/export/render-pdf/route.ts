@@ -29,6 +29,27 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "INVALID_FIELDS" }, { status: 400 });
   }
 
+  // Modèle « Bienfaiteur » : tout le monde peut exporter un vrai PDF, mais la
+  // version HAUTE DÉFINITION SANS FILIGRANE est réservée aux Bienfaiteurs (PREMIUM)
+  // et aux admins. Pour les autres, on appose un filigrane discret. On ne bloque
+  // jamais l'export (la consultation/le souvenir restent gratuits).
+  const role = session.user.role;
+  const watermarkFree = role !== "PREMIUM" && role !== "ADMIN";
+  let html = parsed.data.html;
+  if (watermarkFree) {
+    const watermark = `
+      <div style="position:fixed;inset:0;z-index:9999;pointer-events:none;
+        display:flex;align-items:center;justify-content:center;opacity:0.10;
+        transform:rotate(-30deg);font-family:Georgia,'Times New Roman',serif;
+        font-size:46px;letter-spacing:0.18em;color:#0E1320;text-transform:uppercase;">
+        Arbre de famille
+      </div>`;
+    // On injecte le filigrane juste après l'ouverture du body (repli : avant </body>).
+    html = html.includes("<body")
+      ? html.replace(/(<body[^>]*>)/i, `$1${watermark}`)
+      : html.replace(/<\/body>/i, `${watermark}</body>`);
+  }
+
   let browser: any = null;
   try {
     const puppeteer = (await import("puppeteer")).default;
@@ -37,7 +58,7 @@ export async function POST(req: NextRequest) {
       args: ["--no-sandbox", "--disable-setuid-sandbox"],
     });
     const page = await browser.newPage();
-    await page.setContent(parsed.data.html, { waitUntil: "networkidle0" });
+    await page.setContent(html, { waitUntil: "networkidle0" });
     const pdf = await page.pdf({
       format: "A3",
       printBackground: true,

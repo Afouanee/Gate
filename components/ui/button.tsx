@@ -15,7 +15,7 @@ const buttonVariants = cva(
         seal:
           "bg-seal text-paper rounded-full hover:bg-seal-bright active:scale-[0.98] shadow-seal",
         destructive:
-          "bg-destructive text-paper rounded-full hover:opacity-90 active:scale-[0.98]",
+          "bg-patina text-paper rounded-full hover:brightness-95 active:scale-[0.98]",
         outline:
           "border border-ink-line bg-transparent text-ink rounded-full hover:border-ink hover:bg-paper-warm active:scale-[0.98]",
         secondary:

@@ -428,7 +428,7 @@ export function AdminDashboard() {
                       onChange={(e) => setPersonSearch(e.target.value)}
                       placeholder="Rechercher un profil..."
                       aria-label="Rechercher un profil"
-                      className="pl-8 pr-8 h-8 w-full rounded-full border border-ink-line bg-paper-deep text-sm text-ink placeholder:text-ink-faint focus:outline-none focus:ring-2 focus:ring-seal focus:border-seal transition-colors"
+                      className="pl-8 pr-8 h-9 w-full rounded-full border border-ink-line bg-paper-deep text-sm text-ink placeholder:text-ink-faint focus:outline-none focus:ring-2 focus:ring-seal focus:border-seal transition-colors"
                     />
                     {personSearch && (
                       <button

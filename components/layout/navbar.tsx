@@ -126,7 +126,7 @@ export function Navbar() {
                 onClick={() => signOut({ callbackUrl: "/" })}
                 title={t("logout")}
                 aria-label={t("logout")}
-                className="p-2 text-ink-faint hover:text-seal hover:bg-paper-warm rounded-[var(--radius)] transition-colors"
+                className="inline-flex h-10 w-10 items-center justify-center text-ink-faint hover:text-seal hover:bg-paper-warm rounded-[var(--radius)] transition-colors"
               >
                 <LogOut className="h-4 w-4" strokeWidth={1.75} />
               </button>
@@ -150,7 +150,7 @@ export function Navbar() {
 
           {/* Mobile toggle */}
           <button
-            className="md:hidden p-2 text-ink-soft hover:text-ink hover:bg-paper-warm rounded-[var(--radius)] transition-colors"
+            className="md:hidden inline-flex h-10 w-10 items-center justify-center text-ink-soft hover:text-ink hover:bg-paper-warm rounded-[var(--radius)] transition-colors"
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label={mobileOpen ? "Fermer le menu" : "Ouvrir le menu"}
             aria-expanded={mobileOpen}

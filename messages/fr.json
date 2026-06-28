@@ -79,23 +79,28 @@
       "body": "Vous ne vous retrouvez pas, ou vous souhaitez enrichir une branche ? Écrivez-nous, chaque lien compte.",
       "cta": "Nous contacter"
     },
+    "spotlight": {
+      "sectionNo": "№ 04 · À l'honneur",
+      "title": "Les projets des nôtres.",
+      "lead": "Un commerce, un compte, une initiative : la famille met en lumière ce que font les siens."
+    },
     "pricingTeaser": {
-      "sectionNo": "№ 04 · Tarifs",
-      "title": "Commencez gratuitement.",
+      "sectionNo": "№ 05 · Tarifs",
+      "title": "Gratuit pour toute la famille.",
       "freeLabel": "Gratuit",
       "freePrice": "0 €",
       "freePeriod": "pour toujours",
-      "freeFeature1": "5 recherches / mois",
-      "freeFeature2": "10 profils",
-      "freeFeature3": "1 export / mois",
+      "freeFeature1": "Arbre complet",
+      "freeFeature2": "Recherche libre",
+      "freeFeature3": "Export souvenir",
       "freeCta": "Commencer",
-      "premiumBadge": "✦ Premium",
-      "premiumLabel": "Premium",
+      "premiumBadge": "✦ Bienfaiteur",
+      "premiumLabel": "Bienfaiteur",
       "premiumPrice": "3,99 €",
-      "premiumPeriod": "tous les 3 mois",
-      "premiumFeature1": "Illimité",
-      "premiumFeature2": "Arbre complet",
-      "premiumFeature3": "Exports PDF",
+      "premiumPeriod": "par mois",
+      "premiumFeature1": "Export HD sans filigrane",
+      "premiumFeature2": "Galerie photo étendue",
+      "premiumFeature3": "Livret de famille",
       "premiumCta": "Voir les détails"
     },
     "features": {
@@ -276,9 +281,9 @@
     "yearFrom": "Né(e) après",
     "yearTo": "Né(e) avant",
     "results": "résultats trouvés",
-    "limitReached": "Vous avez atteint la limite de 5 recherches gratuites.",
-    "upgradeToPremium": "Passer à Premium pour des recherches illimitées",
-    "blurredResults": "Passez à Premium pour voir les résultats complets",
+    "limitReached": "",
+    "upgradeToPremium": "",
+    "blurredResults": "Certaines informations sont privées, selon les réglages de la famille.",
     "noResults": "Aucun profil trouvé"
   },
   "export": {
@@ -301,8 +306,8 @@
     "generate": "Générer le PDF",
     "generating": "Génération en cours...",
     "download": "Télécharger",
-    "limitReached": "Vous avez atteint la limite d'1 export gratuit.",
-    "upgradeToPremium": "Passer à Premium pour des exports illimités",
+    "limitReached": "",
+    "upgradeToPremium": "Export haute définition sans filigrane pour les Bienfaiteurs.",
     "success": "PDF généré avec succès !",
     "error": "Erreur lors de la génération du PDF",
     "sectionNo": "№ · Export",
@@ -357,78 +362,79 @@
       "price": "0€",
       "period": "pour toujours",
       "features": [
-        "5 recherches maximum",
-        "10 profils consultables",
-        "1 export PDF maximum",
-        "Résultats partiellement masqués"
+        "Arbre familial complet, sans limite",
+        "Recherche dans tous les profils",
+        "Export PDF (version souvenir)",
+        "Pages mémoire Pondichéry et Karaikal"
       ],
       "cta": "Commencer gratuitement"
     },
     "premium": {
-      "name": "Premium",
+      "name": "Bienfaiteur",
       "price": "3,99€",
-      "period": "tous les 3 mois",
+      "period": "par mois",
       "features": [
-        "Recherches illimitées",
-        "Accès à tous les profils",
-        "Exports PDF illimités",
-        "Toutes les données visibles",
-        "Support prioritaire"
+        "Tout le gratuit, sans limite",
+        "Export PDF haute définition, sans filigrane",
+        "Galerie photo étendue sur les fiches",
+        "Livret de famille (1 à 2 fois par an)",
+        "Vous aidez à faire vivre le projet"
       ],
-      "cta": "Passer à Premium",
-      "badge": "Recommandé"
+      "cta": "Devenir Bienfaiteur",
+      "badge": "Bienfaiteur"
     },
     "page": {
       "sectionNo": "№ · Le projet",
       "headingBefore": "Gratuit, pour ",
       "headingHighlight": "rassembler",
       "headingAfter": ".",
-      "intro": "Gate est un projet familial, pas un commerce. L'arbre et toutes ses fonctionnalités sont gratuits. Si vous le souhaitez, vous pouvez soutenir l'hébergement, mais rien n'est jamais bloqué.",
-      "reassureStrong": "La priorité, c'est de partager et de réunir la famille.",
-      "reassureRest": "Le soutien est une attention, jamais une condition.",
+      "intro": "Voir l'arbre, retrouver les siens et contribuer restent gratuits pour toute la famille, à vie. Le forfait Bienfaiteur ajoute des attentions (export en haute définition, galerie photo étendue, livret de famille) et aide à faire vivre le projet.",
+      "reassureStrong": "On ne paie jamais pour voir ou retrouver un proche.",
+      "reassureRest": "Le forfait Bienfaiteur, c'est du confort et un coup de pouce, jamais une condition pour accéder à l'arbre.",
       "activeAdmin": "Administrateur : accès total activé.",
-      "activeSupporter": "Merci, votre soutien au projet est actif.",
+      "activeSupporter": "Merci, votre forfait Bienfaiteur est actif.",
       "freeLabel": "Pour toute la famille",
       "freePrice": "0 €",
       "freePeriod": "pour toujours",
-      "currentPlan": "Plan actuel",
+      "currentPlan": "Votre formule",
       "joinFamily": "Rejoindre la famille",
-      "supportOptional": "✦ Optionnel",
-      "supportLabel": "Soutien",
+      "supportOptional": "✦ Bienfaiteur",
+      "supportLabel": "Bienfaiteur",
       "supportPrice": "3,99 €",
-      "supportPeriod": "/ 3 mois",
-      "supportActive": "Merci pour votre soutien",
+      "supportPeriod": "/ mois",
+      "supportActive": "Merci, vous êtes Bienfaiteur",
       "supportAdmin": "Administrateur",
-      "supportCta": "Soutenir le projet",
-      "supportNote": "Paiement via Stripe · Résiliable à tout moment",
+      "supportCta": "Devenir Bienfaiteur",
+      "supportNote": "Paiement via Stripe · sans engagement, résiliable à tout moment",
       "faqLabel": "№ · FAQ",
       "errorTitle": "Erreur",
       "errorCheckout": "Impossible de démarrer le paiement.",
       "errorGeneric": "Une erreur est survenue.",
       "freeFeatures": [
-        "Arbre familial complet",
+        "Arbre familial complet, sans limite",
         "Recherche dans tous les profils",
-        "Export PDF de l'arbre",
+        "Export PDF de l'arbre (version souvenir)",
         "Pages mémoire (Pondichéry, Karaikal)"
       ],
       "premiumFeatures": [
         "Tout le gratuit, sans limite",
-        "Vous soutenez l'hébergement",
-        "Badge de soutien sur votre profil",
-        "Notre gratitude éternelle"
+        "Export PDF haute définition, sans filigrane",
+        "Galerie photo étendue sur les fiches",
+        "Livret de famille (1 à 2 fois par an)",
+        "Vous aidez à faire vivre le projet"
       ],
       "faq": [
         {
-          "q": "Faut-il payer pour utiliser l'arbre ?",
-          "a": "Non. L'arbre, la recherche, les profils et l'export sont entièrement gratuits. Le but du projet est de rassembler la famille, pas de gagner de l'argent."
+          "q": "Faut-il payer pour voir l'arbre ?",
+          "a": "Non. Voir l'arbre, rechercher, consulter les fiches (selon les réglages de confidentialité de la famille) et contribuer sont gratuits pour tous les membres, à vie. On ne fait jamais payer pour retrouver un proche."
         },
         {
-          "q": "À quoi sert le soutien alors ?",
-          "a": "Uniquement à aider à couvrir les frais d'hébergement. C'est une attention facultative ; rien n'est jamais bloqué si vous ne soutenez pas."
+          "q": "Qu'apporte le forfait Bienfaiteur alors ?",
+          "a": "Des attentions de confort : l'export PDF en haute définition sans filigrane (à encadrer ou imprimer), une galerie photo étendue sur les fiches, et un livret de famille envoyé une à deux fois par an. Et vous aidez à couvrir l'hébergement."
         },
         {
-          "q": "Puis-je arrêter mon soutien à tout moment ?",
-          "a": "Oui. L'arrêt prend effet à la fin de la période en cours, et vous gardez exactement le même accès qu'avant : tout reste gratuit."
+          "q": "Puis-je arrêter à tout moment ?",
+          "a": "Oui. L'arrêt prend effet à la fin de la période en cours. Vous gardez le même accès complet à l'arbre : seules les attentions de confort du forfait s'arrêtent."
         },
         {
           "q": "Le paiement est-il sécurisé ?",
@@ -627,16 +633,16 @@
   },
   "payment": {
     "success": {
-      "title": "Paiement réussi !",
-      "subtitle": "Bienvenue dans Gate Premium",
-      "message": "Votre abonnement est maintenant actif. Profitez de toutes les fonctionnalités Premium.",
+      "title": "Merci pour votre soutien !",
+      "subtitle": "Vous êtes désormais Bienfaiteur",
+      "message": "Votre soutien aide à faire vivre l'arbre de la famille. Voici les attentions qui vous accompagnent.",
       "cta": "Accéder à l'arbre",
-      "sectionNo": "№ · Paiement confirmé",
-      "unlockedLabel": "Débloqué",
-      "unlocked1": "Recherches illimitées",
-      "unlocked2": "Profils illimités",
-      "unlocked3": "Exports PDF illimités",
-      "unlocked4": "Arbre complet"
+      "sectionNo": "№ · Soutien confirmé",
+      "unlockedLabel": "Vos attentions",
+      "unlocked1": "Export PDF haute définition, sans filigrane",
+      "unlocked2": "Galerie photo étendue",
+      "unlocked3": "Livret de famille 1 à 2 fois par an",
+      "unlocked4": "Vous faites vivre le projet"
     },
     "cancel": {
       "title": "Paiement annulé",
