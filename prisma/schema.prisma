@@ -73,6 +73,7 @@ enum ReportType {
 /// Actions d'audit pour traçabilité complète des opérations
 enum AuditAction {
   USER_CREATED
+  USER_LOGGED_IN
   USER_UPDATED
   USER_DELETED
   USER_UPGRADED

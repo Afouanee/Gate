@@ -160,14 +160,13 @@ export const authOptions: NextAuthOptions = {
   events: {
     /**
      * SignIn event: Enregistre l'AuditLog à chaque connexion
-     * NOTE: Il y a un bug ici - devrait être "USER_LOGGED_IN" pas "USER_CREATED"
      */
     async signIn({ user }) {
       // Audit log
       await prisma.auditLog.create({
         data: {
           userId: user.id,
-          action: "USER_CREATED",  // À corriger: devrait être une action LOGIN
+          action: "USER_LOGGED_IN",
           entity: "users",
           entityId: user.id,
         },

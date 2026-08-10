@@ -149,10 +149,6 @@ Audit logs are written via `lib/audit.ts → createAuditLog()` for all significa
 
 **FREE quotas (`searchCount`, `exportCount`) are reserved atomically** via a conditional `updateMany({ where: { id, count: { lt: LIMIT } } })`: if `count === 0` the limit is reached → return 403. Never split this into a separate read-then-increment (race condition). Date inputs are validated for ISO format and `birthDate <= deathDate` before persisting (`/api/persons` POST & PATCH).
 
-### Known Bug
-
-`lib/auth.ts` `signIn` event logs `action: "USER_CREATED"` instead of a login action. The `AuditAction` enum has no `USER_LOGIN` value — to fix this, add the enum value in `prisma/schema.prisma` and run a migration.
-
 ### Environment Variables
 
 Required in `.env.local`:
